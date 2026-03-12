@@ -11,8 +11,8 @@
     --bg2: #0a1028;
     --accent: #ff7c1e;
     --accent2: #ffe040;
-    --accent3: #ff4455;
-    --teal: #38d4ff;
+    --accent3: #ff2080;
+    --teal: #ff6eb4;
     --gold: #ffe040;
     --text: #fff8ee;
     --muted: #b09870;
@@ -25,7 +25,7 @@
   html { scroll-behavior: smooth; }
 
   body {
-    background: linear-gradient(175deg, #060a1c 0%, #0a0d28 20%, #120926 50%, #1e0912 75%, #140407 100%) fixed;
+    background: linear-gradient(to bottom, #04071e 0%, #0d0b2a 15%, #1e0d3a 30%, #3a1050 45%, #6a1520 60%, #aa3a10 78%, #d45510 92%, #e86820 100%) fixed;
     background-attachment: fixed;
     background-size: cover;
     color: var(--text);
@@ -55,13 +55,19 @@
     z-index: 0;
   }
 
-  /* ── BOTTOM SUNSET GLOW ── */
+  /* ── HORIZON SUNSET GLOW ── */
   body::after {
     content: '';
     position: fixed;
     bottom: 0; left: 0; right: 0;
-    height: 500px;
-    background: linear-gradient(to top, rgba(255,65,10,0.22), rgba(255,100,20,0.1), rgba(255,140,30,0.04), transparent);
+    height: 65vh;
+    background: linear-gradient(to top,
+      rgba(255,90,10,0.85) 0%,
+      rgba(255,55,20,0.55) 18%,
+      rgba(210,30,80,0.28) 40%,
+      rgba(110,15,70,0.1) 65%,
+      transparent 100%
+    );
     pointer-events: none;
     z-index: 0;
   }
@@ -157,12 +163,12 @@
   }
   .spotlight::before {
     left: 10%;
-    background: linear-gradient(to top, rgba(255,160,30,0.65), rgba(255,200,80,0.25), transparent);
+    background: linear-gradient(to top, rgba(255,130,20,0.75), rgba(255,180,60,0.3), transparent);
     transform: rotate(-22deg);
   }
   .spotlight::after {
     right: 10%;
-    background: linear-gradient(to top, rgba(255,50,100,0.55), rgba(255,80,120,0.2), transparent);
+    background: linear-gradient(to top, rgba(220,30,100,0.65), rgba(255,80,160,0.25), transparent);
     transform: rotate(22deg);
     animation-delay: -3s;
   }
