@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BATTLE FES 2026 | ColorSing</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Dela+Gothic+One&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060c1a;
+    --bg2: #0a1028;
+    --accent: #ff7c1e;
+    --accent2: #ffe040;
+    --accent3: #ff4455;
+    --teal: #38d4ff;
+    --gold: #ffe040;
+    --text: #fff8ee;
+    --muted: #b09870;
+    --card: rgba(255,190,90,0.07);
+    --border: rgba(255,160,60,0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: linear-gradient(175deg, #060a1c 0%, #0a0d28 20%, #120926 50%, #1e0912 75%, #140407 100%) fixed;
+    background-attachment: fixed;
+    background-size: cover;
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── STARS BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 15% 20%, rgba(255,220,150,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 8%,  rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 15%, rgba(255,200,100,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 5%,  rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 25%, rgba(255,220,150,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 8%  50%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 60%, rgba(255,200,100,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 45%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 70%, rgba(255,220,150,0.4) 0%, transparent 100%),
+      radial-gradient(2px 2px at 45% 80%, rgba(255,200,100,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 90%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 85%, rgba(255,220,150,0.5) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── BOTTOM SUNSET GLOW ── */
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 500px;
+    background: linear-gradient(to top, rgba(255,65,10,0.22), rgba(255,100,20,0.1), rgba(255,140,30,0.04), transparent);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2.5rem;
+    background: rgba(6,10,24,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,130,40,0.25);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.4);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-decoration: none;
+    background: linear-gradient(90deg, var(--accent), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    padding: 8rem 2rem 4rem;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 130% 65% at 50% 115%, rgba(255,75,10,0.48) 0%, transparent 55%),
+      radial-gradient(ellipse 90% 50% at 50% 100%,  rgba(255,140,20,0.28) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 40% at 50% 88%,   rgba(255,200,50,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 50% at 15% 25%,   rgba(100,50,200,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 85% 20%,   rgba(255,120,30,0.07) 0%, transparent 60%);
+  }
+
+  /* ── STAGE LIGHTS ── */
+  .spotlight {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 80%;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .spotlight::before,
+  .spotlight::after {
+    content: '';
+    position: absolute;
+    bottom: -30px;
+    width: 220px;
+    height: 90%;
+    border-radius: 50%;
+    filter: blur(45px);
+    transform-origin: bottom center;
+    animation: lightSway 6s ease-in-out infinite;
+    opacity: 0.75;
+  }
+  .spotlight::before {
+    left: 10%;
+    background: linear-gradient(to top, rgba(255,160,30,0.65), rgba(255,200,80,0.25), transparent);
+    transform: rotate(-22deg);
+  }
+  .spotlight::after {
+    right: 10%;
+    background: linear-gradient(to top, rgba(255,50,100,0.55), rgba(255,80,120,0.2), transparent);
+    transform: rotate(22deg);
+    animation-delay: -3s;
+  }
+  @keyframes lightSway {
+    0%, 100% { transform: rotate(-22deg); }
+    50%       { transform: rotate(-10deg); }
+  }
+
+  .hero-sub {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.5em;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+    text-shadow: 0 0 24px rgba(255,220,10,0.6), 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(5rem, 16vw, 12rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    background: linear-gradient(155deg, #ffffff 0%, #ffe566 20%, #ff9c1a 55%, #ff3322 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 70px rgba(255,100,10,0.6)) drop-shadow(0 8px 40px rgba(0,0,0,0.7));
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+
+  .hero-sub2 {
+    font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
+    font-size: 1.05rem;
+    color: var(--text);
+    opacity: 0.75;
+    margin-top: 1.5rem;
+    letter-spacing: 0.12em;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+
+  .hero-date {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .date-chip {
+    background: rgba(255,180,80,0.08);
+    border: 1px solid rgba(255,180,80,0.2);
+    border-radius: 100px;
+    padding: 0.5rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .date-chip.hot {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 16px rgba(255,107,26,0.25);
+  }
+
+  .hero-btns {
+    margin-top: 3rem;
+    display: flex;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 1s forwards;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.9rem 2.6rem;
+    border-radius: 100px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.25s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ff8c1a, #ff3344);
+    color: #fff;
+    box-shadow: 0 4px 32px rgba(255,100,20,0.55), 0 0 0 1px rgba(255,180,60,0.2) inset;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 8px 50px rgba(255,100,20,0.75);
+  }
+
+  .btn-outline {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    border: 1.5px solid rgba(255,180,80,0.35);
+    backdrop-filter: blur(4px);
+  }
+
+  .btn-outline:hover {
+    border-color: var(--accent2);
+    color: var(--accent2);
+    transform: translateY(-3px);
+    background: rgba(255,200,50,0.08);
+  }
+
+  /* ── SCROLL INDICATOR ── */
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    opacity: 0;
+    animation: fadeUp 1s 1.5s forwards;
+  }
+
+  .scroll-hint span {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--muted), transparent);
+    animation: scrollPulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.2); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SECTIONS SHARED ── */
+  section {
+    padding: 6rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.5em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+
+  .section-title {
+    font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
+    font-weight: 400;
+    font-size: clamp(2.4rem, 5.5vw, 4rem);
+    line-height: 1.15;
+    letter-spacing: 0.06em;
+    margin-bottom: 3rem;
+    color: transparent;
+    -webkit-text-stroke: 2px #ffd47a;
+    filter: drop-shadow(0 0 16px rgba(255,180,80,0.4));
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,120,30,0.2), transparent);
+    margin: 0 auto;
+  }
+
+  /* ── ABOUT ── */
+  #about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    padding: 7rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .about-text p:not(.section-label) {
+    color: var(--muted);
+    line-height: 1.9;
+    font-size: 0.95rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .about-text strong { color: var(--text); }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .stat-card:hover { border-color: var(--accent2); box-shadow: 0 4px 24px rgba(255,200,40,0.15); }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 0.3rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── TEAMS ── */
+  #teams {
+    padding: 6rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .teams-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .team-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    cursor: default;
+  }
+
+  .team-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--team-color, var(--accent));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .team-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  }
+
+  .team-card:hover::before { opacity: 0.05; }
+  .team-card:hover { border-color: var(--team-color, var(--accent)); }
+
+  .team-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+
+  .team-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    letter-spacing: 0.05em;
+    color: var(--team-color, var(--accent));
+    margin-bottom: 0.8rem;
+  }
+
+  .team-members {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .member-tag {
+    background: rgba(255,255,255,0.06);
+    border-radius: 100px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  .team-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .team-placeholder {
+    border-style: dashed;
+    opacity: 0.5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .team-placeholder .plus {
+    font-size: 2rem;
+    color: var(--muted);
+  }
+
+  /* ── SCHEDULE ── */
+  #schedule {
+    padding: 6rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+
+  .schedule-list::before {
+    content: '';
+    position: absolute;
+    left: 100px;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2), transparent);
+    opacity: 0.3;
+  }
+
+  .schedule-item {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 2rem;
+    padding: 1.8rem 0;
+    border-bottom: 1px solid var(--border);
+    align-items: start;
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .schedule-item:hover { background: rgba(255,255,255,0.02); padding-left: 0.5rem; }
+
+  .schedule-item::before {
+    content: '';
+    position: absolute;
+    left: 97px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 7px; height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .sched-time {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    color: var(--accent);
+    padding-top: 0.1rem;
+    text-align: right;
+    letter-spacing: 0.05em;
+  }
+
+  .sched-content { padding-left: 1rem; }
+
+  .sched-title {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .sched-detail {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .sched-badge {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+  }
+
+  .badge-live { background: var(--accent); color: #fff; }
+  .badge-open { background: rgba(0,201,177,0.12); color: var(--teal); border: 1px solid rgba(0,201,177,0.3); }
+  .badge-vote { background: rgba(255,214,10,0.1); color: var(--gold); border: 1px solid rgba(255,214,10,0.3); }
+
+  /* ── VOTE ── */
+  #vote {
+    padding: 6rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .vote-notice {
+    background: rgba(255,107,26,0.06);
+    border: 1px solid rgba(255,107,26,0.2);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+  }
+
+  .vote-notice::before {
+    content: '⚡';
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .vote-teams {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+  }
+
+  .vote-card {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 1.8rem;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .vote-card:hover {
+    border-color: var(--team-color, var(--accent));
+    transform: translateY(-3px);
+    box-shadow: 0 6px 30px rgba(0,0,0,0.3);
+  }
+
+  .vote-card.selected {
+    border-color: var(--team-color, var(--accent));
+    background: rgba(255,255,255,0.07);
+    box-shadow: 0 0 0 4px rgba(255,45,120,0.12), 0 8px 40px rgba(0,0,0,0.3);
+  }
+
+  .vote-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 1rem; right: 1rem;
+    background: var(--team-color, var(--accent));
+    color: #fff;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .vote-card-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    color: var(--team-color, var(--accent));
+    margin-bottom: 0.3rem;
+  }
+
+  .vote-card-members {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  .vote-bar-wrap {
+    height: 6px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.4rem;
+  }
+
+  .vote-bar {
+    height: 100%;
+    background: var(--team-color, var(--accent));
+    border-radius: 3px;
+    transition: width 0.6s cubic-bezier(.4,0,.2,1);
+  }
+
+  .vote-count {
+    font-size: 0.75rem;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .vote-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-vote {
+    background: linear-gradient(135deg, #ff8c1a, #ff3344);
+    color: #fff;
+    font-size: 1rem;
+    padding: 1rem 3rem;
+    border-radius: 100px;
+    cursor: pointer;
+    border: none;
+    font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    letter-spacing: 0.08em;
+    transition: all 0.25s;
+    box-shadow: 0 0 28px rgba(255,107,26,0.35);
+  }
+
+  .btn-vote:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 0 48px rgba(255,107,26,0.6);
+  }
+
+  .btn-vote:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .vote-hint {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .vote-success {
+    display: none;
+    background: rgba(255,214,10,0.06);
+    border: 1px solid rgba(255,214,10,0.25);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    text-align: center;
+    margin-top: 1.5rem;
+  }
+
+  .vote-success.show { display: block; }
+
+  .vote-success p {
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .vote-success small { color: var(--muted); font-size: 0.82rem; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 3rem 2rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 2;
+  }
+
+  footer strong { color: var(--accent); }
+
+  /* ── PARTICLE CANVAS ── */
+  #particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ── MOBILE NAV ── */
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 4px;
+    background: none;
+    border: none;
+  }
+  .nav-hamburger span {
+    display: block;
+    width: 24px; height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+  .nav-hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+  .nav-drawer {
+    display: none;
+    position: fixed;
+    top: 57px; left: 0; right: 0;
+    background: rgba(10,10,26,0.97);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,107,26,0.2);
+    padding: 1.5rem 2rem;
+    z-index: 99;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .nav-drawer.open { display: flex; }
+  .nav-drawer a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,107,26,0.15);
+  }
+
+  /* ── TEAM CARD ENHANCEMENTS ── */
+  .team-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1.2rem;
+    padding: 0.45rem 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .team-link:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+    border-color: var(--team-color, var(--accent));
+  }
+  .team-link svg { flex-shrink: 0; }
+
+  .team-genre {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    border: 1px solid var(--team-color, var(--accent));
+    color: var(--team-color, var(--accent));
+    margin-bottom: 0.8rem;
+    opacity: 0.85;
+  }
+
+  /* ── VOTE STATUS BANNER ── */
+  .vote-status-banner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .vote-status-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .vote-status-dot.waiting { background: var(--muted); }
+  .vote-status-dot.open {
+    background: #22c55e;
+    box-shadow: 0 0 8px #22c55e;
+    animation: blink 1.2s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .vote-status-text { font-size: 0.88rem; }
+  .vote-status-text strong { color: var(--text); }
+  .vote-status-text span { color: var(--muted); font-size: 0.78rem; margin-left: 0.5rem; }
+
+  /* ── VOTE RESULT PODIUM ── */
+  .vote-result-wrap {
+    display: none;
+    margin-top: 3rem;
+  }
+  .vote-result-wrap.show { display: block; }
+  .vote-result-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.35em;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+  .vote-result-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 1.2rem;
+    border-radius: 10px;
+    margin-bottom: 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    transition: border-color 0.3s;
+  }
+  .vote-result-row.rank-1 {
+    border-color: var(--gold);
+    background: rgba(255,215,0,0.05);
+  }
+  .vote-result-rank {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    width: 2rem;
+    text-align: center;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .vote-result-row.rank-1 .vote-result-rank { color: var(--gold); }
+  .vote-result-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    flex: 1;
+  }
+  .vote-result-bar-wrap {
+    flex: 2;
+    height: 8px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .vote-result-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s cubic-bezier(.4,0,.2,1);
+  }
+  .vote-result-pct {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    color: var(--muted);
+    width: 3rem;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    #about { grid-template-columns: 1fr; gap: 2rem; }
+    .schedule-list::before { left: 60px; }
+    .schedule-item { grid-template-columns: 60px 1fr; gap: 1rem; }
+    .schedule-item::before { left: 57px; }
+    nav { padding: 0.9rem 1rem; }
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+    .hero-btns { flex-direction: column; align-items: center; }
+    .hero-date { flex-direction: column; gap: 0.8rem; }
+    .vote-status-banner { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .vote-result-bar-wrap { display: none; }
+    .about-stats { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 420px) {
+    .nav-logo { font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#hero">BATTLE FES</a>
+  <ul class="nav-links">
+    <li><a href="#about">概要</a></li>
+    <li><a href="#teams">チーム</a></li>
+    <li><a href="#schedule">スケジュール</a></li>
+    <li><a href="#vote">投票</a></li>
+  </ul>
+  <button class="nav-hamburger" id="hamburger" onclick="toggleNav()" aria-label="メニュー">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="nav-drawer" id="navDrawer">
+  <a href="#about" onclick="closeNav()">概要</a>
+  <a href="#teams" onclick="closeNav()">チーム</a>
+  <a href="#schedule" onclick="closeNav()">スケジュール</a>
+  <a href="#vote" onclick="closeNav()">投票</a>
+</div>
+
+<canvas id="particles"></canvas>
+
+<!-- HERO -->
+<div id="hero">
+  <div class="hero-bg"></div>
+  <div class="spotlight"></div>
+
+  <p class="hero-sub">ColorSing × Summer Event 2026</p>
+  <h1 class="hero-title">BATTLE<br>FES</h1>
+  <p class="hero-sub2">チーム対抗 歌唱バトルフェスティバル</p>
+
+  <div class="hero-date">
+    <div class="date-chip hot">2026.08.XX（土）</div>
+    <div class="date-chip">ONLINE LIVE</div>
+  </div>
+
+  <div class="hero-btns">
+    <a href="#vote" class="btn btn-primary">投票する</a>
+    <a href="#about" class="btn btn-outline">イベント詳細</a>
+  </div>
+
+  <div class="scroll-hint">
+    <span>SCROLL</span>
+    <div class="scroll-line"></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ABOUT -->
+<div id="about">
+  <div class="about-text">
+    <p class="section-label">About</p>
+    <h2 class="section-title">イベント<br>について</h2>
+    <p>ColorSingの歌い手たちがチームを組み、歌唱力・表現力・チームワークで競い合う<strong>大型バトルイベント</strong>です。</p>
+    <p>各チームが持ち時間内にパフォーマンスを披露。リスナー投票と獲得ライブスコアで<strong>最強チームを決定</strong>します。</p>
+    <p>応援したいチームに投票して、あなたもバトルフェスに参加しよう！</p>
+  </div>
+  <div class="about-stats">
+    <div class="stat-card">
+      <div class="stat-num">4</div>
+      <div class="stat-label">参加チーム数</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">12</div>
+      <div class="stat-label">総出演者数</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">3h</div>
+      <div class="stat-label">配信時間</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">1</div>
+      <div class="stat-label">優勝チーム</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- TEAMS -->
+<section id="teams">
+  <p class="section-label">Teams</p>
+  <h2 class="section-title">参加チーム</h2>
+  <div class="teams-grid">
+
+    <div class="team-card reveal reveal-delay-1" style="--team-color: #ff2d78;">
+      <div class="team-num">TEAM 01</div>
+      <div class="team-name">CRIMSON</div>
+      <div class="team-genre">POWER / J-POP</div>
+      <div class="team-members">
+        <span class="member-tag">ユーザー名A</span>
+        <span class="member-tag">ユーザー名B</span>
+        <span class="member-tag">ユーザー名C</span>
+      </div>
+      <p class="team-desc">圧倒的な歌唱力で勝負するパワー系チーム。ジャンルを問わない幅広いレパートリーが武器。感情をそのままぶつけるストレートなパフォーマンスが持ち味。</p>
+      <a href="https://colorsing.com/" target="_blank" rel="noopener" class="team-link">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        ColorSing プロフィール
+      </a>
+    </div>
+
+    <div class="team-card reveal reveal-delay-2" style="--team-color: #7c3aff;">
+      <div class="team-num">TEAM 02</div>
+      <div class="team-name">NOVA</div>
+      <div class="team-genre">HARMONY / BALLAD</div>
+      <div class="team-members">
+        <span class="member-tag">ユーザー名D</span>
+        <span class="member-tag">ユーザー名E</span>
+        <span class="member-tag">ユーザー名F</span>
+      </div>
+      <p class="team-desc">ハーモニーと表現力で勝負するアーティスト系チーム。感情豊かなバラードから疾走感あるアップテンポまで、聴く者の心を揺さぶるパフォーマンスに注目。</p>
+      <a href="https://colorsing.com/" target="_blank" rel="noopener" class="team-link">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        ColorSing プロフィール
+      </a>
+    </div>
+
+    <div class="team-card reveal reveal-delay-3" style="--team-color: #00e5ff;">
+      <div class="team-num">TEAM 03</div>
+      <div class="team-name">AZURE</div>
+      <div class="team-genre">ANIME / GAME</div>
+      <div class="team-members">
+        <span class="member-tag">ユーザー名G</span>
+        <span class="member-tag">ユーザー名H</span>
+        <span class="member-tag">ユーザー名I</span>
+      </div>
+      <p class="team-desc">アニソン・ゲームソングを中心に攻めるオタク魂チーム。選曲のセンスと完成度の高いカバーで会場を熱狂させる。MC力とキャラクター性も武器のひとつ。</p>
+      <a href="https://colorsing.com/" target="_blank" rel="noopener" class="team-link">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        ColorSing プロフィール
+      </a>
+    </div>
+
+    <div class="team-card reveal reveal-delay-4" style="--team-color: #ffd700;">
+      <div class="team-num">TEAM 04</div>
+      <div class="team-name">GOLDEN</div>
+      <div class="team-genre">ALL-ROUND</div>
+      <div class="team-members">
+        <span class="member-tag">ユーザー名J</span>
+        <span class="member-tag">ユーザー名K</span>
+        <span class="member-tag">ユーザー名L</span>
+      </div>
+      <p class="team-desc">バランス型の万能チーム。どんな曲も高水準にこなすオールラウンダー集団。安定感と確実性を武器に、ハイレベルな完成度で他チームを圧倒する。</p>
+      <a href="https://colorsing.com/" target="_blank" rel="noopener" class="team-link">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        ColorSing プロフィール
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SCHEDULE -->
+<section id="schedule">
+  <p class="section-label">Schedule</p>
+  <h2 class="section-title">タイムスケジュール</h2>
+
+  <div class="schedule-list">
+    <div class="schedule-item">
+      <div class="sched-time">18:00</div>
+      <div class="sched-content">
+        <div class="sched-title">開場・待機配信 <span class="sched-badge badge-open">OPEN</span></div>
+        <div class="sched-detail">BGM・チーム紹介・ルール説明</div>
+      </div>
+    </div>
+    <div class="schedule-item">
+      <div class="sched-time">18:30</div>
+      <div class="sched-content">
+        <div class="sched-title">開会式・MC挨拶 <span class="sched-badge badge-live">LIVE</span></div>
+        <div class="sched-detail">ルール最終説明・チームコール</div>
+      </div>
+    </div>
+    <div class="schedule-item">
+      <div class="sched-time">18:45</div>
+      <div class="sched-content">
+        <div class="sched-title">TEAM 01 CRIMSON パフォーマンス <span class="sched-badge badge-live">LIVE</span></div>
+        <div class="sched-detail">持ち時間 30分 ／ 曲数未定</div>
+      </div>
+    </div>
+    <div class="schedule-item">
+      <div class="sched-time">19:20</div>
+      <div class="sched-content">
+        <div class="sched-title">TEAM 02 NOVA パフォーマンス <span class="sched-badge badge-live">LIVE</span></div>
+        <div class="sched-detail">持ち時間 30分 ／ 曲数未定</div>
+      </div>
+    </div>
+    <div class="schedule-item">
+      <div class="sched-time">19:55</div>
+      <div class="sched-content">
+        <div class="sched-title">休憩・中間集計 <span class="sched-badge badge-vote">VOTE</span></div>
+        <div class="sched-detail">中間投票結果発表 ／ 自由投票タイム</div>
+      </div>
+    </div>
+    <div class="schedule-item">
+      <div class="sched-time">20:10</div>
+      <div class="sched-content">
+        <div class="sched-title">TEAM 03 AZURE パフォーマンス <span class="sched-badge badge-live">LIVE</span></div>
+        <div class="sched-detail">持ち時間 30分 ／ 曲数未定</div>
+      </div>
+    </div>
+    <div class="schedule-item">
+      <div class="sched-time">20:45</div>
+      <div class="sched-content">
+        <div class="sched-title">TEAM 04 GOLDEN パフォーマンス <span class="sched-badge badge-live">LIVE</span></div>
+        <div class="sched-detail">持ち時間 30分 ／ 曲数未定</div>
+      </div>
+    </div>
+    <div class="schedule-item">
+      <div class="sched-time">21:20</div>
+      <div class="sched-content">
+        <div class="sched-title">最終投票締め切り <span class="sched-badge badge-vote">VOTE</span></div>
+        <div class="sched-detail">全チームのパフォーマンス終了後・最終投票受付開始</div>
+      </div>
+    </div>
+    <div class="schedule-item">
+      <div class="sched-time">21:40</div>
+      <div class="sched-content">
+        <div class="sched-title">結果発表・閉会式 <span class="sched-badge badge-live">LIVE</span></div>
+        <div class="sched-detail">審査発表 → MVP発表 → 優勝チーム発表</div>
+      </div>
+    </div>
+    <div class="schedule-item">
+      <div class="sched-time">22:00</div>
+      <div class="sched-content">
+        <div class="sched-title">打ち上げ雑談配信</div>
+        <div class="sched-detail">全員集合・自由トーク</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- VOTE -->
+<section id="vote">
+  <p class="section-label">Vote</p>
+  <h2 class="section-title">リスナー投票</h2>
+
+  <div class="vote-status-banner" id="voteStatusBanner">
+    <div class="vote-status-dot waiting" id="voteStatusDot"></div>
+    <div class="vote-status-text">
+      <strong id="voteStatusLabel">投票受付前</strong>
+      <span id="voteStatusSub">イベント当日の投票開始をお待ちください</span>
+    </div>
+  </div>
+
+  <div class="vote-notice">
+    投票は1人1回のみ有効です。同一ブラウザからの重複投票は防止されます。イベント当日の投票受付開始後、締め切りまでにご投票ください。
+  </div>
+
+  <div class="vote-teams" id="voteTeams"></div>
+
+  <div class="vote-actions">
+    <button class="btn-vote" id="voteBtn" disabled onclick="submitVote()">投票する</button>
+    <span class="vote-hint" id="voteHint">チームを選んでください</span>
+  </div>
+
+  <div class="vote-success" id="voteSuccess">
+    <p id="voteSuccessMsg">✓ 投票ありがとうございます！</p>
+    <small>あなたの1票がチームの力になります。引き続き配信を楽しんでください！</small>
+  </div>
+
+  <div class="vote-result-wrap" id="voteResultWrap">
+    <div class="vote-result-title">CURRENT RANKING</div>
+    <div id="voteResultRows"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <strong>BATTLE FES 2026</strong><br>
+  ColorSing チーム対抗歌唱バトルフェスティバル<br><br>
+  <span style="font-size:0.75rem;">© 2026 Battle Fes Staff. All rights reserved.</span>
+</footer>
+
+<script>
+/* ── TEAMS DATA ── */
+const teams = [
+  { id: 1, name: 'CRIMSON', members: 'ユーザー名A / B / C', color: '#ff2d78', votes: 0 },
+  { id: 2, name: 'NOVA',    members: 'ユーザー名D / E / F', color: '#7c3aff', votes: 0 },
+  { id: 3, name: 'AZURE',   members: 'ユーザー名G / H / I', color: '#00e5ff', votes: 0 },
+  { id: 4, name: 'GOLDEN',  members: 'ユーザー名J / K / L', color: '#ffd700', votes: 0 },
+];
+
+/* ── VOTE STATE (localStorage で不正防止) ── */
+const VOTE_KEY  = 'battlefes2026_vote';
+const COUNT_KEY = 'battlefes2026_counts';
+
+let selected = null;
+let voted = false;
+
+function loadVoteCounts() {
+  try {
+    const raw = localStorage.getItem(COUNT_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      teams.forEach(t => { t.votes = saved[t.id] || 0; });
+    }
+  } catch(e) {}
+}
+
+function saveVoteCounts() {
+  const obj = {};
+  teams.forEach(t => { obj[t.id] = t.votes; });
+  try { localStorage.setItem(COUNT_KEY, JSON.stringify(obj)); } catch(e) {}
+}
+
+function checkAlreadyVoted() {
+  try { return !!localStorage.getItem(VOTE_KEY); } catch(e) { return false; }
+}
+
+function markVoted(teamId) {
+  try { localStorage.setItem(VOTE_KEY, String(teamId)); } catch(e) {}
+}
+
+function getMyVote() {
+  try { return parseInt(localStorage.getItem(VOTE_KEY)) || null; } catch(e) { return null; }
+}
+
+/* ── VOTE STATUS ── */
+// 運営はここで投票期間を設定（ISO文字列）
+const VOTE_OPEN  = null; // 例: '2026-08-15T18:45:00'
+const VOTE_CLOSE = null; // 例: '2026-08-15T21:20:00'
+
+function getVoteStatus() {
+  if (!VOTE_OPEN || !VOTE_CLOSE) return 'waiting';
+  const now = new Date();
+  if (now < new Date(VOTE_OPEN))  return 'waiting';
+  if (now > new Date(VOTE_CLOSE)) return 'closed';
+  return 'open';
+}
+
+function updateStatusBanner() {
+  const status = getVoteStatus();
+  const dot    = document.getElementById('voteStatusDot');
+  const label  = document.getElementById('voteStatusLabel');
+  const sub    = document.getElementById('voteStatusSub');
+
+  dot.className = 'vote-status-dot ' + status;
+  if (status === 'waiting') {
+    label.textContent = '投票受付前';
+    sub.textContent   = 'イベント当日の投票開始をお待ちください';
+  } else if (status === 'open') {
+    label.textContent = '投票受付中';
+    sub.textContent   = '締め切りまでに投票してください！';
+  } else {
+    label.textContent = '投票終了';
+    sub.textContent   = 'ご投票ありがとうございました';
+  }
+}
+
+/* ── VOTE RENDER ── */
+function totalVotes() {
+  return teams.reduce((s, t) => s + t.votes, 0);
+}
+
+function renderVote() {
+  const container = document.getElementById('voteTeams');
+  const total = totalVotes();
+  const myVote = getMyVote();
+
+  container.innerHTML = teams.map(t => {
+    const pct = total > 0 ? Math.round(t.votes / total * 100) : 0;
+    const isSelected = selected === t.id;
+    const isMyVote   = myVote === t.id;
+    return `
+      <div class="vote-card${isSelected ? ' selected' : ''}"
+           style="--team-color:${t.color}"
+           onclick="selectTeam(${t.id})">
+        <div class="vote-card-name">${t.name}${isMyVote ? ' <span style="font-size:0.7rem;opacity:0.7;">← あなたの票</span>' : ''}</div>
+        <div class="vote-card-members">${t.members}</div>
+        <div class="vote-bar-wrap">
+          <div class="vote-bar" style="width:${pct}%; background:${t.color};"></div>
+        </div>
+        <div class="vote-count">
+          <span>${t.votes} 票</span>
+          <span>${pct}%</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderRanking() {
+  const wrap = document.getElementById('voteResultWrap');
+  const rows = document.getElementById('voteResultRows');
+  const total = totalVotes();
+  if (total === 0) { wrap.classList.remove('show'); return; }
+
+  wrap.classList.add('show');
+  const sorted = [...teams].sort((a, b) => b.votes - a.votes);
+  rows.innerHTML = sorted.map((t, i) => {
+    const pct = Math.round(t.votes / total * 100);
+    return `
+      <div class="vote-result-row${i === 0 ? ' rank-1' : ''}">
+        <div class="vote-result-rank">${i + 1}</div>
+        <div class="vote-result-name" style="color:${t.color}">${t.name}</div>
+        <div class="vote-result-bar-wrap">
+          <div class="vote-result-bar" style="width:${pct}%; background:${t.color};"></div>
+        </div>
+        <div class="vote-result-pct">${pct}%</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectTeam(id) {
+  if (voted || checkAlreadyVoted()) return;
+  selected = id;
+  document.getElementById('voteBtn').disabled = false;
+  document.getElementById('voteHint').textContent = `TEAM ${id} を選択中`;
+  renderVote();
+}
+
+function submitVote() {
+  if (!selected || voted || checkAlreadyVoted()) return;
+  const team = teams.find(t => t.id === selected);
+  team.votes++;
+  voted = true;
+
+  markVoted(team.id);
+  saveVoteCounts();
+
+  document.getElementById('voteBtn').disabled = true;
+  document.getElementById('voteHint').textContent = '投票済み';
+
+  const msg = document.getElementById('voteSuccessMsg');
+  msg.textContent = `✓ ${team.name} に投票しました！ありがとうございます！`;
+  document.getElementById('voteSuccess').classList.add('show');
+
+  document.querySelectorAll('.vote-card').forEach(c => c.style.cursor = 'default');
+  renderVote();
+  renderRanking();
+
+  // 投票確定エフェクト
+  confettiBurst(team.color);
+}
+
+/* ── CONFETTI BURST ── */
+function confettiBurst(color) {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  const cx = canvas.width / 2, cy = canvas.height / 2;
+  const pieces = Array.from({ length: 60 }, () => ({
+    x: cx, y: cy,
+    vx: (Math.random() - 0.5) * 12,
+    vy: (Math.random() - 0.8) * 14,
+    size: Math.random() * 8 + 4,
+    color,
+    alpha: 1,
+    rot: Math.random() * Math.PI * 2,
+    vrot: (Math.random() - 0.5) * 0.3,
+  }));
+  let frame = 0;
+  function draw() {
+    if (frame++ > 80) return;
+    pieces.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.vy += 0.4;
+      p.alpha -= 0.012; p.rot += p.vrot;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size * 0.5);
+      ctx.restore();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* ── PARTICLE BACKGROUND ── */
+(function() {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, dots = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const COLORS = ['#ffcc44','#ff9922','#ffe066','#ff6633','#ffdd88'];
+  for (let i = 0; i < 55; i++) {
+    dots.push({
+      x: Math.random() * W, y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: -(Math.random() * 0.25 + 0.08),
+      r: Math.random() * 2 + 0.8,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      alpha: Math.random() * 0.6 + 0.15,
+      pulse: Math.random() * Math.PI * 2,
+    });
+  }
+
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+    dots.forEach(d => {
+      d.x += d.vx; d.y += d.vy;
+      d.pulse += 0.04;
+      if (d.x < 0) d.x = W; if (d.x > W) d.x = 0;
+      if (d.y < 0) d.y = H; if (d.y > H) d.y = 0;
+      const pulsedAlpha = d.alpha * (0.65 + 0.35 * Math.sin(d.pulse));
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+      ctx.fillStyle = d.color;
+      ctx.globalAlpha = pulsedAlpha;
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = d.color;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+/* ── SCROLL REVEAL ── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ── MOBILE NAV ── */
+function toggleNav() {
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('navDrawer').classList.toggle('open');
+}
+function closeNav() {
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('navDrawer').classList.remove('open');
+}
+
+/* ── INIT ── */
+loadVoteCounts();
+if (checkAlreadyVoted()) {
+  voted = true;
+  selected = getMyVote();
+  document.getElementById('voteBtn').disabled = true;
+  document.getElementById('voteHint').textContent = '投票済みです。ありがとうございました！';
+  document.getElementById('voteSuccess').classList.add('show');
+  const myTeam = teams.find(t => t.id === selected);
+  if (myTeam) document.getElementById('voteSuccessMsg').textContent = `✓ ${myTeam.name} に投票しました！ありがとうございます！`;
+}
+renderVote();
+renderRanking();
+updateStatusBanner();
+setInterval(updateStatusBanner, 30000);
+</script>
+</body>
+</html>
