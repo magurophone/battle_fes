@@ -126,12 +126,17 @@
   .hero-bg {
     position: absolute;
     inset: 0;
+    background-image: url('hero-bg.jpg');
+    background-size: cover;
+    background-position: center 30%;
+    background-repeat: no-repeat;
+  }
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
     background:
-      radial-gradient(ellipse 130% 65% at 50% 115%, rgba(255,75,10,0.48) 0%, transparent 55%),
-      radial-gradient(ellipse 90% 50% at 50% 100%,  rgba(255,140,20,0.28) 0%, transparent 55%),
-      radial-gradient(ellipse 60% 40% at 50% 88%,   rgba(255,200,50,0.12) 0%, transparent 50%),
-      radial-gradient(ellipse 50% 50% at 15% 25%,   rgba(100,50,200,0.08) 0%, transparent 60%),
-      radial-gradient(ellipse 40% 40% at 85% 20%,   rgba(255,120,30,0.07) 0%, transparent 60%);
+      linear-gradient(to bottom, rgba(4,7,30,0.35) 0%, rgba(4,7,30,0.1) 40%, rgba(4,7,30,0.55) 100%);
   }
 
   /* ── STAGE LIGHTS ── */
