@@ -12,12 +12,12 @@
     --accent: #ff7c1e;
     --accent2: #ffe040;
     --accent3: #ff4455;
-    --teal: #38d4ff;
+    --teal: #00e8d0;
     --gold: #ffe040;
-    --text: #fff8ee;
-    --muted: #b09870;
-    --card: rgba(255,190,90,0.07);
-    --border: rgba(255,160,60,0.2);
+    --text: #edfcff;
+    --muted: #7ab8c8;
+    --card: rgba(0,220,200,0.06);
+    --border: rgba(0,200,200,0.2);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,7 +25,7 @@
   html { scroll-behavior: smooth; }
 
   body {
-    background: linear-gradient(175deg, #060a1c 0%, #0a0d28 20%, #120926 50%, #1e0912 75%, #140407 100%) fixed;
+    background: linear-gradient(to bottom, #010d1a 0%, #031828 20%, #041f35 45%, #062535 70%, #041820 90%, #021010 100%) fixed;
     background-attachment: fixed;
     background-size: cover;
     color: var(--text);
@@ -39,29 +39,34 @@
     position: fixed;
     inset: 0;
     background-image:
-      radial-gradient(1px 1px at 15% 20%, rgba(255,220,150,0.6) 0%, transparent 100%),
-      radial-gradient(1px 1px at 35% 8%,  rgba(255,255,255,0.5) 0%, transparent 100%),
-      radial-gradient(1px 1px at 55% 15%, rgba(255,200,100,0.4) 0%, transparent 100%),
-      radial-gradient(1px 1px at 75% 5%,  rgba(255,255,255,0.6) 0%, transparent 100%),
-      radial-gradient(1px 1px at 90% 25%, rgba(255,220,150,0.5) 0%, transparent 100%),
-      radial-gradient(1px 1px at 8%  50%, rgba(255,255,255,0.3) 0%, transparent 100%),
-      radial-gradient(1px 1px at 25% 60%, rgba(255,200,100,0.4) 0%, transparent 100%),
-      radial-gradient(1px 1px at 60% 45%, rgba(255,255,255,0.5) 0%, transparent 100%),
-      radial-gradient(1px 1px at 80% 70%, rgba(255,220,150,0.4) 0%, transparent 100%),
-      radial-gradient(2px 2px at 45% 80%, rgba(255,200,100,0.3) 0%, transparent 100%),
-      radial-gradient(1px 1px at 70% 90%, rgba(255,255,255,0.4) 0%, transparent 100%),
-      radial-gradient(1px 1px at 20% 85%, rgba(255,220,150,0.5) 0%, transparent 100%);
+      radial-gradient(1px 1px at 15% 10%, rgba(200,240,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 5%,  rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 12%, rgba(180,240,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 4%,  rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 18%, rgba(200,240,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 8%  30%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 38%, rgba(180,240,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 28%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 42%, rgba(200,240,255,0.3) 0%, transparent 100%),
+      radial-gradient(2px 2px at 45% 22%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 15%, rgba(180,240,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 20%, rgba(255,255,255,0.5) 0%, transparent 100%);
     pointer-events: none;
     z-index: 0;
   }
 
-  /* ── BOTTOM SUNSET GLOW ── */
+  /* ── OCEAN GLOW ── */
   body::after {
     content: '';
     position: fixed;
     bottom: 0; left: 0; right: 0;
-    height: 500px;
-    background: linear-gradient(to top, rgba(255,65,10,0.22), rgba(255,100,20,0.1), rgba(255,140,30,0.04), transparent);
+    height: 55vh;
+    background: linear-gradient(to top,
+      rgba(0,200,190,0.28) 0%,
+      rgba(0,180,210,0.14) 25%,
+      rgba(0,150,200,0.06) 55%,
+      transparent 100%
+    );
     pointer-events: none;
     z-index: 0;
   }
@@ -157,12 +162,12 @@
   }
   .spotlight::before {
     left: 10%;
-    background: linear-gradient(to top, rgba(255,160,30,0.65), rgba(255,200,80,0.25), transparent);
+    background: linear-gradient(to top, rgba(255,150,20,0.7), rgba(255,200,60,0.28), transparent);
     transform: rotate(-22deg);
   }
   .spotlight::after {
     right: 10%;
-    background: linear-gradient(to top, rgba(255,50,100,0.55), rgba(255,80,120,0.2), transparent);
+    background: linear-gradient(to top, rgba(0,220,200,0.6), rgba(0,200,230,0.22), transparent);
     transform: rotate(22deg);
     animation-delay: -3s;
   }
