@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BATTLE FES Admin</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 24px;
+      line-height: 1.5;
+    }
+    button {
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+    input {
+      padding: 10px;
+      width: min(420px, 100%);
+    }
+    .row {
+      margin-bottom: 16px;
+    }
+    .hidden {
+      display: none;
+    }
+    pre {
+      background: #f5f5f5;
+      padding: 12px;
+      overflow: auto;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 720px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px 10px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>BATTLE FES Admin</h1>
+
+  <div class="row">
+    <label for="adminToken">Admin password</label><br>
+    <input id="adminToken" type="password" placeholder="管理画面パスワード">
+    <button type="button" onclick="saveToken()">Log in</button>
+    <button type="button" onclick="loadAdmin()">Load status</button>
+  </div>
+
+  <div class="row">
+    <button type="button" onclick="resetVotes()">Reset all votes</button>
+    <span id="statusText"></span>
+  </div>
+
+  <div id="dashboard" class="hidden">
+    <div class="row"><strong>Vote status:</strong> <span id="voteStatus"></span></div>
+    <div class="row"><strong>Total votes:</strong> <span id="totalVotes"></span></div>
+    <div class="row"><strong>Unique fingerprints:</strong> <span id="uniqueFingerprints"></span></div>
+    <div class="row"><strong>Total submissions:</strong> <span id="totalSubmissions"></span></div>
+    <div class="row"><strong>Updated at:</strong> <span id="updatedAt"></span></div>
+    <div class="row"><strong>Last vote at:</strong> <span id="lastVoteAt"></span></div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Team</th>
+          <th>Votes</th>
+          <th>Percent</th>
+        </tr>
+      </thead>
+      <tbody id="resultsBody"></tbody>
+    </table>
+
+    <div class="row">
+      <h2>Raw JSON</h2>
+      <pre id="rawJson"></pre>
+    </div>
+
+    <div class="row">
+      <h2>Vote Log</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Team</th>
+            <th>Name</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const TEAMS = {
+      1: 'CRIMSON',
+      2: 'NOVA',
+      3: 'AZURE',
+      4: 'GOLDEN',
+    };
+
+    function getToken() {
+      return localStorage.getItem('battlefes_admin_token') || '';
+    }
+
+    function saveToken() {
+      const token = document.getElementById('adminToken').value.trim();
+      if (token) {
+        localStorage.setItem('battlefes_admin_token', token);
+        document.getElementById('statusText').textContent = 'Password saved in this browser.';
+      } else {
+        localStorage.removeItem('battlefes_admin_token');
+        document.getElementById('statusText').textContent = 'Saved password cleared.';
+      }
+    }
+
+    async function api(path, options = {}) {
+      const token = getToken();
+      const headers = new Headers(options.headers || {});
+      if (token) headers.set('Authorization', `Bearer ${token}`);
+
+      const response = await fetch(path, { ...options, headers });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || `Request failed: ${response.status}`);
+      }
+      return data;
+    }
+
+    function renderSnapshot(data) {
+      document.getElementById('dashboard').classList.remove('hidden');
+      document.getElementById('voteStatus').textContent = data.status || '-';
+      document.getElementById('totalVotes').textContent = data.results.totalVotes ?? 0;
+      document.getElementById('uniqueFingerprints').textContent = data.uniqueFingerprints ?? 0;
+      document.getElementById('totalSubmissions').textContent = data.meta.totalSubmissions ?? 0;
+      document.getElementById('updatedAt').textContent = data.results.updatedAt || '-';
+      document.getElementById('lastVoteAt').textContent = data.meta.lastVoteAt || '-';
+
+      const totalVotes = data.results.totalVotes || 0;
+      const rows = Object.entries(data.results.counts || {}).map(([teamId, votes]) => {
+        const percent = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
+        return `<tr><td>${TEAMS[teamId] || teamId}</td><td>${votes}</td><td>${percent}%</td></tr>`;
+      }).join('');
+
+      document.getElementById('resultsBody').innerHTML = rows;
+      document.getElementById('logBody').innerHTML = (data.voteLog || []).map(entry => {
+        return `<tr>
+          <td>${entry.timestamp || '-'}</td>
+          <td>${TEAMS[entry.teamId] || entry.teamId}</td>
+          <td>${entry.voterName || '-'}</td>
+          <td>${entry.comment || ''}</td>
+        </tr>`;
+      }).join('');
+      document.getElementById('rawJson').textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function loadAdmin() {
+      try {
+        const data = await api('/api/admin/results');
+        renderSnapshot(data);
+        document.getElementById('statusText').textContent = 'Loaded.';
+      } catch (error) {
+        document.getElementById('statusText').textContent = error.message;
+      }
+    }
+
+    async function resetVotes() {
+      const ok = window.confirm('すべての投票データをリセットします。よろしいですか？');
+      if (!ok) return;
+
+      try {
+        const data = await api('/api/admin/reset', { method: 'POST' });
+        renderSnapshot(data);
+        document.getElementById('statusText').textContent = 'All votes reset.';
+      } catch (error) {
+        document.getElementById('statusText').textContent = error.message;
+      }
+    }
+
+    document.getElementById('adminToken').value = getToken();
+  </script>
+</body>
+</html>
