@@ -1,3 +1,4 @@
+.tooling/
 node_modules/
 .wrangler/
 .safety-backups/

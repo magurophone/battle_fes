@@ -409,10 +409,28 @@
       rgba(255,150,40,0.55) 28%,
       rgba(255,90,20,0.2) 55%,
       transparent 75%);
-    -webkit-mask: url('/assets/effects/sunburst.png') center / contain no-repeat;
-            mask: url('/assets/effects/sunburst.png') center / contain no-repeat;
-    -webkit-mask-mode: luminance;
-            mask-mode: luminance;
+    -webkit-mask-image:
+      radial-gradient(circle at center, #000 30%, transparent 70%),
+      url('/assets/effects/sunburst.png');
+            mask-image:
+      radial-gradient(circle at center, #000 30%, transparent 70%),
+      url('/assets/effects/sunburst.png');
+    -webkit-mask-mode: alpha, luminance;
+            mask-mode: alpha, luminance;
+    -webkit-mask-size: 100% 100%, contain;
+            mask-size: 100% 100%, contain;
+    -webkit-mask-position: center, center;
+            mask-position: center, center;
+    -webkit-mask-repeat: no-repeat, no-repeat;
+            mask-repeat: no-repeat, no-repeat;
+    -webkit-mask-composite: source-in;
+            mask-composite: intersect;
+    -webkit-mask-position: center, center;
+            mask-position: center, center;
+    -webkit-mask-repeat: no-repeat, no-repeat;
+            mask-repeat: no-repeat, no-repeat;
+    -webkit-mask-composite: source-in;
+            mask-composite: intersect;
     opacity: 0.7;
     pointer-events: none;
     z-index: -1;
