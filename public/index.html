@@ -341,7 +341,8 @@
   .team-num { font-family: 'Bebas Neue', sans-serif; font-size: 0.8rem; letter-spacing: 0.3em; color: var(--muted); margin-bottom: 0.3rem; }
   .team-name { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 0.05em; color: var(--team-color, var(--accent)); margin-bottom: 0.8rem; }
   .team-members { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
-  .member-tag { background: rgba(255,255,255,0.06); border-radius: 100px; padding: 0.25rem 0.75rem; font-size: 0.78rem; color: var(--muted); }
+  .member-tag { background: rgba(255,255,255,0.06); border-radius: 100px; padding: 0.25rem 0.75rem; font-size: 0.78rem; color: var(--muted); text-decoration: none; transition: background-color 0.2s, color 0.2s; }
+  a.member-tag:hover { background: rgba(255,255,255,0.14); color: var(--team-color, var(--text)); }
   .team-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
   .team-link {
     display: inline-flex; align-items: center; gap: 0.4rem;
@@ -661,15 +662,11 @@
       <div class="team-name">CRIMSON</div>
       <div class="team-genre">POWER / J-POP</div>
       <div class="team-members">
-        <span class="member-tag">ユーザー名A</span>
-        <span class="member-tag">ユーザー名B</span>
-        <span class="member-tag">ユーザー名C</span>
+        <a class="member-tag" href="#">???</a>
+        <a class="member-tag" href="#">???</a>
+        <a class="member-tag" href="#">???</a>
       </div>
-      <p class="team-desc">圧倒的な歌唱力で勝負するパワー系チーム。ジャンルを問わない幅広いレパートリーが武器。感情をそのままぶつけるストレートなパフォーマンスが持ち味。</p>
-      <a href="https://colorsing.com/" target="_blank" rel="noopener" class="team-link">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        ColorSing プロフィール
-      </a>
+      <p class="team-desc">???</p>
     </div>
 
     <div class="team-card reveal reveal-delay-2" style="--team-color: #7c3aff; --team-bg: url('/assets/teams/nova.png');">
@@ -677,15 +674,11 @@
       <div class="team-name">NOVA</div>
       <div class="team-genre">HARMONY / BALLAD</div>
       <div class="team-members">
-        <span class="member-tag">ユーザー名D</span>
-        <span class="member-tag">ユーザー名E</span>
-        <span class="member-tag">ユーザー名F</span>
+        <a class="member-tag" href="#">???</a>
+        <a class="member-tag" href="#">???</a>
+        <a class="member-tag" href="#">???</a>
       </div>
-      <p class="team-desc">ハーモニーと表現力で勝負するアーティスト系チーム。感情豊かなバラードから疾走感あるアップテンポまで、聴く者の心を揺さぶるパフォーマンスに注目。</p>
-      <a href="https://colorsing.com/" target="_blank" rel="noopener" class="team-link">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        ColorSing プロフィール
-      </a>
+      <p class="team-desc">???</p>
     </div>
 
     <div class="team-card reveal reveal-delay-3" style="--team-color: #ffd700; --team-bg: url('/assets/teams/golden.png');">
@@ -693,15 +686,11 @@
       <div class="team-name">GOLDEN</div>
       <div class="team-genre">ALL-ROUND</div>
       <div class="team-members">
-        <span class="member-tag">ユーザー名J</span>
-        <span class="member-tag">ユーザー名K</span>
-        <span class="member-tag">ユーザー名L</span>
+        <a class="member-tag" href="#">???</a>
+        <a class="member-tag" href="#">???</a>
+        <a class="member-tag" href="#">???</a>
       </div>
-      <p class="team-desc">バランス型の万能チーム。どんな曲も高水準にこなすオールラウンダー集団。安定感と確実性を武器に、ハイレベルな完成度で他チームを圧倒する。</p>
-      <a href="https://colorsing.com/" target="_blank" rel="noopener" class="team-link">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        ColorSing プロフィール
-      </a>
+      <p class="team-desc">???</p>
     </div>
 
   </div>
@@ -715,17 +704,17 @@
   <div class="schedule-list">
     <div class="schedule-item"><div class="sched-time">19:45</div><div class="sched-content"><div class="sched-title">開会式・チーム紹介</div><div class="sched-detail">ルール説明・チームコール（15分）</div></div></div>
     <div class="round-divider"><span class="round-label">ROUND 1</span></div>
-    <div class="schedule-item"><div class="sched-time">20:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span> 1人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">20:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span> 1人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">20:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span> 1人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">20:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">20:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">20:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="round-divider"><span class="round-label">ROUND 2</span><span class="sched-badge badge-vote">投票開始</span></div>
-    <div class="schedule-item"><div class="sched-time">20:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span> 2人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">21:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span> 2人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">21:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span> 2人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">20:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="round-divider"><span class="round-label">ROUND 3</span></div>
-    <div class="schedule-item"><div class="sched-time">21:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span> 3人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">21:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span> 3人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">22:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span> 3人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">22:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="schedule-item"><div class="sched-time">22:15<div class="sched-badges"><span class="sched-badge badge-vote">VOTE</span></div></div><div class="sched-content"><div class="sched-title">本投票開始</div><div class="sched-detail">10分間</div></div></div>
     <div class="schedule-item"><div class="sched-time">22:25</div><div class="sched-content"><div class="sched-title">結果発表・閉会式</div><div class="sched-detail">最終集計 ／ MVP・優勝チーム発表</div></div></div>
     <div class="schedule-item"><div class="sched-time">22:40</div><div class="sched-content"><div class="sched-title">終了</div></div></div>
