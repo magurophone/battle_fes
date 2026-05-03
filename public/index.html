@@ -410,6 +410,8 @@
     pointer-events: none;
     z-index: -1;
     animation: voteRaysSway 18s ease-in-out infinite;
+    -webkit-mask-image: radial-gradient(ellipse 65% 80% at 50% 15%, #000 35%, rgba(0,0,0,0.5) 65%, transparent 95%);
+            mask-image: radial-gradient(ellipse 65% 80% at 50% 15%, #000 35%, rgba(0,0,0,0.5) 65%, transparent 95%);
   }
   @keyframes voteRaysSway {
     0%, 100% { transform: translateX(-50%) rotate(-2deg) scale(1.0); opacity: 0.45; }
