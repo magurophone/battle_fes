@@ -392,6 +392,10 @@
   .round-divider .sched-badge { margin-left: auto; }
   .sched-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
   .sched-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; }
+  .team-name { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.06em; font-weight: 400; font-size: 1.15em; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; padding: 0 0.05em; background-size: cover; background-position: center; }
+  .team-name.crimson { background-image: url('/assets/teams/crimson.png'); }
+  .team-name.nova    { background-image: url('/assets/teams/nova.png'); }
+  .team-name.golden  { background-image: url('/assets/teams/golden.png'); }
   .sched-detail { font-size: 0.82rem; color: var(--muted); }
   .sched-badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; margin-left: 0.5rem; vertical-align: middle; white-space: nowrap; }
   .badge-live { background: var(--accent); color: #fff; }
@@ -711,19 +715,19 @@
   <div class="schedule-list">
     <div class="schedule-item"><div class="sched-time">19:45</div><div class="sched-content"><div class="sched-title">開会式・チーム紹介</div><div class="sched-detail">ルール説明・チームコール（15分）</div></div></div>
     <div class="round-divider"><span class="round-label">ROUND 1</span></div>
-    <div class="schedule-item"><div class="sched-time">20:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 01 CRIMSON 1人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">20:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 02 NOVA 1人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">20:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 03 GOLDEN 1人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">20:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="team-name crimson">CRIMSON</span> 1人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">20:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="team-name nova">NOVA</span> 1人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">20:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="team-name golden">GOLDEN</span> 1人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="round-divider"><span class="round-label">ROUND 2</span><span class="sched-badge badge-vote">投票開始</span></div>
-    <div class="schedule-item"><div class="sched-time">20:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 01 CRIMSON 2人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">21:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 02 NOVA 2人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">21:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 03 GOLDEN 2人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">20:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="team-name crimson">CRIMSON</span> 2人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="team-name nova">NOVA</span> 2人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="team-name golden">GOLDEN</span> 2人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="round-divider"><span class="round-label">ROUND 3</span></div>
-    <div class="schedule-item"><div class="sched-time">21:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 01 CRIMSON 3人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">21:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 02 NOVA 3人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">22:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 03 GOLDEN 3人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">22:15<div class="sched-badges"><span class="sched-badge badge-vote">VOTE</span></div></div><div class="sched-content"><div class="sched-title">本投票開始</div><div class="sched-detail">10分間 ／ ここで投じた1票が最も重い</div></div></div>
-    <div class="schedule-item"><div class="sched-time">22:25</div><div class="sched-content"><div class="sched-title">投票締め切り → 結果発表・閉会式</div><div class="sched-detail">最終集計 ／ MVP発表 → 優勝チーム発表（15分）</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="team-name crimson">CRIMSON</span> 3人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="team-name nova">NOVA</span> 3人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">22:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="team-name golden">GOLDEN</span> 3人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">22:15<div class="sched-badges"><span class="sched-badge badge-vote">VOTE</span></div></div><div class="sched-content"><div class="sched-title">本投票開始</div><div class="sched-detail">10分間</div></div></div>
+    <div class="schedule-item"><div class="sched-time">22:25</div><div class="sched-content"><div class="sched-title">結果発表・閉会式</div><div class="sched-detail">最終集計 ／ MVP・優勝チーム発表</div></div></div>
     <div class="schedule-item"><div class="sched-time">22:40</div><div class="sched-content"><div class="sched-title">終了</div></div></div>
   </div>
 </section>
