@@ -208,8 +208,10 @@
     opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
   }
   .date-chip {
-    background: rgba(255,180,80,0.08);
-    border: 1px solid rgba(255,180,80,0.2);
+    background:
+      linear-gradient(rgba(6,10,24,0.6), rgba(6,10,24,0.6)),
+      url('/assets/textures/deco-gold.png') center/180px repeat;
+    border: 1px solid rgba(255,180,80,0.25);
     border-radius: 100px; padding: 0.5rem 1.5rem;
     font-size: 0.9rem; font-weight: 700; letter-spacing: 0.05em;
   }
@@ -235,7 +237,10 @@
   }
   .btn-primary:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 50px rgba(255,100,20,0.75); }
   .btn-outline {
-    background: rgba(255,255,255,0.06); color: var(--text);
+    background:
+      linear-gradient(rgba(6,10,24,0.6), rgba(6,10,24,0.6)),
+      url('/assets/textures/deco-gold.png') center/180px repeat;
+    color: var(--text);
     border: 1.5px solid rgba(255,180,80,0.35);
     backdrop-filter: blur(4px);
   }
@@ -272,6 +277,7 @@
     color: var(--accent); text-transform: uppercase;
     margin-bottom: 0.8rem;
   }
+  .section-label, .section-title { position: relative; text-shadow: 0 0 24px rgba(6,12,26,0.95), 0 0 12px rgba(6,12,26,0.95), 0 2px 4px rgba(0,0,0,0.6); }
   .section-title {
     font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
     font-weight: 400; font-size: clamp(2.4rem, 5.5vw, 4rem);
@@ -461,8 +467,7 @@
   .vote-status-text strong { color: var(--text); }
   .vote-status-text span { color: var(--muted); font-size: 0.78rem; margin-left: 0.5rem; }
 
-  .vote-notice { background: rgba(10,16,40,0.82); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,107,26,0.3); border-radius: 12px; padding: 1rem 1.5rem; font-size: 0.85rem; color: var(--muted); margin-bottom: 2.5rem; display: flex; gap: 0.8rem; align-items: center; }
-  .vote-notice::before { content: '⚡'; font-size: 1rem; flex-shrink: 0; }
+  .vote-notice { background: rgba(10,16,40,0.82); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,107,26,0.3); border-radius: 12px; padding: 1rem 1.5rem; font-size: 0.85rem; color: var(--muted); margin-bottom: 2.5rem; }
   .vote-teams { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; margin-bottom: 2rem; }
   .vote-card { background: rgba(10,16,40,0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 2px solid var(--border); border-radius: 14px; padding: 1.8rem; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden; user-select: none; isolation: isolate; }
   .vote-card::before {
@@ -494,7 +499,7 @@
   .vote-form { width: 100%; margin: 2rem 0; display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; }
   @media (max-width: 600px) { .vote-form { grid-template-columns: 1fr; } }
   .vote-form label { font-size: 0.8rem; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.3rem; display: block; }
-  .vote-form input, .vote-form textarea { width: 100%; background: rgba(10,16,40,0.78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid rgba(255,160,60,0.25); border-radius: 10px; padding: 0.75rem 1rem; color: var(--text); font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.2s; box-sizing: border-box; }
+  .vote-form input, .vote-form textarea { width: 100%; background: rgba(10,16,40,0.78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid rgba(255,160,60,0.25); border-radius: 10px; padding: 0.75rem 1rem; color: var(--text); font-family: inherit; font-size: 16px; outline: none; transition: border-color 0.2s; box-sizing: border-box; }
   .vote-form input:focus, .vote-form textarea:focus { border-color: var(--accent); }
   .vote-form textarea { resize: vertical; min-height: 80px; }
   .vote-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
@@ -559,7 +564,9 @@
     .nav-hamburger { display: flex; }
     .hero-btns { flex-direction: column; align-items: center; }
     .hero-date { flex-direction: column; gap: 0.8rem; }
-    .vote-status-banner { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .vote-status-banner { gap: 0.7rem; padding: 0.85rem 1.1rem; }
+    .vote-status-text strong { display: block; }
+    .vote-status-text span { display: block; margin-left: 0; margin-top: 0.15rem; }
     .vote-result-bar-wrap { display: none; }
     .about-stats { grid-template-columns: 1fr 1fr; }
     .round-divider { padding-left: calc(60px + 2rem); }
@@ -619,7 +626,7 @@
   <p class="hero-sub2">チーム対抗 歌唱バトルフェスティバル</p>
 
   <div class="hero-date">
-    <div class="date-chip hot">2026.07.19（日）</div>
+    <div class="date-chip hot">2026.07.18（土）</div>
     <div class="date-chip">ONLINE LIVE</div>
   </div>
 
@@ -777,9 +784,9 @@
 <script>
 /* ── TEAMS DATA ── */
 const teams = [
-  { id: 1, name: 'CRIMSON', members: 'ユーザー名A / B / C', color: '#ff2d78', bg: '/assets/teams/crimson.png', votes: 0 },
-  { id: 2, name: 'NOVA',    members: 'ユーザー名D / E / F', color: '#7c3aff', bg: '/assets/teams/nova.png',    votes: 0 },
-  { id: 3, name: 'GOLDEN',  members: 'ユーザー名J / K / L', color: '#ffd700', bg: '/assets/teams/golden.png',  votes: 0 },
+  { id: 1, name: 'CRIMSON', members: 'Coming soon', color: '#ff2d78', bg: '/assets/teams/crimson.png', votes: 0 },
+  { id: 2, name: 'NOVA',    members: 'Coming soon', color: '#7c3aff', bg: '/assets/teams/nova.png',    votes: 0 },
+  { id: 3, name: 'GOLDEN',  members: 'Coming soon', color: '#ffd700', bg: '/assets/teams/golden.png',  votes: 0 },
 ];
 
 /* ── VOTE STATE ── */
@@ -835,8 +842,8 @@ function resetTrialVotes() {
 
 /* ── VOTE STATUS ── */
 // 運営はここで投票期間を設定（ISO文字列）
-const VOTE_OPEN  = '2026-07-19T20:45:00+09:00'; // R1終了 = R2先頭 = 投票受付開始
-const VOTE_CLOSE = '2026-07-19T22:25:00+09:00'; // R3終了 + 本投票10分後
+const VOTE_OPEN  = '2026-07-18T20:45:00+09:00'; // R1終了 = R2先頭 = 投票受付開始
+const VOTE_CLOSE = '2026-07-18T22:25:00+09:00'; // R3終了 + 本投票10分後
 
 function getVoteStatus() {
   if (!VOTE_OPEN || !VOTE_CLOSE) return 'waiting';

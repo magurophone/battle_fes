@@ -200,8 +200,8 @@ async function resetAllVotes(store) {
 }
 
 function getVoteWindowStatus() {
-  const VOTE_OPEN = "2026-07-19T20:45:00+09:00";
-  const VOTE_CLOSE = "2026-07-19T22:25:00+09:00";
+  const VOTE_OPEN = "2026-07-18T20:45:00+09:00";
+  const VOTE_CLOSE = "2026-07-18T22:25:00+09:00";
 
   if (!VOTE_OPEN || !VOTE_CLOSE) return "waiting";
 
