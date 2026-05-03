@@ -25,6 +25,14 @@
   - 日付バッジ、すりガラス
 - `⬜` Aboutセクション強調テキスト
   - 中抜きアウトライン（`.outline-accent` CSSが未適用）
+- `✓` ヒーローロゴ画像化
+  - `/assets/logos/logo-B-trim.png` + `/assets/logos/sublogo-colorsing-trim.png`
+- `✓` ヒーロー花火エフェクト
+  - 四隅で時間差4連発（`/assets/effects/firework.png`）
+- `✓` 投票セクション god rays
+  - `/assets/effects/godrays.png` を背景にゆらぎアニメ
+- `✓` チームカード背景画像
+  - `/assets/teams/{crimson,nova,golden}.png`
 
 ### 機能
 
@@ -91,7 +99,10 @@
 - `✓` `hero-bg.webp` preload → `public/hero-bg.webp` 実在確認済み（問題なし）
 - `✓` スケジュール 21:40「審査発表」削除済み
 - `⬜` チーム名、メンバー名を実データへ差し替え
+  - 新デザイン統合で 4 → 3チーム（CRIMSON / NOVA / GOLDEN、AZURE削除）
+  - About `stat-num` の参加チーム数 `4` ／ 出演者数 `12` はデザイン値のまま
 - `⬜` スケジュール日程を確定データへ差し替え（仮: 7/19）
+  - 新デザイン統合により 21:20 打ち上げまでに短縮、AZURE枠削除済み
 - `⬜` 投票タイマー `VOTE_OPEN` / `VOTE_CLOSE` を本番日時に設定
   - 現在 `null`（開発中のため意図的に無効化中）
   - 本番: `'2026-07-19T23:00:00'`
