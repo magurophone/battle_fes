@@ -101,13 +101,14 @@
 - `⬜` チーム名、メンバー名を実データへ差し替え
   - 新デザイン統合で 4 → 3チーム（CRIMSON / NOVA / GOLDEN、AZURE削除）
   - About `stat-num` の参加チーム数 `4` ／ 出演者数 `12` はデザイン値のまま
-- `🔧` スケジュール日程を確定データへ差し替え（仮: 7/19、開始18:30は暫定）
-  - 構成: 開会式15分 → R1 45分 → R2 45分 → R3 45分 → 投票呼びかけ5分 → 結果発表・閉会式15分
+- `🔧` スケジュール日程（7/19、開始19:45）
+  - 構成: 開会式15分 → R1 45分 → R2 45分 → R3 45分 → 本投票10分 → 結果発表・閉会式15分
   - 9公演（A1→B1→C1→A2→B2→C2→A3→B3→C3）、各15分・連続
-  - 18:30開始想定の場合 21:20 終了
-- `🔧` 投票タイマー `VOTE_OPEN` / `VOTE_CLOSE` を本番日時に設定
-  - 現状: 18:30開始想定の暫定値（VOTE_OPEN 19:30 / VOTE_CLOSE 21:05）
-  - 開始時刻が確定したら同期（public/index.html, battlefes.html, functions/api/_lib/vote-store.js の3箇所）
+  - 19:45開始 → 22:40 終了（2h55min）
+- `🔧` 投票タイマー `VOTE_OPEN` / `VOTE_CLOSE`
+  - VOTE_OPEN: 2026-07-19T20:45:00+09:00（R1終了 = R2先頭）
+  - VOTE_CLOSE: 2026-07-19T22:25:00+09:00（本投票10分終了）
+  - 同期箇所: public/index.html, battlefes.html, functions/api/_lib/vote-store.js
 
 ### バックエンド
 
