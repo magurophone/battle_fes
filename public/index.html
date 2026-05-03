@@ -393,6 +393,8 @@
   .round-divider .sched-badge { margin-left: auto; }
   .sched-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
   .sched-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; }
+  .placeholder { color: var(--muted); font-style: italic; opacity: 0.55; letter-spacing: 0.04em; font-weight: 400; animation: placeholderPulse 2.6s ease-in-out infinite; }
+  @keyframes placeholderPulse { 0%, 100% { opacity: 0.45; } 50% { opacity: 0.75; } }
   .sched-team { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.06em; font-weight: 400; font-size: 1.15em; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; padding: 0 0.05em; background-size: cover; background-position: center; }
   .sched-team.crimson { background-image: url('/assets/teams/crimson.png'); }
   .sched-team.nova    { background-image: url('/assets/teams/nova.png'); }
@@ -626,10 +628,7 @@
     <a href="#about" class="btn btn-outline">イベント詳細</a>
   </div>
 
-  <a href="#about" class="scroll-hint" style="text-decoration:none;">
-    <span>SCROLL</span>
-    <div class="scroll-line"></div>
-  </a>
+
 </div>
 
 <div class="divider"></div>
@@ -660,37 +659,37 @@
     <div class="team-card reveal reveal-delay-1" style="--team-color: #ff2d78; --team-bg: url('/assets/teams/crimson.png');">
       <div class="team-num">TEAM 01</div>
       <div class="team-name">CRIMSON</div>
-      <div class="team-genre">POWER / J-POP</div>
+      <div class="team-genre placeholder">Coming soon</div>
       <div class="team-members">
-        <a class="member-tag" href="#">???</a>
-        <a class="member-tag" href="#">???</a>
-        <a class="member-tag" href="#">???</a>
+        <a class="member-tag placeholder">Coming soon</a>
+        <a class="member-tag placeholder">Coming soon</a>
+        <a class="member-tag placeholder">Coming soon</a>
       </div>
-      <p class="team-desc">???</p>
+      <p class="team-desc placeholder">コンセプト・出演者は順次公開予定です</p>
     </div>
 
     <div class="team-card reveal reveal-delay-2" style="--team-color: #7c3aff; --team-bg: url('/assets/teams/nova.png');">
       <div class="team-num">TEAM 02</div>
       <div class="team-name">NOVA</div>
-      <div class="team-genre">HARMONY / BALLAD</div>
+      <div class="team-genre placeholder">Coming soon</div>
       <div class="team-members">
-        <a class="member-tag" href="#">???</a>
-        <a class="member-tag" href="#">???</a>
-        <a class="member-tag" href="#">???</a>
+        <a class="member-tag placeholder">Coming soon</a>
+        <a class="member-tag placeholder">Coming soon</a>
+        <a class="member-tag placeholder">Coming soon</a>
       </div>
-      <p class="team-desc">???</p>
+      <p class="team-desc placeholder">コンセプト・出演者は順次公開予定です</p>
     </div>
 
     <div class="team-card reveal reveal-delay-3" style="--team-color: #ffd700; --team-bg: url('/assets/teams/golden.png');">
       <div class="team-num">TEAM 03</div>
       <div class="team-name">GOLDEN</div>
-      <div class="team-genre">ALL-ROUND</div>
+      <div class="team-genre placeholder">Coming soon</div>
       <div class="team-members">
-        <a class="member-tag" href="#">???</a>
-        <a class="member-tag" href="#">???</a>
-        <a class="member-tag" href="#">???</a>
+        <a class="member-tag placeholder">Coming soon</a>
+        <a class="member-tag placeholder">Coming soon</a>
+        <a class="member-tag placeholder">Coming soon</a>
       </div>
-      <p class="team-desc">???</p>
+      <p class="team-desc placeholder">コンセプト・出演者は順次公開予定です</p>
     </div>
 
   </div>
@@ -704,17 +703,17 @@
   <div class="schedule-list">
     <div class="schedule-item"><div class="sched-time">19:45</div><div class="sched-content"><div class="sched-title">開会式・チーム紹介</div><div class="sched-detail">ルール説明・チームコール（15分）</div></div></div>
     <div class="round-divider"><span class="round-label">ROUND 1</span></div>
-    <div class="schedule-item"><div class="sched-time">20:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">20:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">20:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">20:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">20:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">20:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="round-divider"><span class="round-label">ROUND 2</span><span class="sched-badge badge-vote">投票開始</span></div>
-    <div class="schedule-item"><div class="sched-time">20:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">21:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">21:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">20:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="round-divider"><span class="round-label">ROUND 3</span></div>
-    <div class="schedule-item"><div class="sched-time">21:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">21:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">22:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span> ???</div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">22:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="schedule-item"><div class="sched-time">22:15<div class="sched-badges"><span class="sched-badge badge-vote">VOTE</span></div></div><div class="sched-content"><div class="sched-title">本投票開始</div><div class="sched-detail">10分間</div></div></div>
     <div class="schedule-item"><div class="sched-time">22:25</div><div class="sched-content"><div class="sched-title">結果発表・閉会式</div><div class="sched-detail">最終集計 ／ MVP・優勝チーム発表</div></div></div>
     <div class="schedule-item"><div class="sched-time">22:40</div><div class="sched-content"><div class="sched-title">終了</div></div></div>
