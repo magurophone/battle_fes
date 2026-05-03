@@ -400,22 +400,20 @@
   #vote > * { position: relative; z-index: 1; }
   #vote::before {
     content: ''; position: absolute;
-    left: 50%; top: -10%;
+    left: 50%; top: 50%;
     width: min(1400px, 130%);
     aspect-ratio: 1 / 1;
-    transform: translateX(-50%);
-    background: url('/assets/effects/godrays.png') center top / contain no-repeat;
+    transform: translate(-50%, -50%);
+    background: url('/assets/effects/sunburst.png') center center / contain no-repeat;
     mix-blend-mode: screen;
-    opacity: 0.55;
+    opacity: 0.5;
     pointer-events: none;
     z-index: -1;
-    animation: voteRaysSway 18s ease-in-out infinite;
-    -webkit-mask-image: radial-gradient(ellipse 65% 80% at 50% 15%, #000 35%, rgba(0,0,0,0.5) 65%, transparent 95%);
-            mask-image: radial-gradient(ellipse 65% 80% at 50% 15%, #000 35%, rgba(0,0,0,0.5) 65%, transparent 95%);
+    animation: voteRaysSpin 60s linear infinite;
   }
-  @keyframes voteRaysSway {
-    0%, 100% { transform: translateX(-50%) rotate(-2deg) scale(1.0); opacity: 0.45; }
-    50%      { transform: translateX(-50%) rotate( 2deg) scale(1.05); opacity: 0.65; }
+  @keyframes voteRaysSpin {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to   { transform: translate(-50%, -50%) rotate(360deg); }
   }
   .vote-status-banner { display: flex; align-items: center; gap: 1rem; background: rgba(10,16,40,0.82); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 2rem; }
   .vote-status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
