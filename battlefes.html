@@ -386,13 +386,14 @@
   }
   .sched-time { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--accent); padding-top: 0.1rem; padding-right: 0.9rem; text-align: right; letter-spacing: 0.05em; display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }
   .sched-content { padding-left: 1rem; }
-  .round-divider { margin: 0; padding: 1.8rem 0 1.8rem calc(100px + 3rem); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .round-divider { display: flex; align-items: center; margin: 0; padding: 1.8rem 1rem 1.8rem calc(100px + 3rem); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
   .schedule-item:has(+ .round-divider) { border-bottom: none; }
-  .round-divider span { display: inline-block; font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; letter-spacing: 0.5em; color: var(--text); padding: 0.45rem 1.4rem 0.45rem 1.65rem; border: 1px solid var(--border); border-radius: 4px; background: rgba(6,10,24,0.7); white-space: nowrap; }
+  .round-divider .round-label { display: inline-block; font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; letter-spacing: 0.5em; color: var(--text); padding: 0.45rem 1.4rem 0.45rem 1.65rem; border: 1px solid var(--border); border-radius: 4px; background: rgba(6,10,24,0.7); white-space: nowrap; }
+  .round-divider .sched-badge { margin-left: auto; }
   .sched-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
   .sched-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; }
   .sched-detail { font-size: 0.82rem; color: var(--muted); }
-  .sched-badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; margin-left: 0.5rem; vertical-align: middle; }
+  .sched-badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; margin-left: 0.5rem; vertical-align: middle; white-space: nowrap; }
   .badge-live { background: var(--accent); color: #fff; }
   .badge-open { background: rgba(0,201,177,0.12); color: var(--teal); border: 1px solid rgba(0,201,177,0.3); }
   .badge-vote { background: rgba(255,214,10,0.1); color: var(--gold); border: 1px solid rgba(255,214,10,0.3); }
@@ -709,15 +710,15 @@
   <h2 class="section-title">タイムスケジュール</h2>
   <div class="schedule-list">
     <div class="schedule-item"><div class="sched-time">18:30</div><div class="sched-content"><div class="sched-title">開会式・チーム紹介</div><div class="sched-detail">ルール説明・チームコール（15分）</div></div></div>
-    <div class="round-divider"><span>ROUND 1</span></div>
+    <div class="round-divider"><span class="round-label">ROUND 1</span></div>
     <div class="schedule-item"><div class="sched-time">18:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 01 CRIMSON 1人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="schedule-item"><div class="sched-time">19:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 02 NOVA 1人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="schedule-item"><div class="sched-time">19:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 03 GOLDEN 1人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="round-divider"><span>ROUND 2</span></div>
-    <div class="schedule-item"><div class="sched-time">19:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span><span class="sched-badge badge-vote">投票開始</span></div></div><div class="sched-content"><div class="sched-title">TEAM 01 CRIMSON 2人目</div><div class="sched-detail">持ち時間 15分 ／ 投票受付スタート</div></div></div>
+    <div class="round-divider"><span class="round-label">ROUND 2</span><span class="sched-badge badge-vote">投票開始</span></div>
+    <div class="schedule-item"><div class="sched-time">19:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 01 CRIMSON 2人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="schedule-item"><div class="sched-time">19:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 02 NOVA 2人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="schedule-item"><div class="sched-time">20:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 03 GOLDEN 2人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="round-divider"><span>ROUND 3</span></div>
+    <div class="round-divider"><span class="round-label">ROUND 3</span></div>
     <div class="schedule-item"><div class="sched-time">20:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 01 CRIMSON 3人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="schedule-item"><div class="sched-time">20:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 02 NOVA 3人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="schedule-item"><div class="sched-time">20:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title">TEAM 03 GOLDEN 3人目</div><div class="sched-detail">持ち時間 15分</div></div></div>
