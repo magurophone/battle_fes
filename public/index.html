@@ -926,7 +926,13 @@ function selectTeam(id) {
   if (voted || checkAlreadyVoted()) return;
   selected = id;
   document.getElementById('voteBtn').disabled = false;
-  document.getElementById('voteHint').textContent = `TEAM ${id} を選択中`;
+  const team = teams.find(t => t.id === id);
+  const cls = team ? team.name.toLowerCase() : '';
+  const num = String(id).padStart(2, '0');
+  document.getElementById('voteHint').innerHTML =
+    team
+      ? `TEAM ${num} <span class="sched-team ${cls}">${team.name}</span> を選択中`
+      : `TEAM ${id} を選択中`;
   renderVote();
 }
 
