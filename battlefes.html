@@ -555,7 +555,17 @@
     .hero-firework.fw-b { top: 12%; right: 0; }
     .hero-firework.fw-c { bottom: 22%; left: 0; }
     .hero-firework.fw-d { bottom: 26%; right: 0; }
-    #vote::before { width: 100%; }
+    #vote::before {
+      width: 130%;
+      aspect-ratio: 1 / 1;
+      top: 200px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    @keyframes voteRaysSpin {
+      from { transform: translateX(-50%) rotate(0deg); }
+      to   { transform: translateX(-50%) rotate(360deg); }
+    }
   }
   @media (max-width: 420px) { .nav-logo img { height: 28px; } }
 </style>
