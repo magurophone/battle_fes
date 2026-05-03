@@ -23,7 +23,7 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; overflow-x: clip; }
 
   body {
     background: linear-gradient(175deg, #060a1c 0%, #0a0d28 20%, #120926 50%, #1e0912 75%, #140407 100%) fixed;
@@ -550,6 +550,12 @@
     .vote-status-banner { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
     .vote-result-bar-wrap { display: none; }
     .about-stats { grid-template-columns: 1fr 1fr; }
+    .hero-firework { width: 180px; height: 180px; }
+    .hero-firework.fw-a { top: 8%;  left: 0; }
+    .hero-firework.fw-b { top: 12%; right: 0; }
+    .hero-firework.fw-c { bottom: 22%; left: 0; }
+    .hero-firework.fw-d { bottom: 26%; right: 0; }
+    #vote::before { width: 100%; }
   }
   @media (max-width: 420px) { .nav-logo img { height: 28px; } }
 </style>
