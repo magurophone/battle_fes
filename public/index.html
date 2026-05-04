@@ -28,12 +28,13 @@
      アンカークリック時のみ滑らかにしたい場合は a 側で個別対応する */
 
   body {
-    background: linear-gradient(175deg, #060a1c 0%, #0a0d28 20%, #120926 50%, #1e0912 75%, #140407 100%) fixed;
-    background-attachment: fixed;
+    background: linear-gradient(175deg, #060a1c 0%, #0a0d28 20%, #120926 50%, #1e0912 75%, #140407 100%);
     background-size: cover;
     color: var(--text);
     font-family: 'Noto Sans JP', sans-serif;
     overflow-x: hidden;
+    /* background-attachment: fixed はスクロール時に毎フレーム背景再描画が走り
+       マウスホイールがもたつく主因。撤回。 */
   }
 
   body::before {
