@@ -330,34 +330,14 @@
   .about-text strong { color: var(--text); }
   .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   .stat-card {
-    background:
-      linear-gradient(rgba(255,250,235,0.18), rgba(255,250,235,0.18)),
-      url('/assets/textures/paper-layered.png') center/cover no-repeat;
     border: 1px solid rgba(120,90,40,0.35);
-    border-radius: 16px; padding: 1.5rem; text-align: center;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    border-radius: 16px; overflow: hidden;
     box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    aspect-ratio: 600 / 320;
   }
-  .stat-card:hover { border-color: rgba(180,130,60,0.6); box-shadow: 0 8px 26px rgba(0,0,0,0.55); }
-  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; color: var(--accent); line-height: 1; }
-  .stat-unit { font-family: 'Noto Sans JP', sans-serif; font-size: 0.5em; font-weight: 700; margin-left: 0.18em; letter-spacing: 0.01em; text-transform: lowercase; vertical-align: baseline; }
-  .stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem; letter-spacing: 0.05em; }
-  /* SVG filter による真のエンボス（数字のみ、ラベルは小さいので別処理） */
-  .stat-card .stat-num {
-    color: #5a2a08;
-    -webkit-text-stroke: 0;
-    text-shadow: none;
-    filter: url(#paper-emboss);
-  }
-  .stat-card .stat-unit {
-    color: #5a2a08;
-    -webkit-text-stroke: 0;
-    text-shadow: none;
-  }
-  .stat-card .stat-label {
-    color: #2a1407; font-weight: 700;
-    text-shadow: 0 1px 0 rgba(255,250,235,0.5);
-  }
+  .stat-card:hover { border-color: rgba(180,130,60,0.6); box-shadow: 0 10px 28px rgba(0,0,0,0.55); transform: translateY(-2px); }
+  .stat-card img { width: 100%; height: 100%; display: block; object-fit: cover; }
 
   #teams { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
   .teams-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
@@ -638,18 +618,6 @@
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <filter id="paper-emboss" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="1.2" result="blur"/>
-      <feSpecularLighting in="blur" surfaceScale="4" specularConstant="0.9" specularExponent="22" lighting-color="#fff5e0" result="specular">
-        <feDistantLight azimuth="135" elevation="55"/>
-      </feSpecularLighting>
-      <feComposite in="specular" in2="SourceAlpha" operator="in" result="specularClipped"/>
-      <feComposite in="SourceGraphic" in2="specularClipped" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>
-    </filter>
-  </defs>
-</svg>
 
 <nav>
   <a class="nav-logo" href="#hero" aria-label="BATTLE FES"><img src="/assets/logos/logo-B-trim.png" alt="BATTLE FES" style="height:34px;width:auto;display:block;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))"></a>
@@ -707,10 +675,10 @@
     <p>応援したいチームに投票して、あなたもバトルフェスに参加しよう！</p>
   </div>
   <div class="about-stats">
-    <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">参加チーム数</div></div>
-    <div class="stat-card"><div class="stat-num">9</div><div class="stat-label">総出演者数</div></div>
-    <div class="stat-card"><div class="stat-num">2:55</div><div class="stat-label">配信時間</div></div>
-    <div class="stat-card"><div class="stat-num">15<span class="stat-unit">min</span></div><div class="stat-label">1人持ち時間</div></div>
+    <div class="stat-card"><img src="/assets/textures/team-count.png" alt="参加チーム数 3"></div>
+    <div class="stat-card"><img src="/assets/textures/performer-count.png" alt="総出演者数 9"></div>
+    <div class="stat-card"><img src="/assets/textures/broadcast-duration.png" alt="配信時間 2時間55分"></div>
+    <div class="stat-card"><img src="/assets/textures/performer-duration.png" alt="1人持ち時間 15分"></div>
   </div>
 </div>
 
