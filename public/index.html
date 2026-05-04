@@ -1117,7 +1117,7 @@ function confettiBurst(color) {
   resize();
 
   const COLORS = ['#ffcc44','#ff9922','#ffe066','#ff6633','#ffdd88'];
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 55; i++) {
     dots.push({
       x: Math.random() * W, y: Math.random() * H,
       vx: (Math.random() - 0.5) * 0.25,
@@ -1129,14 +1129,8 @@ function confettiBurst(color) {
     });
   }
 
-  // タブが見えていない / ページがスクロール中は描画スキップ
-  let pageVisible = !document.hidden;
-  document.addEventListener('visibilitychange', () => { pageVisible = !document.hidden; });
-
   function loop() {
-    if (!pageVisible) { requestAnimationFrame(loop); return; }
     ctx.clearRect(0, 0, W, H);
-    // shadowBlur は描画コスト高なので削除
     dots.forEach(d => {
       d.x += d.vx; d.y += d.vy;
       d.pulse += 0.04;
@@ -1147,7 +1141,10 @@ function confettiBurst(color) {
       ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
       ctx.fillStyle = d.color;
       ctx.globalAlpha = pulsedAlpha;
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = d.color;
       ctx.fill();
+      ctx.shadowBlur = 0;
     });
     ctx.globalAlpha = 1;
     requestAnimationFrame(loop);
