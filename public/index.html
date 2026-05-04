@@ -23,7 +23,9 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  html { scroll-behavior: smooth; overflow-x: clip; }
+  html { overflow-x: clip; }
+  /* scroll-behavior: smooth はマウスホイール時にも慣性が掛かって遅延感が出るため撤回。
+     アンカークリック時のみ滑らかにしたい場合は a 側で個別対応する */
 
   body {
     background: linear-gradient(175deg, #060a1c 0%, #0a0d28 20%, #120926 50%, #1e0912 75%, #140407 100%) fixed;
@@ -1115,7 +1117,9 @@ function confettiBurst(color) {
   resize();
 
   const COLORS = ['#ffcc44','#ff9922','#ffe066','#ff6633','#ffdd88'];
-  for (let i = 0; i < 55; i++) {
+  // モバイルは更に減らす
+  const N = window.innerWidth < 700 ? 18 : 30;
+  for (let i = 0; i < N; i++) {
     dots.push({
       x: Math.random() * W, y: Math.random() * H,
       vx: (Math.random() - 0.5) * 0.25,
@@ -1127,8 +1131,14 @@ function confettiBurst(color) {
     });
   }
 
+  // タブが見えていない / ページがスクロール中は描画スキップ
+  let pageVisible = !document.hidden;
+  document.addEventListener('visibilitychange', () => { pageVisible = !document.hidden; });
+
   function loop() {
+    if (!pageVisible) { requestAnimationFrame(loop); return; }
     ctx.clearRect(0, 0, W, H);
+    // shadowBlur は描画コスト高なので削除
     dots.forEach(d => {
       d.x += d.vx; d.y += d.vy;
       d.pulse += 0.04;
@@ -1139,10 +1149,7 @@ function confettiBurst(color) {
       ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
       ctx.fillStyle = d.color;
       ctx.globalAlpha = pulsedAlpha;
-      ctx.shadowBlur = 6;
-      ctx.shadowColor = d.color;
       ctx.fill();
-      ctx.shadowBlur = 0;
     });
     ctx.globalAlpha = 1;
     requestAnimationFrame(loop);
