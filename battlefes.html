@@ -23,18 +23,18 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  html { overflow-x: clip; }
-  /* scroll-behavior: smooth はマウスホイール時にも慣性が掛かって遅延感が出るため撤回。
-     アンカークリック時のみ滑らかにしたい場合は a 側で個別対応する */
+  html { scroll-behavior: smooth; overflow-x: clip; }
 
   body {
-    background: linear-gradient(175deg, #060a1c 0%, #0a0d28 20%, #120926 50%, #1e0912 75%, #140407 100%);
+    background: linear-gradient(175deg, #060a1c 0%, #0a0d28 20%, #120926 50%, #1e0912 75%, #140407 100%) fixed;
+    background-attachment: fixed;
     background-size: cover;
     color: var(--text);
     font-family: 'Noto Sans JP', sans-serif;
-    overflow-x: hidden;
-    /* background-attachment: fixed はスクロール時に毎フレーム背景再描画が走り
-       マウスホイールがもたつく主因。撤回。 */
+    overflow-x: clip;
+    /* hidden だと CSS 仕様で overflow-y が auto に強制され body が第2のスクロールコンテナ化、
+       html とのネスト二重スクローラーになってマウスホイール routing がもたつく。
+       clip なら Y は visible のままで body は非スクロール、html だけがドキュメントスクローラー */
   }
 
   body::before {
