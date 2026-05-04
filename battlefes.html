@@ -334,10 +334,22 @@
     border-radius: 16px; overflow: hidden;
     box-shadow: 0 6px 18px rgba(0,0,0,0.45);
     transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
-    aspect-ratio: 600 / 320;
+    background: rgba(20,10,4,0.8);
+    display: flex; flex-direction: column;
   }
   .stat-card:hover { border-color: rgba(180,130,60,0.6); box-shadow: 0 10px 28px rgba(0,0,0,0.55); transform: translateY(-2px); }
-  .stat-card img { width: 100%; height: 100%; display: block; object-fit: cover; }
+  .stat-card img { width: 100%; aspect-ratio: 600/320; display: block; object-fit: cover; }
+  .stat-card .stat-label {
+    padding: 0.75rem 0.5rem 0.9rem;
+    text-align: center;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent2);
+    letter-spacing: 0.12em;
+    background: linear-gradient(180deg, rgba(30,12,6,0.92) 0%, rgba(15,6,3,0.98) 100%);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    border-top: 1px solid rgba(255,180,80,0.22);
+  }
 
   #teams { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
   .teams-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
@@ -675,10 +687,10 @@
     <p>応援したいチームに投票して、あなたもバトルフェスに参加しよう！</p>
   </div>
   <div class="about-stats">
-    <div class="stat-card"><img src="/assets/textures/team-count.webp" alt="参加チーム数 3"></div>
-    <div class="stat-card"><img src="/assets/textures/performer-count.webp" alt="総出演者数 9"></div>
-    <div class="stat-card"><img src="/assets/textures/broadcast-duration.webp" alt="配信時間 2時間55分"></div>
-    <div class="stat-card"><img src="/assets/textures/performer-duration.webp" alt="1人持ち時間 15分"></div>
+    <div class="stat-card"><img src="/assets/textures/team-count.webp" alt="3"><div class="stat-label">参加チーム数</div></div>
+    <div class="stat-card"><img src="/assets/textures/performer-count.webp" alt="9"><div class="stat-label">総出演者数</div></div>
+    <div class="stat-card"><img src="/assets/textures/broadcast-duration.webp" alt="2:55"><div class="stat-label">配信時間</div></div>
+    <div class="stat-card"><img src="/assets/textures/performer-duration.webp" alt="15min"><div class="stat-label">1人持ち時間</div></div>
   </div>
 </div>
 
