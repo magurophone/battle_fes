@@ -328,36 +328,89 @@
   .vote-countdown::after {
     content: ''; position: absolute; pointer-events: none;
     inset: 0;
-    background: linear-gradient(115deg,
-      transparent 38%,
-      rgba(255,235,170,0.0) 42%,
-      rgba(255,235,170,0.18) 50%,
-      rgba(255,235,170,0.0) 58%,
-      transparent 62%);
-    background-size: 240% 100%;
-    animation: cdShine 7s ease-in-out infinite;
+    background: linear-gradient(112deg,
+      transparent 40%,
+      rgba(255,240,180,0.0) 44%,
+      rgba(255,235,170,0.42) 48%,
+      rgba(255,250,210,0.55) 50%,
+      rgba(255,235,170,0.42) 52%,
+      rgba(255,240,180,0.0) 56%,
+      transparent 60%);
+    background-size: 280% 100%;
+    background-repeat: no-repeat;
+    animation: cdShine 6s ease-in-out infinite;
     mix-blend-mode: screen;
     z-index: 0;
   }
   @keyframes cdShine {
-    0%   { background-position: 130% 0; }
-    55%  { background-position: -30% 0; }
-    100% { background-position: -30% 0; }
+    0%   { background-position: 145% 0; }
+    50%  { background-position: -45% 0; }
+    100% { background-position: -45% 0; }
+  }
+  .vote-countdown {
+    animation: cdBreath 4.5s ease-in-out infinite;
+  }
+  @keyframes cdBreath {
+    0%, 100% {
+      box-shadow:
+        inset 0 1px 0 rgba(255,230,170,0.30),
+        inset 0 -3px 10px rgba(0,0,0,0.55),
+        0 0 80px rgba(255,120,30,0.18),
+        0 18px 56px rgba(255,90,20,0.22),
+        0 6px 18px rgba(0,0,0,0.55);
+    }
+    50% {
+      box-shadow:
+        inset 0 1px 0 rgba(255,240,180,0.38),
+        inset 0 -3px 10px rgba(0,0,0,0.55),
+        0 0 110px rgba(255,140,40,0.30),
+        0 18px 64px rgba(255,90,20,0.30),
+        0 6px 18px rgba(0,0,0,0.55);
+    }
   }
   .cd-headline {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(1.2rem, 2.8vw, 1.7rem);
-    letter-spacing: 0.5em;
-    text-transform: uppercase;
-    background: linear-gradient(180deg, #fff7d6 0%, #ffe066 55%, #ffae2a 100%);
+    position: relative;
+    font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
+    font-weight: 400;
+    font-size: clamp(1.3rem, 2.9vw, 1.85rem);
+    letter-spacing: 0.42em;
+    background: linear-gradient(180deg, #fff7d6 0%, #ffe066 50%, #ffae2a 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     filter:
-      drop-shadow(0 0 18px rgba(255,210,90,0.6))
-      drop-shadow(0 2px 4px rgba(0,0,0,0.55));
+      drop-shadow(0 0 22px rgba(255,210,90,0.65))
+      drop-shadow(0 2px 4px rgba(0,0,0,0.65));
     margin: 0 0 0.4rem;
-    padding-left: 0.5em;
+    padding: 0 1.4em 0 calc(0.4em + 1.4em);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    width: 100%;
+  }
+  .cd-headline::before,
+  .cd-headline::after {
+    content: '';
+    flex: 0 1 110px;
+    height: 1px;
+    background: linear-gradient(to right,
+      transparent 0%,
+      rgba(255,210,140,0.85) 50%,
+      transparent 100%);
+    -webkit-text-fill-color: initial;
+    margin: 0 0.9em;
+    align-self: center;
+  }
+  .cd-headline::before {
+    background: linear-gradient(to right,
+      transparent 0%,
+      rgba(255,210,140,0.85) 100%);
+  }
+  .cd-headline::after {
+    background: linear-gradient(to right,
+      rgba(255,210,140,0.85) 0%,
+      transparent 100%);
   }
   .cd-grid {
     display: flex;
@@ -418,31 +471,50 @@
     font-variant-numeric: tabular-nums;
     text-align: center;
   }
-  .cd-num.tick { animation: cdTick 0.55s cubic-bezier(0.22, 1.4, 0.34, 1); }
+  .cd-num.tick { animation: cdTick 0.5s cubic-bezier(0.22, 1.2, 0.36, 1); }
   @keyframes cdTick {
-    0%   { transform: translateY(0) scale(1); opacity: 1; filter:
-             drop-shadow(0 1px 0 rgba(120,40,10,0.55))
-             drop-shadow(0 0 20px rgba(255,180,60,0.55))
-             drop-shadow(0 3px 6px rgba(0,0,0,0.5)); }
-    38%  { transform: translateY(-12px) scale(0.92); opacity: 0; filter: blur(2px); }
-    40%  { transform: translateY(14px) scale(1.08); opacity: 0; filter: blur(2px); }
-    65%  { transform: translateY(-2px) scale(1.04); opacity: 1; filter:
-             drop-shadow(0 0 26px rgba(255,210,100,0.85))
-             drop-shadow(0 3px 6px rgba(0,0,0,0.5)); }
-    100% { transform: translateY(0) scale(1); opacity: 1; filter:
-             drop-shadow(0 1px 0 rgba(120,40,10,0.55))
-             drop-shadow(0 0 20px rgba(255,180,60,0.55))
-             drop-shadow(0 3px 6px rgba(0,0,0,0.5)); }
+    0%   {
+      transform: scale(0.82);
+      filter:
+        brightness(2.4)
+        drop-shadow(0 0 42px rgba(255,235,120,1))
+        drop-shadow(0 0 14px rgba(255,250,200,0.95));
+    }
+    35%  {
+      transform: scale(1.08);
+      filter:
+        brightness(1.35)
+        drop-shadow(0 0 28px rgba(255,210,90,0.85))
+        drop-shadow(0 1px 0 rgba(120,40,10,0.55));
+    }
+    65%  {
+      transform: scale(0.985);
+      filter:
+        brightness(1.05)
+        drop-shadow(0 0 22px rgba(255,190,70,0.65))
+        drop-shadow(0 1px 0 rgba(120,40,10,0.55));
+    }
+    100% {
+      transform: scale(1);
+      filter:
+        brightness(1)
+        drop-shadow(0 1px 0 rgba(120,40,10,0.55))
+        drop-shadow(0 0 20px rgba(255,180,60,0.55))
+        drop-shadow(0 3px 6px rgba(0,0,0,0.5));
+    }
   }
   .cd-unit {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(0.7rem, 1.4vw, 0.85rem);
-    letter-spacing: 0.32em;
-    color: var(--accent2);
-    margin-top: 0.55rem;
-    opacity: 0.85;
-    text-shadow: 0 0 10px rgba(255,200,80,0.4), 0 1px 2px rgba(0,0,0,0.7);
+    font-size: clamp(0.85rem, 1.7vw, 1.05rem);
+    letter-spacing: 0.36em;
+    color: #ffd87a;
+    margin-top: 0.65rem;
+    text-shadow:
+      0 0 12px rgba(255,200,80,0.55),
+      0 1px 0 rgba(0,0,0,0.85),
+      0 2px 4px rgba(0,0,0,0.65);
     text-transform: uppercase;
+    padding-left: 0.36em;
   }
   .cd-sep {
     font-family: 'Bebas Neue', sans-serif;
@@ -456,29 +528,64 @@
       0 0 22px rgba(255,180,60,0.75),
       0 0 8px rgba(255,200,90,0.6),
       0 2px 4px rgba(0,0,0,0.55);
-    animation: cdColon 1.2s ease-in-out infinite;
+    animation: cdColon 1.6s ease-in-out infinite;
   }
   @keyframes cdColon {
-    0%, 50%, 100% { opacity: 0.95; }
-    25%, 75%      { opacity: 0.32; }
+    0%, 100% {
+      opacity: 1;
+      text-shadow:
+        0 0 28px rgba(255,200,80,0.95),
+        0 0 12px rgba(255,220,110,0.7),
+        0 2px 4px rgba(0,0,0,0.55);
+    }
+    50% {
+      opacity: 0.45;
+      text-shadow:
+        0 0 14px rgba(255,170,60,0.45),
+        0 0 6px rgba(255,200,90,0.3),
+        0 2px 4px rgba(0,0,0,0.55);
+    }
   }
   .cd-target {
+    position: relative;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(0.95rem, 1.6vw, 1.15rem);
-    letter-spacing: 0.22em;
-    color: var(--accent2);
+    font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+    letter-spacing: 0.24em;
+    color: #fff2c5;
     margin: 0.4rem 0 0;
-    text-shadow: 0 0 16px rgba(255,220,80,0.55), 0 1px 2px rgba(0,0,0,0.6);
+    padding: 0.55rem 1.4rem;
+    text-shadow:
+      0 0 14px rgba(255,220,90,0.45),
+      0 1px 0 rgba(0,0,0,0.7),
+      0 2px 6px rgba(0,0,0,0.85);
     text-align: center;
+    background: linear-gradient(180deg,
+      rgba(0,0,0,0.55) 0%,
+      rgba(20,8,4,0.65) 50%,
+      rgba(0,0,0,0.55) 100%);
+    border-radius: 100px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,220,150,0.3),
+      inset 0 -1px 0 rgba(0,0,0,0.55),
+      0 0 0 1px rgba(255,200,110,0.35),
+      0 0 20px rgba(0,0,0,0.4);
   }
   .cd-note {
-    font-size: 0.84rem;
-    line-height: 1.75;
-    color: var(--text);
-    opacity: 0.72;
+    position: relative;
+    font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+    line-height: 1.85;
+    color: #ffe9c0;
     text-align: center;
     margin: 0;
-    max-width: 540px;
+    max-width: 600px;
+    padding: 0.85rem 1.5rem;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.85), 0 0 8px rgba(0,0,0,0.6);
+    background: linear-gradient(180deg, rgba(0,0,0,0.42), rgba(10,4,2,0.52));
+    border-radius: 10px;
+    box-shadow:
+      inset 0 0 0 1px rgba(255,180,80,0.18),
+      0 0 24px rgba(0,0,0,0.35);
+    backdrop-filter: blur(2px);
   }
   @media (max-width: 720px) {
     .vote-countdown { padding: 2rem 1rem 1.7rem; gap: 1.1rem; border-radius: 16px; max-width: 100%; }
