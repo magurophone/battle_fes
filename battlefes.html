@@ -306,17 +306,16 @@
     position: relative;
     margin: 1rem auto 2.6rem;
     max-width: 880px;
+    overflow: hidden;
+    isolation: isolate;
     background:
-      radial-gradient(ellipse at 50% 0%, rgba(255,170,55,0.30), transparent 65%),
-      radial-gradient(ellipse at 50% 100%, rgba(255,90,30,0.18), transparent 60%),
-      linear-gradient(180deg, rgba(28,14,8,0.62) 0%, rgba(50,22,12,0.50) 55%, rgba(70,26,14,0.45) 100%),
-      url('/assets/textures/marble-dark.png') center/cover no-repeat;
-    border: 1px solid rgba(255,190,90,0.45);
+      url('/assets/textures/cd-plate.webp') center/100% 100% no-repeat,
+      #1a0a06;
     border-radius: 22px;
     box-shadow:
-      inset 0 1px 0 rgba(255,230,170,0.40),
+      inset 0 1px 0 rgba(255,230,170,0.30),
       inset 0 -3px 10px rgba(0,0,0,0.55),
-      0 0 80px rgba(255,120,30,0.15),
+      0 0 80px rgba(255,120,30,0.18),
       0 18px 56px rgba(255,90,20,0.22),
       0 6px 18px rgba(0,0,0,0.55);
   }
@@ -324,13 +323,26 @@
     content: ''; position: absolute;
     top: 0; left: 6%; right: 6%; height: 1px;
     background: linear-gradient(to right, transparent, rgba(255,230,170,0.85), transparent);
+    z-index: 1;
   }
   .vote-countdown::after {
-    content: ''; position: absolute;
-    bottom: -1px; left: 10%; right: 10%; height: 2px;
-    border-radius: 2px;
-    background: linear-gradient(to right, transparent, rgba(255,180,80,0.6), transparent);
-    filter: blur(1px);
+    content: ''; position: absolute; pointer-events: none;
+    inset: 0;
+    background: linear-gradient(115deg,
+      transparent 38%,
+      rgba(255,235,170,0.0) 42%,
+      rgba(255,235,170,0.18) 50%,
+      rgba(255,235,170,0.0) 58%,
+      transparent 62%);
+    background-size: 240% 100%;
+    animation: cdShine 7s ease-in-out infinite;
+    mix-blend-mode: screen;
+    z-index: 0;
+  }
+  @keyframes cdShine {
+    0%   { background-position: 130% 0; }
+    55%  { background-position: -30% 0; }
+    100% { background-position: -30% 0; }
   }
   .cd-headline {
     font-family: 'Bebas Neue', sans-serif;
@@ -359,28 +371,29 @@
     align-items: center;
     justify-content: flex-end;
     min-width: clamp(92px, 13vw, 140px);
-    padding: 1.5rem 0.7rem 0.85rem;
+    padding: 1.6rem 0.7rem 0.9rem;
     background:
-      linear-gradient(180deg, rgba(255,210,140,0.10) 0%, transparent 18%),
-      linear-gradient(180deg, rgba(20,10,6,0.92) 0%, rgba(38,16,10,0.85) 50%, rgba(60,22,12,0.80) 100%);
-    border: 1px solid rgba(255,200,110,0.50);
-    border-radius: 14px;
+      radial-gradient(ellipse at 50% 30%, rgba(255,150,50,0.10), transparent 70%),
+      linear-gradient(180deg, rgba(8,4,2,0.92) 0%, rgba(22,10,5,0.92) 50%, rgba(34,14,7,0.92) 100%);
+    border-radius: 12px;
     box-shadow:
-      inset 0 1px 0 rgba(255,230,170,0.55),
-      inset 0 -3px 8px rgba(0,0,0,0.65),
-      inset 0 0 24px rgba(255,140,40,0.10),
-      0 8px 22px rgba(255,90,20,0.22),
-      0 3px 10px rgba(0,0,0,0.55);
+      inset 0 2px 5px rgba(0,0,0,0.85),
+      inset 0 -1px 0 rgba(255,210,130,0.30),
+      inset 0 8px 20px rgba(0,0,0,0.55),
+      0 0 0 1px rgba(180,130,60,0.45),
+      0 0 0 2px rgba(40,18,8,0.5),
+      0 1px 0 rgba(255,220,150,0.18);
   }
   .cd-cell::before {
-    content: ''; position: absolute;
-    top: 0; left: 12%; right: 12%; height: 1px;
-    background: linear-gradient(to right, transparent, rgba(255,235,180,0.95), transparent);
+    content: ''; position: absolute; pointer-events: none;
+    top: 1px; left: 10%; right: 10%; height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,240,190,0.55), transparent);
   }
   .cd-cell::after {
-    content: ''; position: absolute;
-    bottom: 5px; left: 18%; right: 18%; height: 1px;
-    background: linear-gradient(to right, transparent, rgba(255,180,80,0.5), transparent);
+    content: ''; position: absolute; pointer-events: none;
+    inset: 0;
+    border-radius: 12px;
+    background: linear-gradient(180deg, transparent 0%, transparent 65%, rgba(255,140,40,0.06) 100%);
   }
   .cd-num {
     font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
@@ -405,12 +418,21 @@
     font-variant-numeric: tabular-nums;
     text-align: center;
   }
-  .cd-num.tick { animation: cdTick 0.5s ease; }
+  .cd-num.tick { animation: cdTick 0.55s cubic-bezier(0.22, 1.4, 0.34, 1); }
   @keyframes cdTick {
-    0%   { transform: translateY(0); opacity: 1; }
-    35%  { transform: translateY(-16px); opacity: 0; }
-    36%  { transform: translateY(16px); opacity: 0; }
-    100% { transform: translateY(0); opacity: 1; }
+    0%   { transform: translateY(0) scale(1); opacity: 1; filter:
+             drop-shadow(0 1px 0 rgba(120,40,10,0.55))
+             drop-shadow(0 0 20px rgba(255,180,60,0.55))
+             drop-shadow(0 3px 6px rgba(0,0,0,0.5)); }
+    38%  { transform: translateY(-12px) scale(0.92); opacity: 0; filter: blur(2px); }
+    40%  { transform: translateY(14px) scale(1.08); opacity: 0; filter: blur(2px); }
+    65%  { transform: translateY(-2px) scale(1.04); opacity: 1; filter:
+             drop-shadow(0 0 26px rgba(255,210,100,0.85))
+             drop-shadow(0 3px 6px rgba(0,0,0,0.5)); }
+    100% { transform: translateY(0) scale(1); opacity: 1; filter:
+             drop-shadow(0 1px 0 rgba(120,40,10,0.55))
+             drop-shadow(0 0 20px rgba(255,180,60,0.55))
+             drop-shadow(0 3px 6px rgba(0,0,0,0.5)); }
   }
   .cd-unit {
     font-family: 'Bebas Neue', sans-serif;
