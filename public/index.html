@@ -296,6 +296,192 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* ── VOTE COUNTDOWN ── */
+  .vote-countdown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 3rem 2rem 2.6rem;
+    position: relative;
+    margin: 1rem auto 2.6rem;
+    max-width: 880px;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(255,170,55,0.30), transparent 65%),
+      radial-gradient(ellipse at 50% 100%, rgba(255,90,30,0.18), transparent 60%),
+      linear-gradient(180deg, rgba(28,14,8,0.62) 0%, rgba(50,22,12,0.50) 55%, rgba(70,26,14,0.45) 100%),
+      url('/assets/textures/marble-dark.png') center/cover no-repeat;
+    border: 1px solid rgba(255,190,90,0.45);
+    border-radius: 22px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,230,170,0.40),
+      inset 0 -3px 10px rgba(0,0,0,0.55),
+      0 0 80px rgba(255,120,30,0.15),
+      0 18px 56px rgba(255,90,20,0.22),
+      0 6px 18px rgba(0,0,0,0.55);
+  }
+  .vote-countdown::before {
+    content: ''; position: absolute;
+    top: 0; left: 6%; right: 6%; height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,230,170,0.85), transparent);
+  }
+  .vote-countdown::after {
+    content: ''; position: absolute;
+    bottom: -1px; left: 10%; right: 10%; height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(to right, transparent, rgba(255,180,80,0.6), transparent);
+    filter: blur(1px);
+  }
+  .cd-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.2rem, 2.8vw, 1.7rem);
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, #fff7d6 0%, #ffe066 55%, #ffae2a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter:
+      drop-shadow(0 0 18px rgba(255,210,90,0.6))
+      drop-shadow(0 2px 4px rgba(0,0,0,0.55));
+    margin: 0 0 0.4rem;
+    padding-left: 0.5em;
+  }
+  .cd-grid {
+    display: flex;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+  .cd-cell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: clamp(92px, 13vw, 140px);
+    padding: 1.5rem 0.7rem 0.85rem;
+    background:
+      linear-gradient(180deg, rgba(255,210,140,0.10) 0%, transparent 18%),
+      linear-gradient(180deg, rgba(20,10,6,0.92) 0%, rgba(38,16,10,0.85) 50%, rgba(60,22,12,0.80) 100%);
+    border: 1px solid rgba(255,200,110,0.50);
+    border-radius: 14px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,230,170,0.55),
+      inset 0 -3px 8px rgba(0,0,0,0.65),
+      inset 0 0 24px rgba(255,140,40,0.10),
+      0 8px 22px rgba(255,90,20,0.22),
+      0 3px 10px rgba(0,0,0,0.55);
+  }
+  .cd-cell::before {
+    content: ''; position: absolute;
+    top: 0; left: 12%; right: 12%; height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,235,180,0.95), transparent);
+  }
+  .cd-cell::after {
+    content: ''; position: absolute;
+    bottom: 5px; left: 18%; right: 18%; height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,180,80,0.5), transparent);
+  }
+  .cd-num {
+    font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
+    font-weight: 400;
+    font-size: clamp(3.2rem, 6.8vw, 5.4rem);
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+    background: linear-gradient(178deg,
+      #ffffff 0%,
+      #fff4c2 18%,
+      #ffd866 40%,
+      #ffae3d 65%,
+      #ff7a1e 88%,
+      #e8421a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter:
+      drop-shadow(0 1px 0 rgba(120,40,10,0.55))
+      drop-shadow(0 0 20px rgba(255,180,60,0.55))
+      drop-shadow(0 3px 6px rgba(0,0,0,0.5));
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+  .cd-num.tick { animation: cdTick 0.5s ease; }
+  @keyframes cdTick {
+    0%   { transform: translateY(0); opacity: 1; }
+    35%  { transform: translateY(-16px); opacity: 0; }
+    36%  { transform: translateY(16px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  .cd-unit {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(0.7rem, 1.4vw, 0.85rem);
+    letter-spacing: 0.32em;
+    color: var(--accent2);
+    margin-top: 0.55rem;
+    opacity: 0.85;
+    text-shadow: 0 0 10px rgba(255,200,80,0.4), 0 1px 2px rgba(0,0,0,0.7);
+    text-transform: uppercase;
+  }
+  .cd-sep {
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.8rem, 6vw, 4.4rem);
+    line-height: 0.9;
+    color: #ffce6a;
+    align-self: center;
+    padding-bottom: 1.5rem;
+    text-shadow:
+      0 0 22px rgba(255,180,60,0.75),
+      0 0 8px rgba(255,200,90,0.6),
+      0 2px 4px rgba(0,0,0,0.55);
+    animation: cdColon 1.2s ease-in-out infinite;
+  }
+  @keyframes cdColon {
+    0%, 50%, 100% { opacity: 0.95; }
+    25%, 75%      { opacity: 0.32; }
+  }
+  .cd-target {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+    letter-spacing: 0.22em;
+    color: var(--accent2);
+    margin: 0.4rem 0 0;
+    text-shadow: 0 0 16px rgba(255,220,80,0.55), 0 1px 2px rgba(0,0,0,0.6);
+    text-align: center;
+  }
+  .cd-note {
+    font-size: 0.84rem;
+    line-height: 1.75;
+    color: var(--text);
+    opacity: 0.72;
+    text-align: center;
+    margin: 0;
+    max-width: 540px;
+  }
+  @media (max-width: 720px) {
+    .vote-countdown { padding: 2rem 1rem 1.7rem; gap: 1.1rem; border-radius: 16px; max-width: 100%; }
+    .cd-grid { gap: 0.35rem; width: 100%; justify-content: center; }
+    .cd-cell { min-width: 0; flex: 1 1 0; max-width: 90px; padding: 1rem 0.25rem 0.65rem; border-radius: 11px; }
+    .cd-num { font-size: clamp(1.7rem, 8vw, 2.3rem); letter-spacing: 0; }
+    .cd-sep { font-size: clamp(1.5rem, 6vw, 2rem); padding-bottom: 1rem; }
+    .cd-unit { font-size: 0.6rem; letter-spacing: 0.22em; margin-top: 0.4rem; }
+    .cd-headline { font-size: clamp(0.95rem, 3.5vw, 1.15rem); letter-spacing: 0.32em; }
+    .cd-target { font-size: clamp(0.78rem, 3vw, 0.92rem); letter-spacing: 0.16em; }
+    .cd-note { font-size: 0.74rem; line-height: 1.6; }
+  }
+  @media (max-width: 380px) {
+    .vote-countdown { padding: 1.6rem 0.6rem 1.4rem; }
+    .cd-grid { gap: 0.2rem; }
+    .cd-cell { padding: 0.85rem 0.15rem 0.55rem; }
+    .cd-num { font-size: 1.55rem; }
+    .cd-sep { font-size: 1.35rem; padding-bottom: 0.85rem; }
+    .cd-unit { font-size: 0.52rem; letter-spacing: 0.18em; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cd-num.tick { animation: none; }
+    .cd-sep { animation: none; }
+  }
+
   section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
   .section-label {
     font-family: 'Bebas Neue', sans-serif;
@@ -771,45 +957,62 @@
   <p class="section-label">Vote</p>
   <h2 class="section-title">リスナー投票</h2>
 
-  <div class="vote-status-banner" id="voteStatusBanner">
-    <div class="vote-status-dot waiting" id="voteStatusDot"></div>
-    <div class="vote-status-text">
-      <strong id="voteStatusLabel">投票受付前</strong>
-      <span id="voteStatusSub">イベント当日の投票開始をお待ちください</span>
+  <div class="vote-countdown" id="voteCountdown" hidden aria-live="polite">
+    <p class="cd-headline">投票開始まで</p>
+    <div class="cd-grid">
+      <div class="cd-cell"><div class="cd-num" id="cd-days">--</div><div class="cd-unit">Days</div></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-cell"><div class="cd-num" id="cd-hours">--</div><div class="cd-unit">Hours</div></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-cell"><div class="cd-num" id="cd-mins">--</div><div class="cd-unit">Min</div></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-cell"><div class="cd-num" id="cd-secs">--</div><div class="cd-unit">Sec</div></div>
     </div>
+    <p class="cd-target">2026.07.18 (SAT) 20:45 JST OPEN</p>
+    <p class="cd-note">投票は当日の投票開始時刻からこのページで受付します。<br>開始まで今しばらくお待ちください。</p>
   </div>
 
-  <div class="vote-notice">
-    投票は1人1回のみ有効です。同一ブラウザからの重複投票は防止されます。イベント当日の投票受付開始後、締め切りまでにご投票ください。
-  </div>
-
-  <div class="vote-form" id="voteForm">
-    <div>
-      <label for="voterName">お名前（ハンドルネーム）<span style="color:var(--accent3)">*</span></label>
-      <input type="text" id="voterName" placeholder="例：カラーシングファン" maxlength="30">
+  <div id="voteUI" hidden>
+    <div class="vote-status-banner" id="voteStatusBanner">
+      <div class="vote-status-dot waiting" id="voteStatusDot"></div>
+      <div class="vote-status-text">
+        <strong id="voteStatusLabel">投票受付前</strong>
+        <span id="voteStatusSub">イベント当日の投票開始をお待ちください</span>
+      </div>
     </div>
-    <div>
-      <label for="voterComment">応援コメント（任意）</label>
-      <textarea id="voterComment" placeholder="推しチームへの応援メッセージをどうぞ！" maxlength="100"></textarea>
+
+    <div class="vote-notice">
+      投票は1人1回のみ有効です。同一ブラウザからの重複投票は防止されます。イベント当日の投票受付開始後、締め切りまでにご投票ください。
     </div>
-  </div>
 
-  <div class="vote-teams" id="voteTeams"></div>
+    <div class="vote-form" id="voteForm">
+      <div>
+        <label for="voterName">お名前（ハンドルネーム）<span style="color:var(--accent3)">*</span></label>
+        <input type="text" id="voterName" placeholder="例：カラーシングファン" maxlength="30">
+      </div>
+      <div>
+        <label for="voterComment">応援コメント（任意）</label>
+        <textarea id="voterComment" placeholder="推しチームへの応援メッセージをどうぞ！" maxlength="100"></textarea>
+      </div>
+    </div>
 
-  <div class="vote-actions">
-    <button class="btn-vote" id="voteBtn" disabled onclick="submitVote()">投票する</button>
-    <button class="btn-reset" type="button" onclick="resetTrialVotes()">試験リセット</button>
-    <span class="vote-hint" id="voteHint">チームを選んでください</span>
-  </div>
+    <div class="vote-teams" id="voteTeams"></div>
 
-  <div class="vote-success" id="voteSuccess">
-    <p id="voteSuccessMsg">✓ 投票ありがとうございます！</p>
-    <small>あなたの1票がチームの力になります。引き続き配信を楽しんでください！</small>
-  </div>
+    <div class="vote-actions">
+      <button class="btn-vote" id="voteBtn" disabled onclick="submitVote()">投票する</button>
+      <button class="btn-reset" type="button" onclick="resetTrialVotes()">試験リセット</button>
+      <span class="vote-hint" id="voteHint">チームを選んでください</span>
+    </div>
 
-  <div class="vote-result-wrap" id="voteResultWrap">
-    <div class="vote-result-title">CURRENT RANKING</div>
-    <div id="voteResultRows"></div>
+    <div class="vote-success" id="voteSuccess">
+      <p id="voteSuccessMsg">✓ 投票ありがとうございます！</p>
+      <small>あなたの1票がチームの力になります。引き続き配信を楽しんでください！</small>
+    </div>
+
+    <div class="vote-result-wrap" id="voteResultWrap">
+      <div class="vote-result-title">CURRENT RANKING</div>
+      <div id="voteResultRows"></div>
+    </div>
   </div>
 </section>
 
@@ -1200,8 +1403,54 @@ async function initVoteSection() {
   renderVote();
   renderRanking();
   updateStatusBanner();
+  applyVoteVisibility();
+  updateVoteCountdown();
   await loadVoteResults();
-  setInterval(updateStatusBanner, 30000);
+  setInterval(() => {
+    applyVoteVisibility();
+    const cd = document.getElementById('voteCountdown');
+    if (cd && !cd.hidden) {
+      updateVoteCountdown();
+    } else {
+      updateStatusBanner();
+    }
+  }, 1000);
+}
+
+/* ── VOTE COUNTDOWN ── */
+function applyVoteVisibility() {
+  const status = getVoteStatus();
+  const cd = document.getElementById('voteCountdown');
+  const ui = document.getElementById('voteUI');
+  if (!cd || !ui) return;
+  const showCountdown = status === 'waiting';
+  cd.hidden = !showCountdown;
+  ui.hidden = showCountdown;
+}
+
+function updateVoteCountdown() {
+  const root = document.getElementById('voteCountdown');
+  if (!root || root.hidden) return;
+  const target = new Date(VOTE_OPEN).getTime();
+  const diff = Math.max(0, target - Date.now());
+  const days  = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins  = Math.floor((diff % 3600000) / 60000);
+  const secs  = Math.floor((diff % 60000) / 1000);
+  const pad = (n) => String(n).padStart(2, '0');
+  setCdDigit('cd-days', pad(days));
+  setCdDigit('cd-hours', pad(hours));
+  setCdDigit('cd-mins', pad(mins));
+  setCdDigit('cd-secs', pad(secs));
+}
+
+function setCdDigit(id, val) {
+  const el = document.getElementById(id);
+  if (!el || el.textContent === val) return;
+  el.textContent = val;
+  el.classList.remove('tick');
+  void el.offsetWidth;
+  el.classList.add('tick');
 }
 
 initVoteSection();
