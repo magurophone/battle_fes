@@ -11,3 +11,8 @@ id = "6a7f993b3ff1446f9a5774b3a2a50f7a"
 [[env.production.kv_namespaces]]
 binding = "BATTLE_FES_VOTE_STORE"
 id = "6a7f993b3ff1446f9a5774b3a2a50f7a"
+
+[env.preview]
+[[env.preview.kv_namespaces]]
+binding = "BATTLE_FES_VOTE_STORE"
+id = "670a631642904c70bd1aacc42f548dbc"
