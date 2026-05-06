@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vote Power Meter — Compare</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Ops+One&family=Cinzel:wght@600;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'DSEG14 Modern';
+    src: url('/assets/fonts/DSEG14Modern-Bold.woff2') format('woff2'),
+         url('/assets/fonts/DSEG14Modern-Bold.woff') format('woff');
+    font-weight: 700;
+    font-display: block;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: linear-gradient(180deg, #060a1c 0%, #0a0d28 30%, #1e0912 70%, #140407 100%) fixed;
+    color: #fff8ee;
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    padding: 3rem 2rem 5rem;
+  }
+  h1 {
+    text-align: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.4em;
+    color: rgba(255,200,140,0.85);
+    margin: 0 0 1.5rem;
+  }
+  .info {
+    text-align: center;
+    font-size: 0.78rem;
+    color: rgba(255,210,170,0.55);
+    margin-bottom: 2.6rem;
+    letter-spacing: 0.05em;
+  }
+  .info strong { color: rgba(255,210,150,0.95); }
+  .variant {
+    max-width: 720px;
+    margin: 0 auto 1.6rem;
+    padding: 1.3rem 1.6rem 1.8rem;
+    border: 1px solid rgba(255,180,80,0.18);
+    border-radius: 6px;
+    background: rgba(0,0,0,0.32);
+  }
+  .variant-label {
+    display: block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.95rem; letter-spacing: 0.45em;
+    color: rgba(255,200,140,0.88);
+    margin-bottom: 0.4rem;
+    padding-left: 0.4em;
+  }
+  .variant-desc {
+    display: block;
+    font-size: 0.78rem;
+    color: rgba(255,210,170,0.55);
+    margin-bottom: 1.4rem;
+  }
+
+  /* === Shared meter chrome === */
+  .meter {
+    display: flex; flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  .meter-eyebrow {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.55em;
+    color: rgba(255,200,140,0.7);
+    padding-left: 0.55em;
+  }
+  .meter-eyebrow-jp {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 400;
+    font-size: 0.66rem;
+    letter-spacing: 0.4em;
+    color: rgba(255,200,140,0.4);
+    padding-left: 0.4em;
+    margin-top: -0.6rem;
+  }
+  .bar {
+    width: 100%;
+    height: 10px;
+    background: rgba(255,180,80,0.12);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255,180,80,0.18);
+  }
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffd866 0%, #ff7a1e 60%, #ff2030 100%);
+    box-shadow: 0 0 14px rgba(255,140,40,0.55);
+    transition: width 0.2s linear;
+  }
+  .bar-meta {
+    width: 100%;
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(255,200,140,0.55);
+    letter-spacing: 0.06em;
+    margin-top: -0.2rem;
+  }
+
+  /* === A. INTEGER ONLY (baseline) === */
+  .va .int {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 4.2rem;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    background: linear-gradient(178deg, #fff 0%, #fff4c2 14%, #ffd866 32%, #ffae3d 55%, #ff7a1e 80%, #e83a14 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 22px rgba(255,150,40,0.4)) drop-shadow(0 4px 10px rgba(0,0,0,0.7));
+  }
+  .va .unit {
+    font-size: 0.32em;
+    margin-left: 0.18em;
+    letter-spacing: 0.18em;
+    -webkit-text-fill-color: rgba(255,200,140,0.65);
+  }
+
+  /* === B. INTEGER + small decimal (user's preference) === */
+  .vb .num-row {
+    display: inline-flex; align-items: baseline;
+    font-family: 'Black Ops One', sans-serif;
+    line-height: 1;
+    background: linear-gradient(178deg, #fff 0%, #fff4c2 14%, #ffd866 32%, #ffae3d 55%, #ff7a1e 80%, #e83a14 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 22px rgba(255,150,40,0.4)) drop-shadow(0 4px 10px rgba(0,0,0,0.7));
+  }
+  .vb .int { font-size: 4.2rem; letter-spacing: 0.02em; }
+  .vb .dot { font-size: 4.2rem; opacity: 0.5; }
+  .vb .dec {
+    font-size: 1.7rem;
+    letter-spacing: 0.05em;
+    margin-left: 0.05em;
+    align-self: baseline;
+  }
+  .vb .unit {
+    font-size: 1.3rem;
+    margin-left: 0.4em;
+    letter-spacing: 0.18em;
+    -webkit-text-fill-color: rgba(255,200,140,0.65);
+  }
+
+  /* === C. ODOMETER (whole rolling number including decimal) === */
+  .vc .num-row {
+    display: inline-flex; align-items: baseline;
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 3.8rem;
+    line-height: 1;
+    background: linear-gradient(178deg, #fff 0%, #ffd866 40%, #ff7a1e 80%, #e83a14 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 18px rgba(255,150,40,0.4));
+  }
+  .vc .col {
+    display: inline-block;
+    width: 0.7em; height: 1em;
+    overflow: hidden;
+    vertical-align: top;
+    position: relative;
+  }
+  .vc .strip {
+    display: flex; flex-direction: column;
+    transition: transform 0.6s cubic-bezier(0.65, 0.05, 0.36, 1);
+  }
+  .vc .strip > span {
+    height: 1em;
+    line-height: 1em;
+    text-align: center;
+    display: block;
+    background: linear-gradient(178deg, #fff 0%, #ffd866 40%, #ff7a1e 80%, #e83a14 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 14px rgba(255,150,40,0.4));
+  }
+  .vc .dot { display: inline-block; opacity: 0.55; }
+  .vc .unit {
+    font-size: 0.34em;
+    margin-left: 0.3em;
+    letter-spacing: 0.18em;
+    -webkit-text-fill-color: rgba(255,200,140,0.6);
+  }
+
+  /* === D. DSEG14 LED scoreboard === */
+  .vd .led-frame {
+    padding: 1rem 1.6rem;
+    background: linear-gradient(180deg, #050203, #0a0503);
+    border: 1px solid rgba(255,180,80,0.32);
+    border-radius: 4px;
+    box-shadow:
+      inset 0 0 0 2px rgba(0,0,0,0.6),
+      inset 0 1px 0 rgba(255,210,140,0.12),
+      0 6px 20px rgba(0,0,0,0.55),
+      0 0 36px rgba(255,140,40,0.18);
+    display: inline-flex; align-items: baseline;
+    font-family: 'DSEG14 Modern', monospace;
+    font-weight: 700;
+    font-size: 3rem;
+    color: transparent;
+    line-height: 1;
+    letter-spacing: 0.04em;
+  }
+  .vd .led-num {
+    background: linear-gradient(180deg, #ffd866 0%, #ff7a1e 60%, #e83a14 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 18px rgba(255,140,40,0.55));
+  }
+  .vd .led-unit {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.38em;
+    margin-left: 0.5em;
+    letter-spacing: 0.3em;
+    color: rgba(255,200,140,0.6);
+    -webkit-text-fill-color: rgba(255,200,140,0.6);
+    align-self: center;
+    padding-bottom: 0.3em;
+  }
+
+  /* === E. SPLIT-FLAP integer + small decimal sub === */
+  .ve .flap-row {
+    display: inline-flex; align-items: baseline; gap: 0.04em;
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 3.2rem;
+    line-height: 1;
+  }
+  .ve .flap {
+    display: inline-block;
+    width: 0.7em; height: 1em;
+    background: linear-gradient(180deg, #1c0d05, #0a0503);
+    border-radius: 4px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,210,140,0.18),
+      inset 0 -1px 0 rgba(0,0,0,0.55),
+      0 4px 12px rgba(0,0,0,0.5);
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .ve .flap::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 50%;
+    height: 1px;
+    background: rgba(0,0,0,0.7);
+  }
+  .ve .flap span {
+    display: block;
+    background: linear-gradient(178deg, #fff 0%, #ffd866 40%, #ff7a1e 80%, #e83a14 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 14px rgba(255,140,40,0.45));
+  }
+  .ve .dec-wrap {
+    display: inline-flex; align-items: baseline;
+    margin-left: 0.18em;
+  }
+  .ve .dec-dot {
+    font-size: 3.2rem; line-height: 1;
+    color: rgba(255,200,140,0.5);
+    margin-right: 0.05em;
+  }
+  .ve .dec {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 1.4rem;
+    background: linear-gradient(178deg, #fff 0%, #ffd866 40%, #ff7a1e 80%, #e83a14 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .ve .unit {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    margin-left: 0.4em;
+    letter-spacing: 0.18em;
+    color: rgba(255,200,140,0.55);
+  }
+
+</style>
+</head>
+<body>
+
+<h1>VOTE POWER METER COMPARE</h1>
+<p class="info">
+  curve: <strong>100pt → 5000pt linear over 90min</strong>　・　毎秒 +0.91pt 増加　・　本番と同じ速度で再生中 (整数は約 1.1秒に1回、小数は毎フレーム動く)
+</p>
+
+<!-- A. Integer only -->
+<div class="variant va">
+  <span class="variant-label">A. INTEGER ONLY (baseline)</span>
+  <span class="variant-desc">整数のみ、Black Ops One 金グラ。毎秒 1 ずつ整数が変わる演出 (約 1.1 秒に 1 回)</span>
+  <div class="meter">
+    <div class="meter-eyebrow">VOTE POWER</div>
+    <div class="meter-eyebrow-jp">投票パワー</div>
+    <div><span class="int" data-int>1234</span><span class="unit">PT</span></div>
+    <div class="bar"><div class="bar-fill" data-fill style="width: 24%"></div></div>
+    <div class="bar-meta"><span>100 PT</span><span>5000 PT</span></div>
+  </div>
+</div>
+
+<!-- B. Integer + small decimal (user preference) -->
+<div class="variant vb">
+  <span class="variant-label">B. INTEGER + DECIMAL (推奨案)</span>
+  <span class="variant-desc">大きい整数 + 小さめ小数2桁が常時カウントアップ。stopwatch 系のライブ感、ticker</span>
+  <div class="meter">
+    <div class="meter-eyebrow">VOTE POWER</div>
+    <div class="meter-eyebrow-jp">投票パワー</div>
+    <div class="num-row">
+      <span class="int" data-int>1234</span>
+      <span class="dot">.</span>
+      <span class="dec" data-dec>45</span>
+      <span class="unit">PT</span>
+    </div>
+    <div class="bar"><div class="bar-fill" data-fill style="width: 24%"></div></div>
+    <div class="bar-meta"><span>100 PT</span><span>5000 PT</span></div>
+  </div>
+</div>
+
+<!-- C. Odometer rolling -->
+<div class="variant vc">
+  <span class="variant-label">C. ODOMETER ROLLING (各桁が縦スクロール)</span>
+  <span class="variant-desc">各桁が独立した縦ストリップで、変わる桁だけがスムーズに回転。アクションゲーム的</span>
+  <div class="meter">
+    <div class="meter-eyebrow">VOTE POWER</div>
+    <div class="meter-eyebrow-jp">投票パワー</div>
+    <div class="num-row" id="odo-row"></div>
+    <div class="bar"><div class="bar-fill" data-fill style="width: 24%"></div></div>
+    <div class="bar-meta"><span>100 PT</span><span>5000 PT</span></div>
+  </div>
+</div>
+
+<!-- D. DSEG14 LED scoreboard -->
+<div class="variant vd">
+  <span class="variant-label">D. LED SCOREBOARD (DSEG14 14セグLED)</span>
+  <span class="variant-desc">スタジアムの LED スコアボード風、UFC リング下のカウンターっぽい</span>
+  <div class="meter">
+    <div class="meter-eyebrow">VOTE POWER</div>
+    <div class="meter-eyebrow-jp">投票パワー</div>
+    <div class="led-frame">
+      <span class="led-num" data-led>1234.45</span>
+      <span class="led-unit">PT</span>
+    </div>
+    <div class="bar"><div class="bar-fill" data-fill style="width: 24%"></div></div>
+    <div class="bar-meta"><span>100 PT</span><span>5000 PT</span></div>
+  </div>
+</div>
+
+<!-- E. Split-flap + decimal -->
+<div class="variant ve">
+  <span class="variant-label">E. SPLIT-FLAP INTEGER + DECIMAL</span>
+  <span class="variant-desc">countdown と同じ split-flap 方式 (整数のみ機械式) + 横に decimal がスムーズにカウントアップ</span>
+  <div class="meter">
+    <div class="meter-eyebrow">VOTE POWER</div>
+    <div class="meter-eyebrow-jp">投票パワー</div>
+    <div class="flap-row">
+      <span class="flap"><span data-flap-d3>1</span></span>
+      <span class="flap"><span data-flap-d2>2</span></span>
+      <span class="flap"><span data-flap-d1>3</span></span>
+      <span class="flap"><span data-flap-d0>4</span></span>
+      <span class="dec-wrap">
+        <span class="dec-dot">.</span>
+        <span class="dec" data-dec-flap>45</span>
+      </span>
+      <span class="unit">PT</span>
+    </div>
+    <div class="bar"><div class="bar-fill" data-fill style="width: 24%"></div></div>
+    <div class="bar-meta"><span>100 PT</span><span>5000 PT</span></div>
+  </div>
+</div>
+
+<script>
+// === Live demo: 5x speed simulation of 100→5000 over 90min ===
+// Real curve: 100 + 4900 * (t / 90min)
+// We simulate at 5x speed (90min becomes 18min) and loop every 18 minutes
+// Initial value: 1234.45 (about 24% of the way)
+
+const SIM_DURATION_REAL_MS = 90 * 60 * 1000; // 90 min real
+const SIM_SPEED = 1; // real time
+const SIM_LOOP_MS = SIM_DURATION_REAL_MS / SIM_SPEED; // 90 min loop
+const MIN = 100, MAX = 5000;
+
+// Start at the value that produces 1234.45 = 24% progress
+// (1234.45 - 100) / (5000-100) = 0.2315... so start at 23.15% through the loop
+const START_OFFSET = ((1234.45 - MIN) / (MAX - MIN)) * SIM_LOOP_MS;
+const startTime = performance.now() - START_OFFSET;
+
+// Build odometer columns for variant C
+function buildOdoColumns() {
+  const root = document.getElementById('odo-row');
+  if (!root) return;
+  const cols = ['1','2','3','4','dot','d1','d2'];
+  for (const t of cols) {
+    if (t === 'dot') {
+      const el = document.createElement('span');
+      el.className = 'dot';
+      el.textContent = '.';
+      el.style.fontSize = '3.8rem';
+      el.style.lineHeight = '1';
+      root.appendChild(el);
+    } else {
+      const col = document.createElement('span');
+      col.className = 'col';
+      const strip = document.createElement('span');
+      strip.className = 'strip';
+      strip.dataset.col = t;
+      for (let d = 0; d <= 9; d++) {
+        const span = document.createElement('span');
+        span.textContent = d;
+        strip.appendChild(span);
+      }
+      col.appendChild(strip);
+      root.appendChild(col);
+    }
+  }
+  // Add unit
+  const unit = document.createElement('span');
+  unit.className = 'unit';
+  unit.textContent = 'PT';
+  root.appendChild(unit);
+}
+buildOdoColumns();
+
+function setOdoCol(name, digit) {
+  const strip = document.querySelector(`#odo-row .strip[data-col="${name}"]`);
+  if (!strip) return;
+  strip.style.transform = `translateY(-${digit * 10}%)`;
+}
+
+// Track previous integer for split-flap animation
+let prevIntForFlap = 1234;
+
+function updateAll() {
+  const elapsed = (performance.now() - startTime) % SIM_LOOP_MS;
+  const progress = elapsed / SIM_LOOP_MS;
+  const value = MIN + (MAX - MIN) * progress;
+  const fillPct = ((value - MIN) / (MAX - MIN)) * 100;
+
+  const intPart = Math.floor(value);
+  const decPart = Math.floor((value - intPart) * 100);
+  const decStr = String(decPart).padStart(2, '0');
+  const intStr = String(intPart).padStart(4, '0');
+
+  // Update progress bars
+  document.querySelectorAll('[data-fill]').forEach(el => {
+    el.style.width = fillPct.toFixed(2) + '%';
+  });
+
+  // A: integer only
+  document.querySelectorAll('.va [data-int]').forEach(el => el.textContent = intPart);
+  // B: integer + decimal
+  document.querySelectorAll('.vb [data-int]').forEach(el => el.textContent = intPart);
+  document.querySelectorAll('.vb [data-dec]').forEach(el => el.textContent = decStr);
+  // C: odometer (DOM order matches digit order: col-1 = thousands ... col-4 = ones)
+  for (let i = 0; i < 4; i++) {
+    setOdoCol(String(i + 1), parseInt(intStr[i], 10));
+  }
+  setOdoCol('d1', parseInt(decStr[0], 10));
+  setOdoCol('d2', parseInt(decStr[1], 10));
+  // D: LED
+  document.querySelectorAll('[data-led]').forEach(el => el.textContent = `${intPart}.${decStr}`);
+  // E: split-flap (only update integer when changes; decimal smoothly)
+  const flapDigits = intStr.split('');
+  for (let i = 0; i < 4; i++) {
+    const el = document.querySelector(`[data-flap-d${3 - i}]`);
+    if (el && el.textContent !== flapDigits[i]) {
+      el.textContent = flapDigits[i];
+    }
+  }
+  document.querySelectorAll('[data-dec-flap]').forEach(el => el.textContent = decStr);
+}
+
+setInterval(updateAll, 50); // 20fps
+updateAll();
+</script>
+</body>
+</html>
