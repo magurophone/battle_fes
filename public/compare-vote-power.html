@@ -33,10 +33,95 @@
     text-align: center;
     font-size: 0.78rem;
     color: rgba(255,210,170,0.55);
-    margin-bottom: 2.6rem;
+    margin-bottom: 1.2rem;
     letter-spacing: 0.05em;
   }
   .info strong { color: rgba(255,210,150,0.95); }
+  .controls {
+    position: sticky; top: 0;
+    z-index: 50;
+    max-width: 1100px;
+    margin: 0 auto 2rem;
+    padding: 1rem 1.4rem;
+    display: flex; align-items: center; gap: 0.9rem;
+    background: rgba(8,3,2,0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,180,80,0.35);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.55);
+  }
+  .ctl-label {
+    color: rgba(255,200,140,0.85);
+    letter-spacing: 0.4em;
+    padding-left: 0.4em;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+  }
+  #manualFill {
+    flex: 1; min-width: 200px; max-width: 500px;
+    height: 8px;
+    -webkit-appearance: none; appearance: none;
+    background: linear-gradient(90deg, #ffd866 0%, #ff7a1e 60%, #ff2030 100%);
+    border-radius: 4px;
+    outline: none;
+  }
+  #manualFill::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 16px; height: 22px;
+    border-radius: 2px;
+    background: #fff;
+    border: 1px solid rgba(255,180,80,0.6);
+    box-shadow: 0 0 8px rgba(255,140,40,0.7), 0 2px 4px rgba(0,0,0,0.6);
+    cursor: pointer;
+  }
+  #manualFill::-moz-range-thumb {
+    width: 16px; height: 22px;
+    border-radius: 2px;
+    background: #fff;
+    border: 1px solid rgba(255,180,80,0.6);
+    box-shadow: 0 0 8px rgba(255,140,40,0.7), 0 2px 4px rgba(0,0,0,0.6);
+    cursor: pointer;
+  }
+  .ctl-val {
+    color: rgba(255,235,180,0.95);
+    min-width: 70px;
+    text-align: right;
+    font-weight: 500;
+  }
+  .ctl-btn {
+    background: rgba(40,15,6,0.6);
+    border: 1px solid rgba(255,180,80,0.5);
+    color: rgba(255,220,160,0.9);
+    padding: 0.45rem 0.9rem;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .ctl-btn:hover {
+    background: rgba(80,30,10,0.8);
+    border-color: rgba(255,200,140,0.7);
+  }
+  .ctl-btn.auto-on {
+    background: rgba(255,140,40,0.25);
+    border-color: rgba(255,200,140,0.85);
+    color: rgba(255,250,210,0.98);
+  }
+  .ctl-hint {
+    color: rgba(255,210,170,0.5);
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+    margin-left: auto;
+  }
+  @media (max-width: 720px) {
+    .controls { flex-wrap: wrap; gap: 0.6rem; padding: 0.8rem; }
+    .ctl-hint { width: 100%; margin-left: 0; }
+  }
   .variant {
     max-width: 720px;
     margin: 0 auto 1.6rem;
@@ -526,8 +611,16 @@
 
 <h1>VOTE POWER METER COMPARE</h1>
 <p class="info">
-  curve: <strong>100pt → 5000pt linear over 90min</strong>　・　毎秒 +0.91pt 増加　・　本番と同じ速度で再生中 (整数は約 1.1秒に1回、小数は毎フレーム動く)
+  curve: <strong>100pt → 5000pt linear over 90min</strong>　・　毎秒 +0.91pt 増加
 </p>
+
+<div class="controls">
+  <label class="ctl-label">FILL</label>
+  <input type="range" id="manualFill" min="0" max="100" step="0.1" value="24" />
+  <span id="manualVal" class="ctl-val">24.0%</span>
+  <button id="modeBtn" class="ctl-btn auto-on" type="button">AUTO ▶</button>
+  <span class="ctl-hint">スライダー操作で MANUAL に切替、「AUTO ▶」で本番速度ループに戻る</span>
+</div>
 
 <!-- A. Integer only -->
 <div class="variant va">
@@ -771,11 +864,41 @@ function markFastCol(name) {
 // Track previous integer for split-flap animation
 let prevIntForFlap = 1234;
 
+// Manual override via slider
+let manualMode = false;
+let manualPct = 24;
+const slider = document.getElementById('manualFill');
+const valDisp = document.getElementById('manualVal');
+const modeBtn = document.getElementById('modeBtn');
+slider.addEventListener('input', () => {
+  manualMode = true;
+  manualPct = parseFloat(slider.value);
+  valDisp.textContent = manualPct.toFixed(1) + '%';
+  modeBtn.classList.remove('auto-on');
+  modeBtn.textContent = 'MANUAL ◼';
+});
+modeBtn.addEventListener('click', () => {
+  manualMode = false;
+  modeBtn.classList.add('auto-on');
+  modeBtn.textContent = 'AUTO ▶';
+});
+
 function updateAll() {
-  const elapsed = (performance.now() - startTime) % SIM_LOOP_MS;
-  const progress = elapsed / SIM_LOOP_MS;
-  const value = MIN + (MAX - MIN) * progress;
-  const fillPct = ((value - MIN) / (MAX - MIN)) * 100;
+  let value, fillPct;
+  if (manualMode) {
+    fillPct = manualPct;
+    value = MIN + (MAX - MIN) * (fillPct / 100);
+  } else {
+    const elapsed = (performance.now() - startTime) % SIM_LOOP_MS;
+    const progress = elapsed / SIM_LOOP_MS;
+    value = MIN + (MAX - MIN) * progress;
+    fillPct = progress * 100;
+    // Reflect AUTO state into slider for visual sync
+    if (slider) {
+      slider.value = fillPct.toFixed(2);
+      valDisp.textContent = fillPct.toFixed(1) + '%';
+    }
+  }
 
   const intPart = Math.floor(value);
   const decPart = Math.floor((value - intPart) * 100);
