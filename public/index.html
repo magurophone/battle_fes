@@ -803,6 +803,241 @@
     .stat-card .stat-label-jp { font-size: 0.58rem; letter-spacing: 0.14em; }
   }
 
+  /* ── ABOUT RULES (UFC fight card revised, full-width 3rd row inside #about) ── */
+  .about-rules { grid-column: 1 / -1; margin-top: 4rem; }
+  .ar-shell {
+    padding: 2.4rem 2.4rem 2rem;
+    background:
+      linear-gradient(180deg, rgba(8,3,2,0.95), rgba(20,8,4,0.95)),
+      url('/assets/textures/slate-dark.png') center/cover no-repeat, #0a0d18;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 4px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 30px rgba(0,0,0,0.6);
+    position: relative; overflow: hidden;
+  }
+  .ar-shell::after {
+    content: ''; position: absolute;
+    top: 0; right: -10%;
+    width: 120%; height: 4px;
+    background: linear-gradient(90deg, transparent, rgba(255,140,40,0.85), transparent);
+  }
+  .ar-top {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 1.8rem;
+  }
+  @media (max-width: 820px) {
+    .ar-top { grid-template-columns: 1fr; gap: 1.2rem; }
+  }
+  .ar-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.28em;
+    color: rgba(255,255,255,0.55);
+    background: rgba(255,140,40,0.12);
+    border: 1px solid rgba(255,140,40,0.3);
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    margin-bottom: 0.9rem;
+  }
+  .ar-title {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: clamp(2rem, 4.2vw, 3.4rem);
+    line-height: 0.96;
+    color: #fff;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+    text-shadow:
+      -2px 0 0 rgba(255,80,30,0.85),
+       2px 0 0 rgba(40,120,255,0.65);
+  }
+  .ar-title-jp {
+    font-weight: 900;
+    font-size: 1.05rem;
+    color: rgba(255,200,140,0.95);
+    letter-spacing: 0.18em;
+    margin-bottom: 0.7rem;
+  }
+  .ar-lead {
+    font-size: 0.9rem;
+    line-height: 1.75;
+    color: rgba(255,255,255,0.78);
+    border-left: 3px solid rgba(255,140,40,0.7);
+    padding-left: 0.8rem;
+  }
+  .ar-lead strong {
+    color: #fff;
+    background: linear-gradient(180deg, transparent 60%, rgba(255,140,40,0.4) 60%);
+    padding: 0 0.1em;
+  }
+  .ar-graph-wrap {
+    position: relative;
+    padding: 1.1rem 1.2rem 1rem;
+    background: linear-gradient(180deg, rgba(0,0,0,0.7), rgba(20,8,4,0.85));
+    border: 1px solid rgba(255,180,80,0.32);
+    border-radius: 4px;
+    box-shadow: inset 0 1px 0 rgba(255,210,140,0.1);
+  }
+  .ar-graph-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.28em;
+    color: rgba(255,200,140,0.78);
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+  .ar-graph {
+    width: 100%;
+    height: 160px;
+    display: block;
+  }
+  .ar-graph-caption {
+    margin-top: 0.5rem;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: rgba(255,225,180,0.8);
+    text-align: center;
+  }
+  .ar-graph-caption strong {
+    color: rgba(255,200,140,1);
+    font-family: 'Black Ops One', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+  }
+  .ar-graph-caption .multiplier {
+    color: #fff;
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 1.1em;
+    margin: 0 0.15em;
+    text-shadow:
+      -1px 0 0 rgba(255,80,30,0.7),
+       1px 0 0 rgba(40,120,255,0.5);
+  }
+  .ar-rounds {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  @media (max-width: 720px) {
+    .ar-rounds { grid-template-columns: 1fr; }
+    .ar-round + .ar-round { border-top: 1px solid rgba(255,255,255,0.08); border-left: none; }
+  }
+  .ar-round {
+    padding: 1.6rem 1.4rem 1.5rem;
+    position: relative;
+  }
+  .ar-round + .ar-round {
+    border-left: 1px solid rgba(255,255,255,0.08);
+  }
+  .ar-rnum {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 2.2rem;
+    line-height: 1;
+    color: rgba(255,140,40,0.18);
+    margin-bottom: 0.3rem;
+  }
+  .ar-rlabel {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.32em;
+    color: rgba(255,200,140,0.92);
+    margin-bottom: 0.15rem;
+  }
+  .ar-rjp {
+    font-weight: 900;
+    font-size: 1.05rem;
+    color: #fff;
+    margin-bottom: 0.7rem;
+    letter-spacing: 0.04em;
+  }
+  .ar-rbody {
+    font-size: 0.86rem;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.8);
+  }
+  .ar-rbody strong {
+    color: rgba(255,200,140,1);
+    font-weight: 700;
+  }
+  .ar-rbody ul { list-style: none; padding: 0; margin: 0; }
+  .ar-rbody li { padding-left: 0.85em; position: relative; margin-bottom: 0.35rem; }
+  .ar-rbody li::before {
+    content: '×';
+    position: absolute; left: 0;
+    color: rgba(255,140,40,0.6);
+    font-weight: 700;
+  }
+  .ar-rhint {
+    margin: 0.7rem 0 0;
+    padding-top: 0.6rem;
+    border-top: 1px dashed rgba(255,255,255,0.12);
+    font-size: 0.78rem;
+    color: rgba(255,200,140,0.88);
+    letter-spacing: 0.02em;
+  }
+  .ar-formula {
+    margin-top: 1.6rem;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, rgba(255,140,40,0.06), rgba(40,120,255,0.05));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 3px;
+    text-align: center;
+  }
+  .ar-formula-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.32em;
+    color: rgba(255,200,140,0.7);
+    margin-bottom: 0.4rem;
+  }
+  .ar-formula-jp {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: rgba(255,225,180,0.85);
+    margin-bottom: 0.7rem;
+    letter-spacing: 0.06em;
+  }
+  .ar-formula-eq {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: clamp(1.2rem, 2.4vw, 1.8rem);
+    line-height: 1.2;
+    color: #fff;
+    letter-spacing: 0.04em;
+    text-shadow:
+      -1px 0 0 rgba(255,80,30,0.6),
+       1px 0 0 rgba(40,120,255,0.4);
+  }
+  .ar-formula-eq .op {
+    color: rgba(255,140,40,0.9);
+    margin: 0 0.4rem;
+  }
+  @media (max-width: 480px) {
+    .about-rules { margin-top: 3rem; }
+    .ar-shell { padding: 1.4rem 1rem 1.5rem; }
+    .ar-top { gap: 1rem; margin-bottom: 1.2rem; }
+    .ar-tag { font-size: 0.56rem; letter-spacing: 0.18em; padding: 0.18rem 0.5rem; }
+    .ar-title { font-size: 1.7rem; line-height: 1; }
+    .ar-title-jp { font-size: 0.88rem; letter-spacing: 0.14em; }
+    .ar-lead { font-size: 0.82rem; }
+    .ar-graph-wrap { padding: 0.8rem 0.8rem 0.7rem; }
+    .ar-graph-eyebrow { font-size: 0.58rem; letter-spacing: 0.2em; }
+    .ar-graph { height: 130px; }
+    .ar-graph-caption { font-size: 0.72rem; line-height: 1.5; }
+    .ar-round { padding: 1.3rem 1rem 1.2rem; }
+    .ar-rnum { font-size: 1.9rem; }
+    .ar-rjp { font-size: 0.98rem; }
+    .ar-rbody { font-size: 0.82rem; }
+    .ar-formula { padding: 1.2rem 1rem; }
+    .ar-formula-eq { font-size: 0.92rem; letter-spacing: 0.02em; line-height: 1.4; }
+    .ar-formula-eq .op { margin: 0 0.25rem; font-size: 1.1em; }
+  }
+
   #teams { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
   .teams-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.2rem; }
   .team-card {
@@ -1609,6 +1844,96 @@
       <div class="stat-num">15<span class="stat-suffix">MIN</span></div>
       <div class="stat-label">PER ARTIST</div>
       <div class="stat-label-jp">1人持ち時間</div>
+    </div>
+  </div>
+
+  <div class="about-rules">
+    <div class="ar-shell">
+      <div class="ar-top">
+        <div class="ar-headline">
+          <span class="ar-tag">// BATTLE RULES /  R001</span>
+          <h3 class="ar-title">RULES OF<br>ENGAGEMENT</h3>
+          <p class="ar-title-jp">勝敗の決まり方</p>
+          <p class="ar-lead">審査員はいない。リスナーの投票と ColorSing ライブスコア — それだけが優勝チームを決める。<br><strong>遅く投票するほど1票が重くなる</strong>のがこのバトルの肝。</p>
+        </div>
+        <div class="ar-graph-wrap">
+          <p class="ar-graph-eyebrow">// 1票のポイントは時間で変わる //</p>
+          <svg class="ar-graph" viewBox="0 0 400 160" preserveAspectRatio="none" aria-label="Vote power curve">
+            <defs>
+              <linearGradient id="arCurveFill" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0"   stop-color="#ff8c34" stop-opacity="0.6"/>
+                <stop offset="1"   stop-color="#ff3014" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="arCurveLine" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0"    stop-color="#ffd980"/>
+                <stop offset="0.85" stop-color="#ff5a14"/>
+                <stop offset="1"    stop-color="#ff3014"/>
+              </linearGradient>
+            </defs>
+            <g stroke="rgba(255,180,80,0.13)" stroke-width="1" stroke-dasharray="2 4">
+              <line x1="0" y1="20"  x2="400" y2="20" />
+              <line x1="0" y1="60"  x2="400" y2="60" />
+              <line x1="0" y1="100" x2="400" y2="100" />
+              <line x1="0" y1="135" x2="400" y2="135" />
+            </g>
+            <line x1="340" y1="20" x2="340" y2="160" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3 4"/>
+            <path d="M 0,135 L 340,20 L 400,20 L 400,160 L 0,160 Z" fill="url(#arCurveFill)" />
+            <path d="M 0,135 L 340,20 L 400,20" fill="none" stroke="url(#arCurveLine)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="0"   cy="135" r="4.5" fill="#ffd980" stroke="#fff" stroke-width="1.2"/>
+            <circle cx="340" cy="20"  r="5.5" fill="#ff5a14" stroke="#fff" stroke-width="1.5"/>
+            <circle cx="400" cy="20"  r="4" fill="#ff3014"/>
+            <g font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="0.04em">
+              <text x="6"   y="128" fill="rgba(255,200,140,1)" font-weight="700">100PT</text>
+              <text x="6"   y="153" fill="rgba(255,200,140,0.7)">20:45</text>
+              <text x="335" y="14"  text-anchor="end" fill="rgba(255,200,140,1)" font-weight="700">5000PT</text>
+              <text x="335" y="153" text-anchor="end" fill="rgba(255,200,140,0.7)">22:15</text>
+              <text x="395" y="153" text-anchor="end" fill="rgba(255,200,140,0.7)">22:25</text>
+            </g>
+          </svg>
+          <p class="ar-graph-caption">受付開始の <strong>100PT</strong> から、本投票直前で <span class="multiplier">×50</span> の <strong>5000PT</strong> へ</p>
+        </div>
+      </div>
+
+      <div class="ar-rounds">
+        <div class="ar-round">
+          <div class="ar-rnum">01</div>
+          <p class="ar-rlabel">VOTE</p>
+          <p class="ar-rjp">投票の基本</p>
+          <div class="ar-rbody">
+            <ul>
+              <li>1人 <strong>1票</strong>のみ</li>
+              <li>受付 <strong>20:45 〜 22:25</strong></li>
+              <li>期間中いつでも投票可</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ar-round">
+          <div class="ar-rnum">02</div>
+          <p class="ar-rlabel">VOTE POWER</p>
+          <p class="ar-rjp">1票の重さ</p>
+          <div class="ar-rbody">
+            時間が遅いほど1票のポイントが大きくなる。<br>
+            受付開始の <strong>100PT</strong> から本投票直前の <strong>5000PT</strong> へ徐々に上昇。
+            <p class="ar-rhint">▸ 本投票（22:15-22:25）はずっと最大の <strong>5000PT</strong></p>
+          </div>
+        </div>
+        <div class="ar-round">
+          <div class="ar-rnum">03</div>
+          <p class="ar-rlabel">FINAL SCORE</p>
+          <p class="ar-rjp">優勝の決定</p>
+          <div class="ar-rbody">
+            <strong>全投票のポイント合計</strong> に、<strong>ColorSing ライブスコア</strong> を足した合計が最も高いチームが優勝。
+          </div>
+        </div>
+      </div>
+
+      <div class="ar-formula">
+        <div class="ar-formula-label">// FINAL SCORE //</div>
+        <div class="ar-formula-jp">総合スコア</div>
+        <div class="ar-formula-eq">
+          投票ポイント合計 <span class="op">+</span> ライブスコア
+        </div>
+      </div>
     </div>
   </div>
 </div>
