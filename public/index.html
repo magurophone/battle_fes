@@ -981,6 +981,65 @@
     color: rgba(255,200,140,0.88);
     letter-spacing: 0.02em;
   }
+  .ar-secret {
+    margin-top: 1.4rem;
+    padding: 1rem 1.4rem;
+    background:
+      repeating-linear-gradient(135deg,
+        rgba(255,80,30,0.05) 0,
+        rgba(255,80,30,0.05) 14px,
+        transparent 14px,
+        transparent 28px
+      ),
+      rgba(30,10,5,0.55);
+    border: 1px solid rgba(255,80,30,0.35);
+    border-left: 4px solid rgba(255,140,40,0.9);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    animation: secret-pulse 3.2s ease-in-out infinite;
+  }
+  @keyframes secret-pulse {
+    0%, 100% { border-left-color: rgba(255,140,40,0.9); box-shadow: none; }
+    50% { border-left-color: rgba(255,200,80,1); box-shadow: 0 0 18px rgba(255,140,40,0.18); }
+  }
+  .ar-secret-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    color: rgba(255,160,80,0.85);
+    white-space: nowrap;
+  }
+  .ar-secret-mark {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 1.7rem;
+    color: #ffba3a;
+    text-shadow:
+      -1px 0 0 rgba(255,80,30,0.7),
+       1px 0 0 rgba(40,120,255,0.4),
+       0 0 14px rgba(255,140,40,0.55);
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+  .ar-secret-text {
+    font-size: 0.95rem;
+    color: rgba(255,235,210,0.95);
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+  .ar-secret-text strong {
+    color: #fff;
+    font-weight: 700;
+  }
+  .ar-secret-hint {
+    font-size: 0.72rem;
+    color: rgba(255,200,140,0.55);
+    letter-spacing: 0.06em;
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+    margin-left: auto;
+  }
   .ar-formula {
     margin-top: 1.6rem;
     padding: 1.5rem 2rem;
@@ -1036,6 +1095,11 @@
     .ar-formula { padding: 1.2rem 1rem; }
     .ar-formula-eq { font-size: 0.92rem; letter-spacing: 0.02em; line-height: 1.4; }
     .ar-formula-eq .op { margin: 0 0.25rem; font-size: 1.1em; }
+    .ar-secret { flex-direction: column; align-items: flex-start; gap: 0.5rem; padding: 0.85rem 1rem; }
+    .ar-secret-tag { font-size: 0.6rem; letter-spacing: 0.2em; }
+    .ar-secret-mark { font-size: 1.4rem; }
+    .ar-secret-text { font-size: 0.82rem; }
+    .ar-secret-hint { margin-left: 0; font-size: 0.66rem; }
   }
 
   #teams { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
@@ -2006,6 +2070,13 @@
             <strong>全投票のポイント合計</strong> に、<strong>ColorSing ライブスコア</strong> を足した合計が最も高いチームが優勝。
           </div>
         </div>
+      </div>
+
+      <div class="ar-secret">
+        <span class="ar-secret-tag">// ?? CLASSIFIED</span>
+        <span class="ar-secret-mark">!?</span>
+        <span class="ar-secret-text">本投票中、<strong>一定条件達成で BONUS 発生</strong></span>
+        <span class="ar-secret-hint">— 詳細は当日配信で</span>
       </div>
 
       <div class="ar-formula">
