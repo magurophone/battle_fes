@@ -6,7 +6,7 @@
   <title>BATTLE FES Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Ops+One&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #060c1a;
@@ -393,11 +393,51 @@
       border-bottom: none;
     }
 
-    /* チーム名色分け (public 側 TEAM_DISPLAY と同色) */
-    .team-tag { font-weight: 700; letter-spacing: 0.04em; }
-    .team-tag[data-team="1"] { color: #ff2d78; }   /* CRIMSON */
-    .team-tag[data-team="2"] { color: #7c3aff; }   /* NOVA */
+    /* チーム名色分け (public 側 sched-team と同表記) */
+    .team-tag {
+      font-family: 'Black Ops One', 'Bebas Neue', sans-serif;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 6px rgba(0,0,0,0.55), 0 1px 2px rgba(0,0,0,0.85);
+    }
+    .team-tag[data-team="1"] { color: #ff5594; }   /* CRIMSON */
+    .team-tag[data-team="2"] { color: #b389ff; }   /* NOVA */
     .team-tag[data-team="3"] { color: #ffd700; }   /* GOLDEN */
+
+    /* メンバー候補カード: 上にチーム名 (背景色)、下に投票者名 */
+    .candidate-card {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: stretch;
+      min-width: 120px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+      vertical-align: middle;
+      line-height: 1.3;
+    }
+    .candidate-card .cc-team {
+      padding: 3px 10px;
+      font-family: 'Black Ops One', 'Bebas Neue', sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-align: center;
+      text-shadow: 0 0 6px rgba(0,0,0,0.55), 0 1px 2px rgba(0,0,0,0.85);
+    }
+    .candidate-card .cc-name {
+      padding: 6px 10px;
+      font-weight: 600;
+      text-align: center;
+      color: var(--text);
+      font-size: 0.92rem;
+    }
+    .candidate-card[data-team="1"] { border-color: rgba(255,85,148,0.5); background: rgba(255,85,148,0.06); }
+    .candidate-card[data-team="1"] .cc-team { background: rgba(255,85,148,0.28); color: #ffb0cc; }
+    .candidate-card[data-team="2"] { border-color: rgba(179,137,255,0.5); background: rgba(179,137,255,0.06); }
+    .candidate-card[data-team="2"] .cc-team { background: rgba(179,137,255,0.28); color: #cdb6ff; }
+    .candidate-card[data-team="3"] { border-color: rgba(255,215,0,0.45); background: rgba(255,215,0,0.05); }
+    .candidate-card[data-team="3"] .cc-team { background: rgba(255,215,0,0.22); color: #ffe566; }
 
     /* 貫通 BONUS バッジ (ポイント列の値の右に固定位置で表示) */
     .bonus-mark {
@@ -822,7 +862,15 @@
       if (category.candidateType === "member") {
         const member = configCache.members.find((entry) => Number(entry.id) === Number(candidateId));
         if (!member) return escapeHtml(`member#${candidateId}`);
-        return `${escapeHtml(member.name)} (${teamTagHtml(member.teamId)})`;
+        const tid = Number(member.teamId);
+        const teamLabel = (() => {
+          const t = configCache.teams.find((entry) => Number(entry.id) === tid);
+          return t ? t.name : `team#${tid}`;
+        })();
+        return `<span class="candidate-card" data-team="${tid}">`
+          + `<span class="cc-team">${escapeHtml(teamLabel)}</span>`
+          + `<span class="cc-name">${escapeHtml(member.name)}</span>`
+          + `</span>`;
       }
       return escapeHtml(String(candidateId));
     }
