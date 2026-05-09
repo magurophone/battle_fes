@@ -90,13 +90,12 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
   - `IntersectionObserver`
 - `⬜` SCROLLインジケーター アンカーリンク化
   - `<a href="#about">` への変換が未適用
-- `🔧` 投票システム
-  - チーム選択
-  - 重複投票対策
-  - 現在はサーバー側実装に移行済み
-- `🔧` 投票フォーム
-  - 名前
-  - コメント
+- `✓` 投票システム
+  - チーム選択 + 個人賞3つ（MVP / エンタメ / モーメント）の bulk 投票
+  - 重複投票対策（カテゴリ別 fingerprint）
+- `✓` 投票フロー
+  - 名前入力 → チーム選択 → モーダルで個人賞3つ + 任意コメント + イベント感想 → 送信 → サンクスオーバーレイ → ロック
+  - 同じ人を複数賞に選べないUI制御 (disabled-by-other)
 - `🔧` ランキング表示
 - `⬜` 顧客向けの見せ方調整
   - 順位だけ表示するか
@@ -110,19 +109,35 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
 ### 投票関連API
 
 - `✓` `POST /api/votes`
+  - 多カテゴリ bulk 投票（team + 個人賞3カテゴリを1リクエストで送信）
+  - サーバ側でタイムスタンプ強制上書き（クライアント信頼しない）
+  - カテゴリ別 fingerprint で 409 重複判定
 - `✓` `GET /api/results`
+  - `config: { categories, teams, members }` を返す（フロントの動的描画に使用）
 - `✓` 投票データ保存
-  - Cloudflare KV
+  - Cloudflare KV、カテゴリ別キー prefix（`vote-results:<catId>` / `vote-meta:<catId>` / `vote-log:<catId>` / `vote-fingerprint:<catId>:<hash>`）
+- `✓` イベント感想ログ
+  - `event-impressions-log` キーで全感想を集約
 - `✓` 重複投票防止
-  - サーバーサイド判定
+  - サーバーサイド判定（カテゴリ別 fingerprint）
 - `✓` 名前、コメント、投票時刻のログ保存
+
+### 投票カテゴリ設定
+
+- `✓` `functions/api/_lib/vote-categories.js`
+  - TEAMS / MEMBERS / CATEGORIES をデータ駆動で定義
+  - 追加カテゴリは設定変更のみで対応可能（API/UIともに動的に描画）
 
 ### 管理画面
 
 - `✓` 管理画面 `/admin/`
+  - 多カテゴリ対応（カテゴリ別ブロックで Total/Unique/Submissions/Updated/Last vote を表示）
+  - Vote Log は `<details>` で折り畳み（DOM 軽量化）
+  - イベント全体感想ログ表示
+  - 401/403 のメッセージ明示、空状態フォールバック、user input は escapeHtml で XSS 安全化
 - `✓` 管理API
   - `/api/admin/results`
-  - `/api/admin/reset`
+  - `/api/admin/reset`（旧スキーマの legacy キーも一括削除）
 - `✓` 管理画面パスワード保護
 - `✓` パスワードの Cloudflare secret 化
 - `🔧` デザイン改善は未対応
@@ -168,6 +183,17 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
 
 ## イベント本番前チェックリスト
 
+> ⚠️ **最優先 / E2E API 検証**
+>
+> 本番デプロイ前に **必ず 1 回** 実 KV 経由で投票送信を流して下記を確認すること。コードレビュー・モック検証だけでは KV 書込み / fingerprint 重複 / 409 ハンドリングまでは保証されない。
+>
+> - [ ] `wrangler pages dev public` 又は本番 Preview デプロイで 1 票送信し成功（200）
+> - [ ] 同一端末から再送信 → 409 が返り、フロントが既投票ロック状態になる
+> - [ ] `/admin/` で送信内容（候補ID・コメント・eventImpression）が表示される
+> - [ ] reset all votes で全カテゴリ + legacy + fingerprint キー削除確認
+>
+> 上記 4 項目すべて緑になるまでは本番投票公開不可。
+
 - [ ] イベント開始時刻を最終確定（現在 7/18 土 19:45 仮）
 - [ ] 変更時はスケジュール14箇所の時刻を再計算して反映
 - [ ] `VOTE_OPEN` / `VOTE_CLOSE` を確定時刻に同期（3ファイル: public/index.html, battlefes.html, functions/api/_lib/vote-store.js）
@@ -175,6 +201,8 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
 - [ ] 顧客向け結果表示の見せ方を最終決定
 - [ ] 試験用リセットボタンを残すか削除するか決定
 - [ ] 時間加重投票のバックエンド実装（早い投票ほど価値が低い）
+- [ ] 個人賞 (MVP / エンタメ / モーメント) の最終ラベル・候補メンバー確定（現状 `functions/api/_lib/vote-categories.js` に 3 賞 + プレースホルダ名）
+- [ ] 「最多ライブスコアpt獲得賞」の自動算出ロジック実装（投票ベースではなく ColorSing スコア由来）
 
 ---
 

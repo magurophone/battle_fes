@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BATTLE FES 2026 | ColorSing</title>
 <link rel="preload" as="image" href="/hero-bg.webp" type="image/webp">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Dela+Gothic+One&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Ops+One&family=Cinzel:wght@600;800&family=Dela+Gothic+One&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #060c1a;
@@ -130,7 +130,7 @@
   }
   .hero-bg::after {
     content: ''; position: absolute; inset: 0;
-    background: linear-gradient(to bottom, rgba(4,7,30,0.35) 0%, rgba(4,7,30,0.1) 40%, rgba(4,7,30,0.55) 100%);
+    background: linear-gradient(to bottom, rgba(4,7,30,0.40) 0%, rgba(4,7,30,0.12) 38%, rgba(5,2,3,0.55) 88%, rgba(5,2,3,0.78) 100%);
   }
 
   .spotlight {
@@ -206,21 +206,65 @@
     opacity: 0; animation: fadeUp 0.8s 0.6s forwards;
   }
   .hero-date {
-    margin-top: 1.4rem; display: flex; gap: 1.5rem;
+    margin-top: 1.4rem; display: flex; gap: 1.2rem;
     align-items: center; justify-content: center; flex-wrap: wrap;
     opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
   }
   .date-chip {
+    position: relative;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    color: rgba(255,235,200,0.98);
     background:
-      linear-gradient(rgba(6,10,24,0.55), rgba(6,10,24,0.55)),
+      radial-gradient(ellipse at 50% 100%, rgba(255,140,40,0.35) 0%, transparent 75%),
+      linear-gradient(rgba(28,12,5,0.6), rgba(12,5,3,0.75)),
       url('/assets/textures/marble-dark.png') center/cover no-repeat;
-    border: 1px solid rgba(255,180,80,0.25);
-    border-radius: 100px; padding: 0.5rem 1.5rem;
-    font-size: 0.9rem; font-weight: 700; letter-spacing: 0.05em;
+    border: 1.5px solid rgba(255,200,140,0.55);
+    border-radius: 100px;
+    padding: 0.6rem 1.7rem;
+    text-shadow:
+      0 0 16px rgba(255,160,50,0.55),
+      0 1px 2px rgba(0,0,0,0.95);
+    box-shadow:
+      inset 0 1px 0 rgba(255,230,170,0.4),
+      inset 0 -1px 0 rgba(0,0,0,0.45),
+      0 6px 20px rgba(0,0,0,0.55),
+      0 0 36px rgba(255,150,50,0.4);
   }
   .date-chip.hot {
-    border-color: var(--accent); color: var(--accent);
-    box-shadow: 0 0 16px rgba(255,107,26,0.25);
+    color: #ffeec0;
+    background:
+      radial-gradient(ellipse at 50% 100%, rgba(255,90,30,0.55) 0%, rgba(255,50,40,0.15) 55%, transparent 85%),
+      linear-gradient(rgba(70,20,8,0.65), rgba(28,8,4,0.82)),
+      url('/assets/textures/marble-dark.png') center/cover no-repeat;
+    border-color: rgba(255,170,80,0.95);
+    text-shadow:
+      0 0 18px rgba(255,180,60,0.75),
+      0 1px 2px rgba(0,0,0,0.95);
+    box-shadow:
+      inset 0 1px 0 rgba(255,235,170,0.55),
+      inset 0 -1px 0 rgba(0,0,0,0.45),
+      0 6px 20px rgba(0,0,0,0.55),
+      0 0 50px rgba(255,107,26,0.55);
+    animation: hotPulse 3s ease-in-out infinite;
+  }
+  @keyframes hotPulse {
+    0%, 100% {
+      box-shadow:
+        inset 0 1px 0 rgba(255,235,170,0.55),
+        inset 0 -1px 0 rgba(0,0,0,0.45),
+        0 6px 20px rgba(0,0,0,0.55),
+        0 0 50px rgba(255,107,26,0.55);
+    }
+    50% {
+      box-shadow:
+        inset 0 1px 0 rgba(255,235,170,0.7),
+        inset 0 -1px 0 rgba(0,0,0,0.45),
+        0 6px 24px rgba(0,0,0,0.55),
+        0 0 70px rgba(255,140,40,0.8);
+    }
   }
   .hero-btns {
     margin-top: 1.8rem; display: flex; gap: 1rem;
@@ -296,6 +340,333 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* ── VOTE COUNTDOWN (CINEMATIC v2) ── */
+  .vote-countdown {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4rem;
+    padding: 4.5rem 1.5rem 3.4rem;
+    margin: 1.4rem auto 3rem;
+    width: 100%;
+    max-width: 1240px;
+    isolation: isolate;
+    overflow: hidden;
+    background: #050203;
+    border-radius: 4px;
+  }
+  .vote-countdown::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -45%;
+    width: 130%;
+    height: 110%;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse at 50% 100%,
+      rgba(255,140,50,0.24) 0%,
+      rgba(255,90,20,0.13) 22%,
+      rgba(140,40,8,0.06) 48%,
+      transparent 75%);
+    filter: blur(10px);
+    z-index: 0;
+    pointer-events: none;
+    animation: cdRadialBreath 5.5s ease-in-out infinite;
+  }
+  .vote-countdown::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 50%,
+      transparent 45%,
+      rgba(0,0,0,0.4) 82%,
+      rgba(0,0,0,0.78) 100%);
+    z-index: 2;
+    pointer-events: none;
+  }
+  .cd-frame {
+    position: absolute;
+    pointer-events: none;
+    z-index: 2;
+    left: 4%;
+    right: 4%;
+    height: 1px;
+    background: linear-gradient(to right,
+      transparent 0%,
+      rgba(255,200,140,0.45) 25%,
+      rgba(255,220,160,0.7) 50%,
+      rgba(255,200,140,0.45) 75%,
+      transparent 100%);
+  }
+  .cd-frame.top    { top: 1.4rem; }
+  .cd-frame.bottom { bottom: 1.4rem; }
+  .cd-frame::before, .cd-frame::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,210,150,0.95) 0%, rgba(255,140,40,0) 70%);
+  }
+  .cd-frame::before { left: 0; }
+  .cd-frame::after  { right: 0; }
+  @keyframes cdRadialBreath {
+    0%, 100% { opacity: 0.85; transform: translateX(-50%) scale(1); }
+    50%      { opacity: 1.0;  transform: translateX(-50%) scale(1.06); }
+  }
+  .cd-content {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4rem;
+    width: 100%;
+  }
+  .cd-eyebrow-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .cd-eyebrow {
+    margin: 0;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(0.9rem, 1.4vw, 1.25rem);
+    letter-spacing: 0.55em;
+    color: rgba(255,200,140,0.78);
+    text-shadow: 0 0 22px rgba(255,140,40,0.45);
+    line-height: 1;
+    padding-left: 0.55em;
+    white-space: nowrap;
+  }
+  .cd-eyebrow-jp {
+    margin: 0;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 400;
+    font-size: clamp(0.7rem, 1vw, 0.85rem);
+    letter-spacing: 0.5em;
+    color: rgba(255,200,140,0.45);
+    line-height: 1;
+    padding-left: 0.5em;
+    white-space: nowrap;
+  }
+  .cd-grid {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: clamp(0.5rem, 1.4vw, 1.6rem);
+    margin: 0.5rem 0 0.6rem;
+    width: 100%;
+  }
+  .cd-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .cd-num {
+    display: flex;
+    align-items: center;
+    gap: 0.06em;
+    font-family: 'Black Ops One', 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    font-size: clamp(3.8rem, 11vw, 8.6rem);
+    line-height: 1;
+    letter-spacing: 0;
+  }
+  .cd-flap {
+    position: relative;
+    display: inline-block;
+    width: 0.66em;
+    height: 1em;
+    perspective: 700px;
+    vertical-align: top;
+    color: transparent;
+  }
+  .cd-flap-half {
+    position: absolute;
+    left: 0; right: 0;
+    height: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    background: linear-gradient(180deg, #1c0d05 0%, #0a0503 100%);
+    backface-visibility: hidden;
+    font-size: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+  }
+  .cd-flap-half.top {
+    top: 0;
+    align-items: flex-start;
+    border-radius: 7px 7px 0 0;
+    box-shadow:
+      inset 0 1px 0 rgba(255,210,140,0.20),
+      inset 0 -1px 0 rgba(0,0,0,0.85),
+      inset 1px 0 0 rgba(255,180,80,0.08),
+      inset -1px 0 0 rgba(255,180,80,0.08);
+  }
+  .cd-flap-half.bottom {
+    bottom: 0;
+    align-items: flex-end;
+    border-radius: 0 0 7px 7px;
+    box-shadow:
+      inset 0 -1px 0 rgba(0,0,0,0.6),
+      inset 0 1px 0 rgba(255,180,80,0.16),
+      inset 1px 0 0 rgba(255,180,80,0.08),
+      inset -1px 0 0 rgba(255,180,80,0.08);
+  }
+  .cd-flap-half > span {
+    display: block;
+    line-height: 1em;
+    font: inherit;
+    background: linear-gradient(178deg,
+      #ffffff 0%,
+      #fff4c2 14%,
+      #ffd866 32%,
+      #ffae3d 55%,
+      #ff7a1e 80%,
+      #e83a14 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter:
+      drop-shadow(0 0 22px rgba(255,150,40,0.4))
+      drop-shadow(0 4px 12px rgba(0,0,0,0.7));
+  }
+  .cd-flap-half.flip { z-index: 2; }
+  .cd-flap-half.top.flip {
+    transform-origin: 50% 100%;
+    transform: rotateX(0deg);
+  }
+  .cd-flap-half.bottom.flip {
+    transform-origin: 50% 0%;
+    transform: rotateX(90deg);
+  }
+  .cd-flap.flipping .cd-flap-half.top.flip {
+    animation: flapTop 320ms cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+  }
+  .cd-flap.flipping .cd-flap-half.bottom.flip {
+    animation: flapBottom 320ms cubic-bezier(0.45, 0.05, 0.55, 0.95) 320ms forwards;
+  }
+  @keyframes flapTop {
+    0%   { transform: rotateX(0deg);   filter: brightness(1); }
+    100% { transform: rotateX(-90deg); filter: brightness(0.65); }
+  }
+  @keyframes flapBottom {
+    0%   { transform: rotateX(90deg); filter: brightness(0.65); }
+    100% { transform: rotateX(0deg);  filter: brightness(1); }
+  }
+  .vote-countdown.cd-final .cd-flap-half > span {
+    background: linear-gradient(178deg,
+      #ffffff 0%,
+      #ffe8a0 18%,
+      #ff8a3a 50%,
+      #ff2030 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    filter:
+      drop-shadow(0 0 26px rgba(255,40,60,0.55))
+      drop-shadow(0 4px 12px rgba(0,0,0,0.7));
+  }
+  .vote-countdown.cd-final .cd-flap {
+    animation: cdFinalPulse 1s ease-in-out infinite;
+  }
+  @keyframes cdFinalPulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.04); }
+  }
+  .cd-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(0.65rem, 1vw, 0.92rem);
+    letter-spacing: 0.45em;
+    color: rgba(255,180,90,0.7);
+    text-shadow: 0 0 12px rgba(255,140,40,0.35);
+    padding-left: 0.45em;
+    line-height: 1;
+  }
+  .cd-sep {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.55em;
+    height: 1em;
+    font-size: clamp(3.8rem, 11vw, 8.6rem);
+    align-self: flex-start;
+    margin-top: 0;
+    animation: cdSepBlink 1.4s ease-in-out infinite;
+  }
+  .cd-sep i {
+    display: block;
+    width: 0.13em;
+    height: 0.13em;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+      #fff0c0 0%,
+      #ff9a30 55%,
+      rgba(255,90,20,0) 100%);
+    box-shadow:
+      0 0 14px rgba(255,160,50,0.7),
+      0 0 28px rgba(255,120,30,0.4);
+  }
+  @keyframes cdSepBlink {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.32; }
+  }
+  .cd-target {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 0.4rem 0 0;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: clamp(0.7rem, 1.05vw, 0.9rem);
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    color: rgba(255,210,150,0.78);
+    text-shadow: 0 0 12px rgba(255,140,40,0.25);
+    width: 100%;
+    padding: 0 1rem;
+  }
+  .cd-target::before, .cd-target::after {
+    content: '';
+    flex: 1 1 0;
+    max-width: 140px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,200,140,0.55), transparent);
+  }
+  .cd-note {
+    margin: 0.2rem 0 0;
+    max-width: 540px;
+    font-size: clamp(0.78rem, 1.05vw, 0.9rem);
+    line-height: 1.7;
+    color: rgba(255,220,170,0.55);
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.85);
+  }
+  @media (max-width: 720px) {
+    .vote-countdown { padding: 3rem 0.8rem 2.2rem; gap: 1rem; max-width: 100%; }
+    .cd-num { font-size: clamp(2.3rem, 10vw, 4rem); }
+    .cd-sep { font-size: clamp(2.3rem, 10vw, 4rem); gap: 0.4em; }
+    .cd-grid { gap: 0.35rem; }
+    .cd-cell { gap: 0.45rem; }
+    .cd-eyebrow { font-size: 0.92rem; letter-spacing: 0.4em; }
+    .cd-eyebrow-jp { font-size: 0.66rem; letter-spacing: 0.35em; }
+    .cd-label { font-size: 0.6rem; letter-spacing: 0.32em; }
+    .cd-target { font-size: 0.7rem; gap: 0.55rem; letter-spacing: 0.12em; padding: 0 0.5rem; }
+    .cd-target::before, .cd-target::after { max-width: 32px; }
+    .cd-note { font-size: 0.74rem; line-height: 1.55; }
+  }
+  @media (max-width: 380px) {
+    .cd-num { font-size: 2.3rem; }
+    .cd-sep { font-size: 2.3rem; }
+    .cd-grid { gap: 0.2rem; }
+  }
+
   section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
   .section-label {
     font-family: 'Bebas Neue', sans-serif;
@@ -328,127 +699,779 @@
     font-size: 0.95rem; margin-bottom: 1.2rem;
   }
   .about-text strong { color: var(--text); }
-  .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
   .stat-card {
-    border: 1px solid rgba(120,90,40,0.35);
-    border-radius: 16px; overflow: hidden;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 2rem 1rem 1.7rem;
+    min-height: 175px;
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(80,42,18,0.55), transparent 70%),
+      linear-gradient(rgba(20,10,6,0.78), rgba(8,4,3,0.92)),
+      url('/assets/textures/marble-dark.png') center/cover no-repeat;
+    border: 1px solid rgba(190,140,70,0.5);
+    border-radius: 3px;
+    box-shadow:
+      inset 0 0 0 4px rgba(0,0,0,0.55),
+      inset 0 0 0 5px rgba(190,140,70,0.45),
+      inset 0 1px 0 rgba(255,225,170,0.12),
+      0 8px 26px rgba(0,0,0,0.55);
+    isolation: isolate;
+    overflow: hidden;
     transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
-    background: rgba(20,10,4,0.8);
-    display: flex; flex-direction: column;
   }
-  .stat-card:hover { border-color: rgba(180,130,60,0.6); box-shadow: 0 10px 28px rgba(0,0,0,0.55); transform: translateY(-2px); }
-  .stat-card img { width: 100%; aspect-ratio: 600/320; display: block; object-fit: cover; }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 9px; left: 9px; right: 9px; bottom: 9px;
+    border: 1px solid rgba(190,140,70,0.25);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(220,170,90,0.72);
+    box-shadow:
+      inset 0 0 0 4px rgba(0,0,0,0.55),
+      inset 0 0 0 5px rgba(220,170,90,0.62),
+      inset 0 1px 0 rgba(255,225,170,0.2),
+      0 14px 36px rgba(0,0,0,0.55),
+      0 0 38px rgba(255,140,40,0.2);
+  }
+  .stat-num {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: baseline;
+    font-family: 'Cinzel', serif;
+    font-weight: 800;
+    font-size: clamp(2.6rem, 5vw, 4.5rem);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    background: linear-gradient(180deg,
+      #f4dca0 0%,
+      #d9a55a 35%,
+      #8c5a22 70%,
+      #5b3a14 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter:
+      drop-shadow(0 1px 0 rgba(0,0,0,0.55))
+      drop-shadow(0 -1px 0 rgba(255,235,170,0.22))
+      drop-shadow(0 4px 8px rgba(0,0,0,0.7));
+  }
+  .stat-suffix {
+    font-size: 0.4em;
+    margin-left: 0.15em;
+    letter-spacing: 0.1em;
+  }
   .stat-card .stat-label {
-    padding: 0.75rem 0.5rem 0.9rem;
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.4em;
+    color: rgba(220,180,120,0.85);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.85);
+    padding-left: 0.4em;
     text-align: center;
-    font-size: 0.88rem;
+    white-space: nowrap;
+  }
+  .stat-card .stat-label-jp {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 500;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    color: rgba(220,180,120,0.55);
+    text-align: center;
+    white-space: nowrap;
+  }
+  @media (max-width: 480px) {
+    .stat-card { padding: 1.5rem 0.6rem 1.3rem; min-height: 145px; gap: 0.35rem; }
+    .stat-card::before { top: 7px; left: 7px; right: 7px; bottom: 7px; }
+    .stat-num { font-size: clamp(2.2rem, 9vw, 3rem); }
+    .stat-card .stat-label { font-size: 0.66rem; letter-spacing: 0.3em; }
+    .stat-card .stat-label-jp { font-size: 0.58rem; letter-spacing: 0.14em; }
+  }
+
+  /* ── ABOUT RULES (UFC fight card revised, full-width 3rd row inside #about) ── */
+  .about-rules { grid-column: 1 / -1; margin-top: 4rem; }
+  .ar-shell {
+    padding: 2.4rem 2.4rem 2rem;
+    background:
+      linear-gradient(180deg, rgba(8,3,2,0.95), rgba(20,8,4,0.95)),
+      url('/assets/textures/slate-dark.png') center/cover no-repeat, #0a0d18;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 4px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 30px rgba(0,0,0,0.6);
+    position: relative; overflow: hidden;
+  }
+  .ar-shell::after {
+    content: ''; position: absolute;
+    top: 0; right: -10%;
+    width: 120%; height: 4px;
+    background: linear-gradient(90deg, transparent, rgba(255,140,40,0.85), transparent);
+  }
+  .ar-top {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 1.8rem;
+  }
+  @media (max-width: 820px) {
+    .ar-top { grid-template-columns: 1fr; gap: 1.2rem; }
+  }
+  .ar-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.28em;
+    color: rgba(255,255,255,0.55);
+    background: rgba(255,140,40,0.12);
+    border: 1px solid rgba(255,140,40,0.3);
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    margin-bottom: 0.9rem;
+  }
+  .ar-title {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: clamp(2rem, 4.2vw, 3.4rem);
+    line-height: 0.96;
+    color: #fff;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+    text-shadow:
+      -2px 0 0 rgba(255,80,30,0.85),
+       2px 0 0 rgba(40,120,255,0.65);
+  }
+  .ar-title-jp {
+    font-weight: 900;
+    font-size: 1.05rem;
+    color: rgba(255,200,140,0.95);
+    letter-spacing: 0.18em;
+    margin-bottom: 0.7rem;
+  }
+  .ar-lead {
+    font-size: 0.9rem;
+    line-height: 1.75;
+    color: rgba(255,255,255,0.78);
+    border-left: 3px solid rgba(255,140,40,0.7);
+    padding-left: 0.8rem;
+  }
+  .ar-lead strong {
+    color: #fff;
+    background: linear-gradient(180deg, transparent 60%, rgba(255,140,40,0.4) 60%);
+    padding: 0 0.1em;
+  }
+  .ar-graph-wrap {
+    position: relative;
+    padding: 1.1rem 1.2rem 1rem;
+    background: linear-gradient(180deg, rgba(0,0,0,0.7), rgba(20,8,4,0.85));
+    border: 1px solid rgba(255,180,80,0.32);
+    border-radius: 4px;
+    box-shadow: inset 0 1px 0 rgba(255,210,140,0.1);
+  }
+  .ar-graph-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.28em;
+    color: rgba(255,200,140,0.78);
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+  .ar-graph {
+    width: 100%;
+    height: 160px;
+    display: block;
+  }
+  .ar-graph-caption {
+    margin-top: 0.5rem;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: rgba(255,225,180,0.8);
+    text-align: center;
+  }
+  .ar-graph-caption strong {
+    color: rgba(255,200,140,1);
+    font-family: 'Black Ops One', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+  }
+  .ar-graph-caption .multiplier {
+    color: #fff;
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 1.1em;
+    margin: 0 0.15em;
+    text-shadow:
+      -1px 0 0 rgba(255,80,30,0.7),
+       1px 0 0 rgba(40,120,255,0.5);
+  }
+  .ar-rounds {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  @media (max-width: 720px) {
+    .ar-rounds { grid-template-columns: 1fr; }
+    .ar-round + .ar-round { border-top: 1px solid rgba(255,255,255,0.08); border-left: none; }
+  }
+  .ar-round {
+    padding: 1.6rem 1.4rem 1.5rem;
+    position: relative;
+  }
+  .ar-round + .ar-round {
+    border-left: 1px solid rgba(255,255,255,0.08);
+  }
+  .ar-rnum {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 2.2rem;
+    line-height: 1;
+    color: rgba(255,140,40,0.18);
+    margin-bottom: 0.3rem;
+  }
+  .ar-rlabel {
+    font-family: 'JetBrains Mono', monospace;
     font-weight: 700;
-    color: var(--accent2);
-    letter-spacing: 0.12em;
-    background: linear-gradient(180deg, rgba(30,12,6,0.92) 0%, rgba(15,6,3,0.98) 100%);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-    border-top: 1px solid rgba(255,180,80,0.22);
+    font-size: 0.7rem;
+    letter-spacing: 0.32em;
+    color: rgba(255,200,140,0.92);
+    margin-bottom: 0.15rem;
+  }
+  .ar-rjp {
+    font-weight: 900;
+    font-size: 1.05rem;
+    color: #fff;
+    margin-bottom: 0.7rem;
+    letter-spacing: 0.04em;
+  }
+  .ar-rbody {
+    font-size: 0.86rem;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.8);
+  }
+  .ar-rbody strong {
+    color: rgba(255,200,140,1);
+    font-weight: 700;
+  }
+  .ar-rbody ul { list-style: none; padding: 0; margin: 0; }
+  .ar-rbody li { padding-left: 0.85em; position: relative; margin-bottom: 0.35rem; }
+  .ar-rbody li::before {
+    content: '×';
+    position: absolute; left: 0;
+    color: rgba(255,140,40,0.6);
+    font-weight: 700;
+  }
+  .ar-rhint {
+    margin: 0.7rem 0 0;
+    padding-top: 0.6rem;
+    border-top: 1px dashed rgba(255,255,255,0.12);
+    font-size: 0.78rem;
+    color: rgba(255,200,140,0.88);
+    letter-spacing: 0.02em;
+  }
+  .ar-secret {
+    margin-top: 1.4rem;
+    padding: 1rem 1.4rem;
+    background:
+      repeating-linear-gradient(135deg,
+        rgba(255,80,30,0.05) 0,
+        rgba(255,80,30,0.05) 14px,
+        transparent 14px,
+        transparent 28px
+      ),
+      rgba(30,10,5,0.55);
+    border: 1px solid rgba(255,80,30,0.35);
+    border-left: 4px solid rgba(255,140,40,0.9);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    animation: secret-pulse 3.2s ease-in-out infinite;
+  }
+  @keyframes secret-pulse {
+    0%, 100% { border-left-color: rgba(255,140,40,0.9); box-shadow: none; }
+    50% { border-left-color: rgba(255,200,80,1); box-shadow: 0 0 18px rgba(255,140,40,0.18); }
+  }
+  .ar-secret-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    color: rgba(255,160,80,0.85);
+    white-space: nowrap;
+  }
+  .ar-secret-mark {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 1.7rem;
+    color: #ffba3a;
+    text-shadow:
+      -1px 0 0 rgba(255,80,30,0.7),
+       1px 0 0 rgba(40,120,255,0.4),
+       0 0 14px rgba(255,140,40,0.55);
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+  .ar-secret-text {
+    font-size: 0.95rem;
+    color: rgba(255,235,210,0.95);
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+  .ar-secret-text strong {
+    color: #fff;
+    font-weight: 700;
+  }
+  .ar-secret-hint {
+    font-size: 0.72rem;
+    color: rgba(255,200,140,0.55);
+    letter-spacing: 0.06em;
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+    margin-left: auto;
+  }
+  .ar-formula {
+    margin-top: 1.6rem;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, rgba(255,140,40,0.06), rgba(40,120,255,0.05));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 3px;
+    text-align: center;
+  }
+  .ar-formula-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.32em;
+    color: rgba(255,200,140,0.7);
+    margin-bottom: 0.4rem;
+  }
+  .ar-formula-jp {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: rgba(255,225,180,0.85);
+    margin-bottom: 0.7rem;
+    letter-spacing: 0.06em;
+  }
+  .ar-formula-eq {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: clamp(1.2rem, 2.4vw, 1.8rem);
+    line-height: 1.2;
+    color: #fff;
+    letter-spacing: 0.04em;
+    text-shadow:
+      -1px 0 0 rgba(255,80,30,0.6),
+       1px 0 0 rgba(40,120,255,0.4);
+  }
+  .ar-formula-eq .op {
+    color: rgba(255,140,40,0.9);
+    margin: 0 0.4rem;
+  }
+  @media (max-width: 480px) {
+    .about-rules { margin-top: 3rem; }
+    .ar-shell { padding: 1.4rem 1rem 1.5rem; }
+    .ar-top { gap: 1rem; margin-bottom: 1.2rem; }
+    .ar-tag { font-size: 0.56rem; letter-spacing: 0.18em; padding: 0.18rem 0.5rem; }
+    .ar-title { font-size: 1.7rem; line-height: 1; }
+    .ar-title-jp { font-size: 0.88rem; letter-spacing: 0.14em; }
+    .ar-lead { font-size: 0.82rem; }
+    .ar-graph-wrap { padding: 0.8rem 0.8rem 0.7rem; }
+    .ar-graph-eyebrow { font-size: 0.58rem; letter-spacing: 0.2em; }
+    .ar-graph { height: 130px; }
+    .ar-graph-caption { font-size: 0.72rem; line-height: 1.5; }
+    .ar-round { padding: 1.3rem 1rem 1.2rem; }
+    .ar-rnum { font-size: 1.9rem; }
+    .ar-rjp { font-size: 0.98rem; }
+    .ar-rbody { font-size: 0.82rem; }
+    .ar-formula { padding: 1.2rem 1rem; }
+    .ar-formula-eq { font-size: 0.92rem; letter-spacing: 0.02em; line-height: 1.4; }
+    .ar-formula-eq .op { margin: 0 0.25rem; font-size: 1.1em; }
+    .ar-secret { flex-direction: column; align-items: flex-start; gap: 0.5rem; padding: 0.85rem 1rem; }
+    .ar-secret-tag { font-size: 0.6rem; letter-spacing: 0.2em; }
+    .ar-secret-mark { font-size: 1.4rem; }
+    .ar-secret-text { font-size: 0.82rem; }
+    .ar-secret-hint { margin-left: 0; font-size: 0.66rem; }
   }
 
   #teams { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
-  .teams-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+  .entry-reg {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.2rem 1.6rem;
+    margin: 0 0 1.8rem;
+    padding: 0.9rem 1.4rem;
+    background: linear-gradient(135deg, rgba(255,140,40,0.05), rgba(40,120,255,0.04));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-left: 3px solid rgba(255,140,40,0.55);
+    border-radius: 3px;
+  }
+  .entry-reg-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    color: rgba(255,200,140,0.8);
+    white-space: nowrap;
+  }
+  .entry-reg-badges {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+  }
+  .reg-badge {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.35rem 0.8rem 0.35rem 0.7rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,200,140,0.25);
+    border-radius: 999px;
+    line-height: 1;
+  }
+  .reg-badge-stack {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    border-radius: 16px;
+    padding: 0.4rem 0.85rem 0.45rem 0.75rem;
+  }
+  .reg-badge-line {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+  .reg-badge-sub {
+    font-size: 0.66rem;
+    color: rgba(255,210,170,0.7);
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+  .reg-badge-num {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 1.05rem;
+    color: #fff;
+    letter-spacing: 0.03em;
+    text-shadow:
+      -1px 0 0 rgba(255,80,30,0.5),
+       1px 0 0 rgba(40,120,255,0.35);
+  }
+  .reg-badge-label {
+    font-size: 0.78rem;
+    color: rgba(255,225,200,0.85);
+    letter-spacing: 0.06em;
+  }
+  .reg-badge-sep {
+    color: rgba(255,200,140,0.35);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+  }
+  @media (max-width: 480px) {
+    .entry-reg { flex-direction: column; align-items: flex-start; gap: 0.6rem; padding: 0.85rem 1rem; margin-bottom: 1.4rem; }
+    .entry-reg-label { font-size: 0.6rem; letter-spacing: 0.22em; }
+    .entry-reg-badges { gap: 0.45rem; }
+    .reg-badge { padding: 0.3rem 0.7rem 0.3rem 0.6rem; }
+    .reg-badge-num { font-size: 0.95rem; }
+    .reg-badge-label { font-size: 0.72rem; }
+    .reg-badge-stack { padding: 0.35rem 0.7rem 0.4rem 0.6rem; }
+    .reg-badge-sub { font-size: 0.62rem; }
+  }
+  .teams-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.2rem; }
   .team-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 16px; padding: 2rem;
-    position: relative; overflow: hidden;
-    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-    cursor: default;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 380px;
+    padding: 0;
+    background: #050203;
+    border: 1px solid rgba(180,130,60,0.22);
+    border-radius: 6px;
+    overflow: hidden;
     isolation: isolate;
+    transition: transform 0.4s, border-color 0.4s, box-shadow 0.4s;
+    cursor: default;
   }
   .team-card::before {
     content: ''; position: absolute; inset: 0;
     background-image: var(--team-bg);
     background-size: cover; background-position: center;
-    opacity: 0.85;
-    transition: opacity 0.5s, transform 6s ease-out;
-    z-index: -2;
-    transform: scale(1.05);
+    z-index: 0;
+    transform: scale(1.04);
+    transition: transform 6s ease-out;
   }
   .team-card::after {
     content: ''; position: absolute; inset: 0;
-    background: linear-gradient(180deg, rgba(15,8,20,0.15) 0%, rgba(15,8,20,0.55) 55%, rgba(15,8,20,0.88) 100%);
-    z-index: -1;
-    transition: opacity 0.4s;
+    background: linear-gradient(180deg,
+      rgba(5,2,3,0.05) 0%,
+      rgba(5,2,3,0.30) 38%,
+      rgba(5,2,3,0.78) 70%,
+      rgba(5,2,3,0.96) 100%);
+    z-index: 1;
+    pointer-events: none;
+  }
+  .team-card > * {
+    position: relative;
+    z-index: 2;
   }
   .team-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 14px 50px rgba(0,0,0,0.5), 0 0 0 1px var(--team-color, var(--accent));
     border-color: var(--team-color, var(--accent));
+    box-shadow:
+      0 20px 50px rgba(0,0,0,0.55),
+      0 0 0 1px var(--team-color, var(--accent)),
+      0 0 60px color-mix(in srgb, var(--team-color, #ff7c1e) 40%, transparent);
   }
-  .team-card:hover::before { opacity: 1; transform: scale(1.12); }
-  .team-card:hover::after { opacity: 0.7; }
-  .team-num { font-family: 'Bebas Neue', sans-serif; font-size: 0.8rem; letter-spacing: 0.3em; color: var(--muted); margin-bottom: 0.3rem; }
-  .team-name { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 0.05em; color: var(--team-color, var(--accent)); margin-bottom: 0.8rem; }
-  .team-members { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
-  .member-tag { background: rgba(255,255,255,0.06); border-radius: 100px; padding: 0.25rem 0.75rem; font-size: 0.78rem; color: var(--muted); text-decoration: none; transition: background-color 0.2s, color 0.2s; }
-  a.member-tag:hover { background: rgba(255,255,255,0.14); color: var(--team-color, var(--text)); }
-  .team-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+  .team-card:hover::before { transform: scale(1.10); }
+  .team-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.42em;
+    color: rgba(255,255,255,0.6);
+    padding: 1.4rem 1.6rem 0;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.85);
+  }
+  .team-name {
+    font-family: 'Black Ops One', 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: var(--team-color, var(--accent));
+    margin: 0.4rem 1.6rem 0;
+    text-shadow:
+      0 0 28px rgba(0,0,0,0.85),
+      0 2px 6px rgba(0,0,0,0.95),
+      0 0 1px rgba(0,0,0,0.8);
+    -webkit-text-stroke: 0.4px rgba(0,0,0,0.55);
+  }
+  .team-name::after {
+    content: '';
+    display: block;
+    width: 56px;
+    height: 3px;
+    margin-top: 0.65rem;
+    background: var(--team-color, var(--accent));
+    box-shadow: 0 0 14px var(--team-color, var(--accent));
+    border-radius: 2px;
+  }
+  .team-genre {
+    display: inline-block;
+    margin: 0.7rem 1.6rem 0;
+    padding: 0.28rem 0.72rem;
+    border-radius: 3px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.32em;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid var(--team-color, var(--accent));
+    color: rgba(255,255,255,0.9);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.85);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .team-members {
+    display: flex; flex-wrap: wrap;
+    gap: 0.45rem;
+    padding: 1rem 1.6rem 0;
+    margin-top: auto;
+  }
+  .member-tag {
+    display: inline-block;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 4px;
+    padding: 0.32rem 0.78rem;
+    font-size: 0.74rem;
+    color: rgba(255,255,255,0.88);
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+  }
+  a.member-tag:hover {
+    background: var(--team-color, var(--accent));
+    color: rgba(0,0,0,0.92);
+    border-color: var(--team-color, var(--accent));
+    transform: translateY(-1px);
+  }
+  .team-desc {
+    padding: 0.85rem 1.6rem 1.5rem;
+    margin: 0;
+    font-size: 0.8rem;
+    line-height: 1.65;
+    color: rgba(255,210,170,0.78);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.85);
+  }
   .team-link {
     display: inline-flex; align-items: center; gap: 0.4rem;
-    margin-top: 1.2rem; padding: 0.45rem 1rem;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 6px; font-size: 0.78rem; font-weight: 700;
-    letter-spacing: 0.05em; color: var(--muted);
-    text-decoration: none; transition: all 0.2s;
+    margin: 0 1.6rem 1.4rem;
+    padding: 0.5rem 1rem;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 4px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.78rem; letter-spacing: 0.18em;
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    transition: all 0.2s;
+    align-self: flex-start;
   }
-  .team-link:hover { background: rgba(255,255,255,0.1); color: var(--text); border-color: var(--team-color, var(--accent)); }
+  .team-link:hover {
+    background: var(--team-color, var(--accent));
+    color: rgba(0,0,0,0.92);
+    border-color: var(--team-color, var(--accent));
+  }
   .team-link svg { flex-shrink: 0; }
-  .team-genre {
-    display: inline-block; padding: 0.2rem 0.6rem;
-    border-radius: 4px; font-size: 0.7rem; font-weight: 700;
-    letter-spacing: 0.06em;
-    border: 1px solid var(--team-color, var(--accent));
-    color: var(--team-color, var(--accent));
-    margin-bottom: 0.8rem; opacity: 0.85;
-  }
 
   #schedule { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
-  .schedule-list { display: flex; flex-direction: column; position: relative; }
-  .schedule-list::before {
-    content: ''; position: absolute; left: 100px; top: 0; bottom: 0;
-    width: 1px;
-    background: linear-gradient(to bottom, var(--accent), var(--accent2), transparent);
-    opacity: 0.3;
-  }
+  .schedule-list { display: flex; flex-direction: column; gap: 0.5rem; }
   .schedule-item {
-    display: grid; grid-template-columns: 100px 1fr; gap: 2rem;
-    padding: 1.8rem 0; border-bottom: 1px solid var(--border);
-    align-items: start; position: relative; transition: all 0.3s;
+    position: relative;
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 1.4rem;
+    padding: 1.1rem 1.4rem;
+    background: rgba(10,5,3,0.45);
+    border-left: 3px solid rgba(180,130,60,0.28);
+    border-radius: 4px;
+    align-items: center;
+    transition: background 0.3s, border-color 0.3s, transform 0.3s;
   }
-  .schedule-item:hover { background: rgba(255,255,255,0.02); padding-left: 0.5rem; }
-  .schedule-item::before {
-    content: ''; position: absolute; left: 97px; top: 50%;
+  .schedule-item:has(.sched-team.crimson) { border-left-color: #ff2d78; }
+  .schedule-item:has(.sched-team.nova)    { border-left-color: #7c3aff; }
+  .schedule-item:has(.sched-team.golden)  { border-left-color: #ffd700; }
+  .schedule-item:hover {
+    background: rgba(20,10,5,0.72);
+    transform: translateX(4px);
+  }
+  .sched-time {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.4rem;
+    font-family: 'Black Ops One', 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    font-size: 1.4rem;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: rgba(255,210,140,0.92);
+    text-shadow: 0 0 12px rgba(255,140,40,0.22), 0 2px 4px rgba(0,0,0,0.55);
+    padding-top: 0.05rem;
+  }
+  .sched-content {
+    display: flex; flex-direction: column;
+    gap: 0.3rem;
+  }
+  .sched-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    font-size: 1.1rem;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.95);
+    margin: 0;
+  }
+  .sched-team {
+    font-family: 'Black Ops One', 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    font-size: 1.45rem;
+    letter-spacing: 0.04em;
+    background: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+    -webkit-text-fill-color: initial;
+    padding: 0;
+    text-shadow:
+      0 0 16px rgba(0,0,0,0.55),
+      0 2px 4px rgba(0,0,0,0.85),
+      0 0 1px rgba(0,0,0,0.7);
+  }
+  .sched-team.crimson { color: #ff5594; }
+  .sched-team.nova    { color: #b389ff; }
+  .sched-team.golden  { color: #ffd700; }
+  .sched-detail {
+    font-size: 0.78rem;
+    color: rgba(255,210,170,0.55);
+    letter-spacing: 0.02em;
+  }
+  .sched-badges { display: flex; gap: 0.3rem; flex-wrap: wrap; justify-content: flex-end; }
+  .sched-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    white-space: nowrap;
+    margin: 0;
+    vertical-align: baseline;
+  }
+  .badge-live {
+    background: rgba(255,80,40,0.18);
+    color: #ffac6e;
+    border: 1px solid rgba(255,140,60,0.5);
+  }
+  .badge-vote {
+    background: rgba(255,200,40,0.18);
+    color: #ffe28a;
+    border: 1px solid rgba(255,200,80,0.6);
+  }
+  .badge-open {
+    background: rgba(0,201,177,0.12);
+    color: var(--teal);
+    border: 1px solid rgba(0,201,177,0.3);
+  }
+  .round-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.6rem 0 1rem;
+    padding: 0;
+    border: none;
+  }
+  .round-divider::before, .round-divider::after {
+    content: '';
+    flex: 1 1 auto;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,140,40,0.5), transparent);
+  }
+  .round-divider .round-label {
+    position: relative;
+    font-family: 'Black Ops One', 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    font-size: clamp(1.3rem, 2.6vw, 2rem);
+    letter-spacing: 0.4em;
+    color: rgba(255,210,150,0.95);
+    padding: 0.4rem 1.2rem;
+    border: none;
+    background: transparent;
+    text-shadow:
+      0 0 26px rgba(255,140,40,0.5),
+      0 2px 6px rgba(0,0,0,0.85);
+    white-space: nowrap;
+  }
+  /* round-label にぶら下げる badge: label の右側に絶対配置、flex 中央寄せから外して label 位置を ROUND 1/3 と揃える */
+  .round-divider .round-label .sched-badge {
+    position: absolute;
+    left: calc(100% - 0.6rem);
+    top: 50%;
     transform: translateY(-50%);
-    width: 7px; height: 7px;
-    background: var(--accent); border-radius: 50%;
-    box-shadow: 0 0 8px var(--accent);
   }
-  .sched-time { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--accent); padding-top: 0.1rem; padding-right: 0.9rem; text-align: right; letter-spacing: 0.05em; display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }
-  .sched-content { padding-left: 1rem; }
-  .round-divider { display: flex; align-items: center; margin: 0; padding: 1.8rem 1rem 1.8rem calc(100px + 3rem); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-  .schedule-item:has(+ .round-divider) { border-bottom: none; }
-  .round-divider .round-label { display: inline-block; font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; letter-spacing: 0.5em; color: var(--text); padding: 0.45rem 1.4rem 0.45rem 1.65rem; border: 1px solid var(--border); border-radius: 4px; background: rgba(6,10,24,0.7); white-space: nowrap; }
-  .round-divider .sched-badge { margin-left: auto; }
-  .sched-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
-  .sched-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; }
+  .round-divider .sched-badge { margin-left: 0; }
   .placeholder { color: var(--muted); font-style: italic; opacity: 0.55; letter-spacing: 0.04em; font-weight: 400; animation: placeholderPulse 2.6s ease-in-out infinite; }
   @keyframes placeholderPulse { 0%, 100% { opacity: 0.45; } 50% { opacity: 0.75; } }
-  .sched-team { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.06em; font-weight: 400; font-size: 1.15em; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; padding: 0 0.05em; background-size: cover; background-position: center; }
-  .sched-team.crimson { background-image: url('/assets/teams/crimson.png'); }
-  .sched-team.nova    { background-image: url('/assets/teams/nova.png'); }
-  .sched-team.golden  { background-image: url('/assets/teams/golden.png'); }
-  .sched-detail { font-size: 0.82rem; color: var(--muted); }
-  .sched-badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; margin-left: 0.5rem; vertical-align: middle; white-space: nowrap; }
-  .badge-live { background: var(--accent); color: #fff; }
-  .badge-open { background: rgba(0,201,177,0.12); color: var(--teal); border: 1px solid rgba(0,201,177,0.3); }
-  .badge-vote { background: rgba(255,214,10,0.1); color: var(--gold); border: 1px solid rgba(255,214,10,0.3); }
 
   #vote {
     padding: 6rem 2rem; max-width: 1100px; margin: 0 auto;
@@ -497,6 +1520,7 @@
     from { transform: translate(-50%, -50%) rotate(0deg); }
     to   { transform: translate(-50%, -50%) rotate(360deg); }
   }
+  #vote:has(#voteCountdown:not([hidden]))::before { display: none; }
   .vote-status-banner { display: flex; align-items: center; gap: 1rem; background: rgba(10,16,40,0.82); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 2rem; }
   .vote-status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
   .vote-status-dot.waiting { background: var(--muted); }
@@ -505,6 +1529,263 @@
   .vote-status-text { font-size: 0.88rem; }
   .vote-status-text strong { color: var(--text); }
   .vote-status-text span { color: var(--muted); font-size: 0.78rem; margin-left: 0.5rem; }
+
+  /* ── VOTE POWER METER (segmented LED + split-flap digits, time-weighted) ── */
+  .vote-power-block {
+    --heat: 0;
+    margin: 0 auto 2rem;
+    max-width: 640px;
+    padding: 1.4rem 1.6rem 1.6rem;
+    background: linear-gradient(180deg, rgba(20,8,4,0.95), rgba(8,3,2,0.98));
+    border: 1px solid rgba(255,180,80,0.22);
+    border-radius: 12px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,210,140,0.15),
+      0 8px 24px rgba(0,0,0,0.5);
+    text-align: center;
+  }
+  .vp-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.32em;
+    color: rgba(255,200,140,0.72);
+    text-shadow: 0 0 10px rgba(255,140,40,0.4);
+  }
+  .vp-eyebrow-jp {
+    font-size: 0.82rem;
+    color: rgba(255,210,150,0.5);
+    letter-spacing: 0.04em;
+    margin: 0.15rem 0 0.9rem;
+  }
+  .vp-flap-row {
+    display: inline-flex; align-items: baseline; gap: 0.04em;
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 3rem;
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+  .vp-flap {
+    display: inline-block;
+    width: 0.7em; height: 1em;
+    background: linear-gradient(180deg, #1c0d05, #0a0503);
+    border-radius: 4px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,210,140,0.18),
+      inset 0 -1px 0 rgba(0,0,0,0.55),
+      0 4px 12px rgba(0,0,0,0.5);
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .vp-flap::before {
+    content: ''; position: absolute;
+    left: 0; right: 0; top: 50%;
+    height: 1px; background: rgba(0,0,0,0.7);
+  }
+  .vp-flap span {
+    display: block;
+    background: linear-gradient(178deg,
+      #ffffff 0%,
+      hsl(calc(55deg - var(--heat) * 55deg), 100%, 65%) 32%,
+      hsl(calc(38deg - var(--heat) * 38deg), 100%, 50%) 65%,
+      hsl(calc(15deg - var(--heat) * 15deg), 100%, calc(40% - var(--heat) * 5%)) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 calc(14px + var(--heat) * 12px) hsla(calc(40deg - var(--heat) * 40deg), 100%, 55%, calc(0.45 + var(--heat) * 0.4)));
+    transition: filter 0.4s linear;
+  }
+  .vote-power-block.high-heat .vp-flap span,
+  .vote-power-block.high-heat .vp-dec {
+    animation: vpHeatPulse 0.55s ease-in-out infinite alternate;
+  }
+  @keyframes vpHeatPulse {
+    0%   { transform: scale(1);    filter: drop-shadow(0 0 18px rgba(255,80,40,0.65)) brightness(1); }
+    100% { transform: scale(1.025); filter: drop-shadow(0 0 30px rgba(255,80,40,1)) brightness(1.18); }
+  }
+  .vp-dec-wrap { display: inline-flex; align-items: baseline; margin-left: 0.18em; }
+  .vp-dec-dot { font-size: 3rem; line-height: 1; color: rgba(255,200,140,0.5); margin-right: 0.05em; }
+  .vp-dec {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 1.3rem;
+    background: linear-gradient(178deg,
+      #ffffff 0%,
+      hsl(calc(55deg - var(--heat) * 55deg), 100%, 65%) 32%,
+      hsl(calc(38deg - var(--heat) * 38deg), 100%, 50%) 65%,
+      hsl(calc(15deg - var(--heat) * 15deg), 100%, calc(40% - var(--heat) * 5%)) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .vp-unit {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.15rem;
+    margin-left: 0.4em;
+    letter-spacing: 0.18em;
+    color: rgba(255,200,140,0.55);
+  }
+  .vp-power-wrap {
+    width: 100%;
+    display: flex; flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.2rem;
+  }
+  .vp-power-ticks {
+    position: relative;
+    height: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: rgba(255,210,150,0.55);
+    letter-spacing: 0.05em;
+  }
+  .vp-power-ticks .vp-tick {
+    position: absolute;
+    top: 4px; bottom: 0;
+    width: 1px;
+    background: rgba(255,180,80,0.4);
+  }
+  .vp-power-ticks .vp-tick.major {
+    top: 0;
+    background: rgba(255,210,150,0.65);
+  }
+  .vp-power-ticks .vp-tick-label {
+    position: absolute;
+    bottom: 100%;
+    transform: translateX(-50%);
+    line-height: 1;
+    margin-bottom: 1px;
+    font-size: 0.55rem;
+    color: rgba(255,210,150,0.7);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.85);
+  }
+  .vp-bar {
+    position: relative;
+    height: 28px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.85), rgba(8,3,2,0.92));
+    border: 1px solid rgba(255,180,80,0.5);
+    border-radius: 2px;
+    box-shadow:
+      inset 0 1px 3px rgba(0,0,0,0.85),
+      inset 0 -1px 0 rgba(255,180,80,0.18),
+      0 0 0 1px rgba(0,0,0,0.55),
+      0 4px 16px rgba(0,0,0,0.55);
+    overflow: visible;
+  }
+  .vp-bar::before {
+    content: ''; position: absolute; inset: 1px;
+    background: repeating-linear-gradient(0deg,
+      rgba(255,255,255,0) 0 2px,
+      rgba(255,255,255,0.04) 2px 3px);
+    pointer-events: none; z-index: 3; border-radius: 1px;
+  }
+  .vp-bar::after {
+    content: ''; position: absolute; inset: -14px -10px;
+    background: radial-gradient(ellipse at center,
+      rgba(255,140,40,0.45) 0%,
+      rgba(255,60,20,0.22) 40%,
+      transparent 75%);
+    filter: blur(16px);
+    z-index: -1; pointer-events: none;
+    animation: vpHalo 2.6s ease-in-out infinite;
+  }
+  @keyframes vpHalo {
+    0%, 100% { opacity: 0.5; transform: scaleY(0.95); }
+    50%      { opacity: 1.0; transform: scaleY(1.15); }
+  }
+  .vp-bar-cells {
+    position: absolute; inset: 2px;
+    display: flex; gap: 2px;
+    z-index: 1;
+  }
+  .vp-cell {
+    flex: 1; height: 100%;
+    background: linear-gradient(180deg, rgba(255,180,80,0.06) 0%, rgba(255,140,40,0.03) 100%);
+    border-radius: 1px;
+    transition: background 220ms ease-out, box-shadow 220ms ease-out, transform 220ms;
+    position: relative;
+  }
+  .vp-cell.lit {
+    background: linear-gradient(180deg,
+      rgba(255,250,220,0.95) 0%,
+      hsl(calc(55deg - var(--idx) * 1.7deg), 100%, 64%) 28%,
+      hsl(calc(40deg - var(--idx) * 1.4deg), 100%, 50%) 65%,
+      hsl(calc(15deg - var(--idx) * 0.5deg), 100%, 38%) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.55),
+      inset 0 -1px 0 rgba(0,0,0,0.35),
+      0 0 7px hsla(calc(45deg - var(--idx) * 1.5deg), 100%, 55%, 0.85),
+      0 0 14px hsla(calc(35deg - var(--idx) * 1.4deg), 100%, 50%, 0.45);
+  }
+  .vp-cell.lit:nth-child(n+26) {
+    animation: vpCellHot 0.65s ease-in-out infinite alternate;
+  }
+  @keyframes vpCellHot {
+    0%   { filter: brightness(1) saturate(1.0); }
+    100% { filter: brightness(1.25) saturate(1.3); }
+  }
+  .vp-cell.partial {
+    background: linear-gradient(180deg,
+      rgba(255,250,220, calc(var(--p) * 0.95)) 0%,
+      hsla(calc(55deg - var(--idx) * 1.7deg), 100%, 64%, calc(var(--p) * 0.95)) 28%,
+      hsla(calc(40deg - var(--idx) * 1.4deg), 100%, 50%, calc(var(--p) * 0.95)) 65%,
+      hsla(calc(15deg - var(--idx) * 0.5deg), 100%, 38%, calc(var(--p) * 0.85)) 100%);
+    box-shadow: 0 0 calc(var(--p) * 7px) hsla(calc(45deg - var(--idx) * 1.5deg), 100%, 55%, calc(var(--p) * 0.85));
+  }
+  .vp-bar-edge {
+    position: absolute;
+    top: -6px; bottom: -6px;
+    width: 3px; left: 0;
+    background: linear-gradient(180deg, transparent 0%, #fff 30%, #fff 70%, transparent 100%);
+    box-shadow:
+      0 0 6px #fff,
+      0 0 14px rgba(255,235,170,0.95),
+      0 0 28px rgba(255,140,40,0.85),
+      0 0 50px rgba(255,80,30,0.7);
+    transform: translateX(-1.5px);
+    z-index: 4;
+    transition: left 0.2s linear;
+    animation: vpEdge 0.5s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+  .vp-bar-edge.is-empty { display: none; }
+  @keyframes vpEdge {
+    0%   { opacity: 0.7; box-shadow: 0 0 6px #fff, 0 0 14px rgba(255,235,170,0.85), 0 0 28px rgba(255,140,40,0.7), 0 0 50px rgba(255,80,30,0.55); }
+    100% { opacity: 1.0; box-shadow: 0 0 8px #fff, 0 0 22px rgba(255,235,170,1.0), 0 0 42px rgba(255,140,40,0.95), 0 0 76px rgba(255,80,30,0.85); }
+  }
+  .vp-bar-edge::before {
+    content: ''; position: absolute;
+    right: 100%; top: -2px; bottom: -2px;
+    width: 16px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,200,100,0.5) 70%, rgba(255,255,255,0.95) 100%);
+    filter: blur(2px);
+    pointer-events: none;
+  }
+  .vp-bar-edge::after {
+    content: ''; position: absolute;
+    left: 100%; top: 50%;
+    transform: translateY(-50%);
+    width: 14px; height: 14px;
+    background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,200,100,0.5) 30%, transparent 65%);
+    filter: blur(1px);
+    pointer-events: none;
+    animation: vpSparkBurst 0.4s ease-out infinite;
+  }
+  @keyframes vpSparkBurst {
+    0%   { transform: translateY(-50%) scale(0.6); opacity: 1; }
+    100% { transform: translateY(-50%) scale(1.4); opacity: 0; }
+  }
+  .vp-power-numeric {
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(255,210,150,0.78);
+    letter-spacing: 0.06em;
+    text-shadow: 0 0 8px rgba(255,140,40,0.4);
+  }
+  .vp-power-numeric .vp-pn-current { color: rgba(255,235,180,0.95); font-weight: 500; }
+  .vp-power-numeric .vp-pn-pct {
+    font-size: 0.62rem;
+    opacity: 0.65;
+    margin-left: 0.3em;
+  }
 
   .vote-notice { background: rgba(10,16,40,0.82); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,107,26,0.3); border-radius: 12px; padding: 1rem 1.5rem; font-size: 0.85rem; color: var(--muted); margin-bottom: 2.5rem; }
   .vote-teams { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; margin-bottom: 2rem; }
@@ -535,8 +1816,7 @@
   .vote-bar-wrap { height: 6px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem; }
   .vote-bar { height: 100%; background: var(--team-color, var(--accent)); border-radius: 3px; transition: width 0.6s cubic-bezier(.4,0,.2,1); }
   .vote-count { font-size: 0.75rem; color: var(--muted); display: flex; justify-content: space-between; }
-  .vote-form { width: 100%; margin: 2rem 0; display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; }
-  @media (max-width: 600px) { .vote-form { grid-template-columns: 1fr; } }
+  .vote-form { width: 100%; max-width: 480px; margin: 2rem 0; }
   .vote-form label { font-size: 0.8rem; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.3rem; display: block; }
   .vote-form input, .vote-form textarea { width: 100%; background: rgba(10,16,40,0.78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid rgba(255,160,60,0.25); border-radius: 10px; padding: 0.75rem 1rem; color: var(--text); font-family: inherit; font-size: 16px; outline: none; transition: border-color 0.2s; box-sizing: border-box; }
   .vote-form input:focus, .vote-form textarea:focus { border-color: var(--accent); }
@@ -560,6 +1840,58 @@
   .vote-success.show { display: block; }
   .vote-success p { color: var(--gold); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.3rem; }
   .vote-success small { color: var(--muted); font-size: 0.82rem; }
+
+  /* ── 投票モーダル（個人賞 + イベント感想）── */
+  .vote-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 200; padding: 1.5rem; overflow-y: auto; }
+  .vote-modal-overlay.show { display: flex; }
+  .vote-modal-panel { background: rgba(14,18,42,0.96); border: 1px solid rgba(255,160,60,0.35); border-radius: 16px; padding: 1.8rem 1.6rem; width: 100%; max-width: 720px; max-height: calc(100vh - 3rem); overflow-y: auto; position: relative; box-shadow: 0 20px 80px rgba(0,0,0,0.6); }
+  .vote-modal-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.12); }
+  .vote-modal-header h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.18em; margin: 0; color: var(--accent); }
+  .vote-modal-close { background: none; border: none; color: var(--muted); font-size: 1.6rem; cursor: pointer; padding: 0.2rem 0.6rem; line-height: 1; transition: color 0.2s; }
+  .vote-modal-close:hover { color: var(--text); }
+  .vote-modal-team-display { background: rgba(10,16,40,0.65); border-radius: 10px; padding: 0.8rem 1rem; margin-bottom: 1.4rem; display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; font-size: 0.88rem; }
+  .vote-modal-team-display strong { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.12em; }
+  .vote-modal-team-display .vmd-voter { color: var(--muted); font-size: 0.78rem; }
+
+  .award-section { margin-bottom: 1.6rem; padding-bottom: 1.4rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .award-section:last-of-type { border-bottom: none; padding-bottom: 0; }
+  .award-section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; letter-spacing: 0.16em; color: var(--gold); margin-bottom: 0.85rem; }
+  .member-grid { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 0.8rem; }
+  .member-team-row { display: flex; align-items: flex-start; gap: 0.8rem; flex-wrap: wrap; }
+  .member-team-label { font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 0.16em; min-width: 80px; padding-top: 0.45rem; }
+  .member-team-buttons { display: flex; gap: 0.45rem; flex-wrap: wrap; flex: 1; }
+  .member-btn { background: rgba(10,16,40,0.78); border: 1px solid rgba(255,255,255,0.18); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 0.85rem; font-weight: 600; padding: 0.5rem 0.9rem; border-radius: 999px; cursor: pointer; transition: all 0.18s; min-height: 38px; }
+  .member-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(255,140,40,0.12); }
+  .member-btn.selected { background: linear-gradient(135deg, #ff8c1a, #ff3344); border-color: transparent; color: #fff; box-shadow: 0 0 18px rgba(255,107,26,0.45); }
+  .member-btn:disabled, .member-btn.disabled-by-other { opacity: 0.32; cursor: not-allowed; background: rgba(40,40,55,0.6); }
+  .award-comment { width: 100%; background: rgba(10,16,40,0.78); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.6rem 0.85rem; color: var(--text); font-family: inherit; font-size: 0.88rem; resize: vertical; min-height: 56px; box-sizing: border-box; outline: none; transition: border-color 0.2s; }
+  .award-comment:focus { border-color: var(--accent); }
+
+  .event-impression-section { margin-top: 1.4rem; padding-top: 1.3rem; border-top: 1px solid rgba(255,255,255,0.12); }
+  .event-impression-section .award-section-title { color: var(--accent); }
+  .event-impression-section textarea { width: 100%; min-height: 80px; }
+
+  .vote-modal-actions { display: flex; flex-direction: column; gap: 0.7rem; align-items: center; margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,0.12); }
+  .vote-modal-actions .btn-vote { width: 100%; max-width: 360px; }
+  .vote-modal-hint { font-size: 0.8rem; color: var(--muted); text-align: center; }
+
+  .thank-you-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 250; padding: 1.5rem; }
+  .thank-you-overlay.show { display: flex; }
+  .thank-you-panel { background: rgba(14,18,42,0.97); border: 1px solid rgba(255,214,10,0.5); border-radius: 18px; padding: 2.4rem 2rem; max-width: 460px; width: 100%; text-align: center; box-shadow: 0 20px 80px rgba(0,0,0,0.7); }
+  .thank-you-panel .ty-mark { font-size: 2.6rem; color: var(--gold); line-height: 1; margin-bottom: 1rem; }
+  .thank-you-panel h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.2em; margin: 0 0 0.6rem; color: var(--gold); }
+  .thank-you-panel p { color: var(--text); margin-bottom: 1.4rem; line-height: 1.7; font-size: 0.92rem; }
+  .thank-you-panel button { background: rgba(10,16,40,0.85); border: 1px solid rgba(255,255,255,0.25); color: var(--text); font-weight: 700; padding: 0.7rem 1.8rem; border-radius: 999px; cursor: pointer; font-family: 'Noto Sans JP', sans-serif; letter-spacing: 0.08em; transition: all 0.2s; }
+  .thank-you-panel button:hover { border-color: var(--accent); color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .vote-modal-panel { padding: 1.4rem 1.1rem; }
+    .vote-modal-header h3 { font-size: 1.2rem; }
+    .member-team-row { flex-direction: column; gap: 0.4rem; }
+    .member-team-label { min-width: 0; padding-top: 0; }
+    .member-btn { font-size: 0.82rem; padding: 0.45rem 0.8rem; }
+    .thank-you-panel { padding: 2rem 1.4rem; }
+  }
   .vote-result-wrap { display: none; margin-top: 3rem; }
   .vote-result-wrap.show { display: block; }
   .vote-result-title { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.35em; color: var(--muted); margin-bottom: 1.5rem; }
@@ -595,9 +1927,11 @@
 
   @media (max-width: 700px) {
     #about { grid-template-columns: 1fr; gap: 2rem; }
-    .schedule-list::before { left: 60px; }
-    .schedule-item { grid-template-columns: 60px 1fr; gap: 1rem; }
-    .schedule-item::before { left: 57px; }
+    .schedule-item { grid-template-columns: 72px 1fr; gap: 0.9rem; padding: 0.9rem 1rem; }
+    .sched-time { font-size: 1.1rem; gap: 0.3rem; }
+    .sched-team { font-size: 1.2rem; }
+    .sched-title { font-size: 0.95rem; }
+    .sched-badge { font-size: 0.62rem; letter-spacing: 0.18em; padding: 0.16rem 0.5rem; }
     nav { padding: 0.9rem 1rem; }
     .nav-links { display: none; }
     .nav-hamburger { display: flex; }
@@ -608,7 +1942,8 @@
     .vote-status-text span { display: block; margin-left: 0; margin-top: 0.15rem; }
     .vote-result-bar-wrap { display: none; }
     .about-stats { grid-template-columns: 1fr 1fr; }
-    .round-divider { padding-left: calc(60px + 2rem); }
+    .round-divider { margin: 1.2rem 0 0.8rem; gap: 0.6rem; }
+    .round-divider .round-label { font-size: 1.1rem; letter-spacing: 0.3em; padding: 0.3rem 0.7rem; }
     .hero-firework { width: 180px; height: 180px; }
     .hero-firework.fw-a { top: 8%;  left: 0; }
     .hero-firework.fw-b { top: 12%; right: 0; }
@@ -687,10 +2022,122 @@
     <p>応援したいチームに投票して、あなたもバトルフェスに参加しよう！</p>
   </div>
   <div class="about-stats">
-    <div class="stat-card"><img src="/assets/textures/team-count.webp" alt="3"><div class="stat-label">参加チーム数</div></div>
-    <div class="stat-card"><img src="/assets/textures/performer-count.webp" alt="9"><div class="stat-label">総出演者数</div></div>
-    <div class="stat-card"><img src="/assets/textures/broadcast-duration.webp" alt="2:55"><div class="stat-label">配信時間</div></div>
-    <div class="stat-card"><img src="/assets/textures/performer-duration.webp" alt="15min"><div class="stat-label">1人持ち時間</div></div>
+    <div class="stat-card">
+      <div class="stat-num">3</div>
+      <div class="stat-label">TEAMS</div>
+      <div class="stat-label-jp">参加チーム</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">9</div>
+      <div class="stat-label">ARTISTS</div>
+      <div class="stat-label-jp">出演者</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">2:55</div>
+      <div class="stat-label">DURATION</div>
+      <div class="stat-label-jp">配信時間</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">15<span class="stat-suffix">MIN</span></div>
+      <div class="stat-label">PER ARTIST</div>
+      <div class="stat-label-jp">1人持ち時間</div>
+    </div>
+  </div>
+
+  <div class="about-rules">
+    <div class="ar-shell">
+      <div class="ar-top">
+        <div class="ar-headline">
+          <span class="ar-tag">// BATTLE RULES /  R001</span>
+          <h3 class="ar-title">RULES OF<br>ENGAGEMENT</h3>
+          <p class="ar-title-jp">勝敗について</p>
+          <p class="ar-lead">審査員はいない。リスナーの投票と ColorSing ライブスコア — それだけが優勝チームを決める。<br><strong>遅く投票するほど1票が重くなる</strong></p>
+        </div>
+        <div class="ar-graph-wrap">
+          <svg class="ar-graph" viewBox="0 0 400 160" preserveAspectRatio="none" aria-label="Vote power curve">
+            <defs>
+              <linearGradient id="arCurveFill" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0"   stop-color="#ff8c34" stop-opacity="0.6"/>
+                <stop offset="1"   stop-color="#ff3014" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="arCurveLine" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0"    stop-color="#ffd980"/>
+                <stop offset="0.85" stop-color="#ff5a14"/>
+                <stop offset="1"    stop-color="#ff3014"/>
+              </linearGradient>
+            </defs>
+            <g stroke="rgba(255,180,80,0.13)" stroke-width="1" stroke-dasharray="2 4">
+              <line x1="0" y1="20"  x2="400" y2="20" />
+              <line x1="0" y1="60"  x2="400" y2="60" />
+              <line x1="0" y1="100" x2="400" y2="100" />
+              <line x1="0" y1="135" x2="400" y2="135" />
+            </g>
+            <line x1="340" y1="20" x2="340" y2="160" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3 4"/>
+            <path d="M 0,135 L 340,20 L 400,20 L 400,160 L 0,160 Z" fill="url(#arCurveFill)" />
+            <path d="M 0,135 L 340,20 L 400,20" fill="none" stroke="url(#arCurveLine)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="0"   cy="135" r="4.5" fill="#ffd980" stroke="#fff" stroke-width="1.2"/>
+            <circle cx="340" cy="20"  r="5.5" fill="#ff5a14" stroke="#fff" stroke-width="1.5"/>
+            <circle cx="400" cy="20"  r="4" fill="#ff3014"/>
+            <g font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="0.04em">
+              <text x="6"   y="128" fill="rgba(255,200,140,1)" font-weight="700">100PT</text>
+              <text x="6"   y="153" fill="rgba(255,200,140,0.7)">20:45</text>
+              <text x="335" y="14"  text-anchor="end" fill="rgba(255,200,140,1)" font-weight="700">5000PT</text>
+              <text x="335" y="153" text-anchor="end" fill="rgba(255,200,140,0.7)">22:15</text>
+              <text x="395" y="153" text-anchor="end" fill="rgba(255,200,140,0.7)">22:25</text>
+            </g>
+          </svg>
+          <p class="ar-graph-caption">受付開始の <strong>100PT</strong> から、本投票直前で <span class="multiplier">×50</span> の <strong>5000PT</strong> へ</p>
+        </div>
+      </div>
+
+      <div class="ar-rounds">
+        <div class="ar-round">
+          <div class="ar-rnum">01</div>
+          <p class="ar-rlabel">VOTE</p>
+          <p class="ar-rjp">投票の基本</p>
+          <div class="ar-rbody">
+            <ul>
+              <li>1人 <strong>1票</strong>のみ</li>
+              <li>受付 <strong>20:45 〜 22:25</strong></li>
+              <li>期間中いつでも投票可</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ar-round">
+          <div class="ar-rnum">02</div>
+          <p class="ar-rlabel">VOTE POWER</p>
+          <p class="ar-rjp">1票の重さ</p>
+          <div class="ar-rbody">
+            時間が遅いほど1票のポイントが大きくなる。<br>
+            受付開始の <strong>100PT</strong> から本投票直前の <strong>5000PT</strong> へ徐々に上昇。
+            <p class="ar-rhint">▸ 本投票（22:15-22:25）はずっと最大の <strong>5000PT</strong></p>
+          </div>
+        </div>
+        <div class="ar-round">
+          <div class="ar-rnum">03</div>
+          <p class="ar-rlabel">FINAL SCORE</p>
+          <p class="ar-rjp">優勝の決定</p>
+          <div class="ar-rbody">
+            <strong>全投票のポイント合計</strong> に、<strong>ColorSing ライブスコア</strong> を足した合計が最も高いチームが優勝。
+          </div>
+        </div>
+      </div>
+
+      <div class="ar-secret">
+        <span class="ar-secret-tag">// ?? CLASSIFIED</span>
+        <span class="ar-secret-mark">!?</span>
+        <span class="ar-secret-text">本投票中、<strong>一定条件達成で BONUS 発生</strong></span>
+        <span class="ar-secret-hint">— 詳細は当日配信で</span>
+      </div>
+
+      <div class="ar-formula">
+        <div class="ar-formula-label">// FINAL SCORE //</div>
+        <div class="ar-formula-jp">総合スコア</div>
+        <div class="ar-formula-eq">
+          投票ポイント合計 <span class="op">+</span> ライブスコア
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -699,6 +2146,17 @@
 <section id="teams">
   <p class="section-label">Teams</p>
   <h2 class="section-title">参加チーム</h2>
+  <div class="entry-reg">
+    <span class="entry-reg-label">// ENTRY REGULATION</span>
+    <div class="entry-reg-badges">
+      <span class="reg-badge"><span class="reg-badge-num">3</span><span class="reg-badge-label">名構成</span></span>
+      <span class="reg-badge-sep">×</span>
+      <span class="reg-badge reg-badge-stack">
+        <span class="reg-badge-line"><span class="reg-badge-label">リーグ合計</span><span class="reg-badge-num">100</span><span class="reg-badge-label">未満</span></span>
+        <span class="reg-badge-sub">※ 5月下旬締め時点</span>
+      </span>
+    </div>
+  </div>
   <div class="teams-grid">
 
     <div class="team-card reveal reveal-delay-1" style="--team-color: #ff2d78; --team-bg: url('/assets/teams/crimson.png');">
@@ -751,7 +2209,7 @@
     <div class="schedule-item"><div class="sched-time">20:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="schedule-item"><div class="sched-time">20:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="schedule-item"><div class="sched-time">20:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="round-divider"><span class="round-label">ROUND 2</span><span class="sched-badge badge-vote">投票開始</span></div>
+    <div class="round-divider"><span class="round-label">ROUND 2<span class="sched-badge badge-vote">投票開始</span></span></div>
     <div class="schedule-item"><div class="sched-time">20:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="schedule-item"><div class="sched-time">21:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="schedule-item"><div class="sched-time">21:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
@@ -771,47 +2229,139 @@
   <p class="section-label">Vote</p>
   <h2 class="section-title">リスナー投票</h2>
 
-  <div class="vote-status-banner" id="voteStatusBanner">
-    <div class="vote-status-dot waiting" id="voteStatusDot"></div>
-    <div class="vote-status-text">
-      <strong id="voteStatusLabel">投票受付前</strong>
-      <span id="voteStatusSub">イベント当日の投票開始をお待ちください</span>
+  <div class="vote-countdown" id="voteCountdown" hidden aria-live="polite">
+    <div class="cd-frame top" aria-hidden="true"></div>
+    <div class="cd-frame bottom" aria-hidden="true"></div>
+    <div class="cd-content">
+      <div class="cd-eyebrow-wrap">
+        <p class="cd-eyebrow">BATTLE&nbsp;STARTS&nbsp;IN</p>
+        <p class="cd-eyebrow-jp">投票開始まで</p>
+      </div>
+      <div class="cd-grid">
+        <div class="cd-cell">
+          <div class="cd-num" id="cd-days"></div>
+          <div class="cd-label">DAYS</div>
+        </div>
+        <div class="cd-sep" aria-hidden="true"><i></i><i></i></div>
+        <div class="cd-cell">
+          <div class="cd-num" id="cd-hours"></div>
+          <div class="cd-label">HOURS</div>
+        </div>
+        <div class="cd-sep" aria-hidden="true"><i></i><i></i></div>
+        <div class="cd-cell">
+          <div class="cd-num" id="cd-mins"></div>
+          <div class="cd-label">MIN</div>
+        </div>
+        <div class="cd-sep" aria-hidden="true"><i></i><i></i></div>
+        <div class="cd-cell">
+          <div class="cd-num" id="cd-secs"></div>
+          <div class="cd-label">SEC</div>
+        </div>
+      </div>
+      <p class="cd-target">2026.07.18&nbsp;SAT&nbsp;·&nbsp;20:45&nbsp;JST&nbsp;OPEN</p>
+      <p class="cd-note">投票はイベント当日の投票開始時刻からこのページで受付します。</p>
     </div>
   </div>
 
-  <div class="vote-notice">
-    投票は1人1回のみ有効です。同一ブラウザからの重複投票は防止されます。イベント当日の投票受付開始後、締め切りまでにご投票ください。
-  </div>
-
-  <div class="vote-form" id="voteForm">
-    <div>
-      <label for="voterName">お名前（ハンドルネーム）<span style="color:var(--accent3)">*</span></label>
-      <input type="text" id="voterName" placeholder="例：カラーシングファン" maxlength="30">
+  <div id="voteUI" hidden>
+    <div class="vote-status-banner" id="voteStatusBanner">
+      <div class="vote-status-dot waiting" id="voteStatusDot"></div>
+      <div class="vote-status-text">
+        <strong id="voteStatusLabel">投票受付前</strong>
+        <span id="voteStatusSub">イベント当日の投票開始をお待ちください</span>
+      </div>
     </div>
-    <div>
-      <label for="voterComment">応援コメント（任意）</label>
-      <textarea id="voterComment" placeholder="推しチームへの応援メッセージをどうぞ！" maxlength="100"></textarea>
+
+    <div class="vote-power-block" id="votePowerBlock">
+      <div class="vp-eyebrow">VOTE POWER</div>
+      <div class="vp-eyebrow-jp">あなたの1票の重み（時間加重）</div>
+      <div class="vp-flap-row">
+        <span class="vp-flap"><span data-vp-d3>0</span></span>
+        <span class="vp-flap"><span data-vp-d2>1</span></span>
+        <span class="vp-flap"><span data-vp-d1>0</span></span>
+        <span class="vp-flap"><span data-vp-d0>0</span></span>
+        <span class="vp-dec-wrap">
+          <span class="vp-dec-dot">.</span>
+          <span class="vp-dec" data-vp-dec>00</span>
+        </span>
+        <span class="vp-unit">PT</span>
+      </div>
+      <div class="vp-power-wrap">
+        <div class="vp-power-ticks" data-vp-ticks></div>
+        <div class="vp-bar">
+          <div class="vp-bar-cells" data-vp-cells></div>
+          <div class="vp-bar-edge is-empty" data-vp-edge></div>
+        </div>
+        <div class="vp-power-numeric">
+          <span><span class="vp-pn-current" data-vp-current>100</span> PT<span class="vp-pn-pct" data-vp-pct> · 0%</span></span>
+          <span>5000 PT MAX</span>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div class="vote-teams" id="voteTeams"></div>
+    <div class="vote-notice">
+      投票は1人1回のみ有効です。同一ブラウザからの重複投票は防止されます。イベント当日の投票受付開始後、締め切りまでにご投票ください。
+    </div>
 
-  <div class="vote-actions">
-    <button class="btn-vote" id="voteBtn" disabled onclick="submitVote()">投票する</button>
-    <button class="btn-reset" type="button" onclick="resetTrialVotes()">試験リセット</button>
-    <span class="vote-hint" id="voteHint">チームを選んでください</span>
-  </div>
+    <div class="vote-form" id="voteForm">
+      <div>
+        <label for="voterName">お名前（ハンドルネーム）<span style="color:var(--accent3)">*</span></label>
+        <input type="text" id="voterName" placeholder="例：カラーシングファン" maxlength="30">
+      </div>
+    </div>
 
-  <div class="vote-success" id="voteSuccess">
-    <p id="voteSuccessMsg">✓ 投票ありがとうございます！</p>
-    <small>あなたの1票がチームの力になります。引き続き配信を楽しんでください！</small>
-  </div>
+    <div class="vote-teams" id="voteTeams"></div>
 
-  <div class="vote-result-wrap" id="voteResultWrap">
-    <div class="vote-result-title">CURRENT RANKING</div>
-    <div id="voteResultRows"></div>
+    <div class="vote-actions">
+      <button class="btn-vote" id="voteBtn" disabled onclick="openVoteModal()">投票する</button>
+      <button class="btn-reset" type="button" onclick="resetTrialVotes()">試験リセット</button>
+      <span class="vote-hint" id="voteHint">チームを選んでください</span>
+    </div>
+
+    <div class="vote-result-wrap" id="voteResultWrap">
+      <div class="vote-result-title">CURRENT RANKING</div>
+      <div id="voteResultRows"></div>
+    </div>
   </div>
 </section>
+
+<!-- 個人賞 + イベント感想モーダル（section 外に置く: #vote > * の position 上書きを回避） -->
+<div class="vote-modal-overlay" id="voteModalOverlay" role="dialog" aria-modal="true" aria-labelledby="voteModalTitle">
+  <div class="vote-modal-panel">
+    <div class="vote-modal-header">
+      <h3 id="voteModalTitle">個人賞投票</h3>
+      <button type="button" class="vote-modal-close" onclick="closeVoteModal()" aria-label="閉じる">×</button>
+    </div>
+
+    <div class="vote-modal-team-display">
+      <span>選択中のチーム:</span>
+      <strong id="modalTeamName">—</strong>
+      <span class="vmd-voter">投票者: <span id="modalVoterName">—</span></span>
+    </div>
+
+    <div id="modalAwardsWrap"></div>
+
+    <div class="event-impression-section">
+      <div class="award-section-title">イベント全体の感想（任意）</div>
+      <textarea class="award-comment" id="eventComment" placeholder="ご感想・印象に残ったシーンなど（任意・300文字まで）" maxlength="300"></textarea>
+    </div>
+
+    <div class="vote-modal-actions">
+      <button class="btn-vote" id="modalSubmitBtn" disabled onclick="submitBulkVote()">投票を送信する</button>
+      <span class="vote-modal-hint" id="modalHint">3つの賞それぞれにメンバーを1名ずつ選択してください</span>
+    </div>
+  </div>
+</div>
+
+<!-- 投票完了サンクスオーバーレイ -->
+<div class="thank-you-overlay" id="thankYouOverlay" role="dialog" aria-modal="true" aria-labelledby="thankYouTitle">
+  <div class="thank-you-panel">
+    <div class="ty-mark">✓</div>
+    <h3 id="thankYouTitle">ありがとうございました</h3>
+    <p>あなたの一票を受け付けました。<br>引き続き BATTLE FES をお楽しみください！</p>
+    <button type="button" onclick="closeThankYou()">閉じる</button>
+  </div>
+</div>
 
 <footer>
   <strong>BATTLE FES 2026</strong><br>
@@ -820,12 +2370,21 @@
 </footer>
 
 <script>
-/* ── TEAMS DATA ── */
-const teams = [
-  { id: 1, name: 'CRIMSON', members: 'Coming soon', color: '#ff2d78', bg: '/assets/teams/crimson.png', votes: 0 },
-  { id: 2, name: 'NOVA',    members: 'Coming soon', color: '#7c3aff', bg: '/assets/teams/nova.png',    votes: 0 },
-  { id: 3, name: 'GOLDEN',  members: 'Coming soon', color: '#ffd700', bg: '/assets/teams/golden.png',  votes: 0 },
+/* ── TEAMS / MEMBERS / CATEGORIES (API config と同期) ── */
+// チームの色・背景は UI 固定値、ID と name は API config が正本。
+const TEAM_DISPLAY = {
+  1: { color: '#ff2d78', bg: '/assets/teams/crimson.png' },
+  2: { color: '#7c3aff', bg: '/assets/teams/nova.png'    },
+  3: { color: '#ffd700', bg: '/assets/teams/golden.png'  },
+};
+
+let teams = [
+  { id: 1, name: 'CRIMSON', color: '#ff2d78', bg: '/assets/teams/crimson.png', votes: 0 },
+  { id: 2, name: 'NOVA',    color: '#7c3aff', bg: '/assets/teams/nova.png',    votes: 0 },
+  { id: 3, name: 'GOLDEN',  color: '#ffd700', bg: '/assets/teams/golden.png',  votes: 0 },
 ];
+let members = [];      // [{ id, teamId, name }]
+let categories = [];   // [{ id, type, label, candidateType, candidateIds }]
 
 /* ── VOTE STATE ── */
 const API_BASE = '/api';
@@ -834,29 +2393,53 @@ const VOTE_KEY = 'battlefes2026_vote';
 let selected = null;
 let voted = false;
 let isSubmitting = false;
+let modalSelections = {}; // { mvp: memberId, entertainer: memberId, moment: memberId }
 
 function checkAlreadyVoted() {
   try { return !!localStorage.getItem(VOTE_KEY); } catch(e) { return false; }
 }
 
-function markVoted(teamId) {
-  try { localStorage.setItem(VOTE_KEY, String(teamId)); } catch(e) {}
-}
-
-function getMyVote() {
-  try { return parseInt(localStorage.getItem(VOTE_KEY)) || null; } catch(e) { return null; }
+function markVoted() {
+  try { localStorage.setItem(VOTE_KEY, '1'); } catch(e) {}
 }
 
 function clearVotedMarker() {
   try { localStorage.removeItem(VOTE_KEY); } catch(e) {}
 }
 
-function applyVoteResults(results) {
-  const counts = results && results.counts ? results.counts : {};
+function applyTeamResults(teamResults) {
+  if (!teamResults || !teamResults.counts) return;
+  const counts = teamResults.counts;
   teams.forEach(t => {
     const value = counts[t.id] ?? counts[String(t.id)] ?? 0;
     t.votes = Number.isFinite(Number(value)) ? Number(value) : 0;
   });
+}
+
+function applyApiConfig(config) {
+  if (!config) return;
+  if (Array.isArray(config.teams) && config.teams.length) {
+    teams = config.teams.map(t => {
+      const display = TEAM_DISPLAY[t.id] || {};
+      return {
+        id: t.id,
+        name: t.name,
+        color: display.color || '#fff',
+        bg: display.bg || '',
+        votes: 0,
+      };
+    });
+  }
+  if (Array.isArray(config.members)) {
+    members = config.members.slice();
+  }
+  if (Array.isArray(config.categories)) {
+    categories = config.categories.slice();
+  }
+}
+
+function getIndividualCategories() {
+  return categories.filter(c => c.type === 'individual');
 }
 
 function resetTrialVotes() {
@@ -865,15 +2448,16 @@ function resetTrialVotes() {
 
   selected = null;
   voted = false;
+  modalSelections = {};
   clearVotedMarker();
 
   document.getElementById('voterName').value = '';
-  document.getElementById('voterComment').value = '';
   document.getElementById('voterName').style.borderColor = '';
   document.getElementById('voteBtn').disabled = true;
   document.getElementById('voteHint').textContent = 'チームを選んでください';
-  document.getElementById('voteForm').style.display = 'grid';
-  document.getElementById('voteSuccess').classList.remove('show');
+  document.getElementById('voteForm').style.display = '';
+  closeVoteModal();
+  closeThankYou();
 
   loadVoteResults();
 }
@@ -912,24 +2496,23 @@ function updateStatusBanner() {
 
 /* ── VOTE RENDER ── */
 function totalVotes() {
-  return teams.reduce((s, t) => s + t.votes, 0);
+  return teams.reduce((s, t) => s + (t.votes || 0), 0);
 }
 
 function renderVote() {
   const container = document.getElementById('voteTeams');
+  if (!container) return;
   const total = totalVotes();
-  const myVote = getMyVote();
 
   container.innerHTML = teams.map(t => {
     const pct = total > 0 ? Math.round(t.votes / total * 100) : 0;
     const isSelected = selected === t.id;
-    const isMyVote   = myVote === t.id;
     return `
       <div class="vote-card${isSelected ? ' selected' : ''}"
            style="--team-color:${t.color}; --team-bg:url('${t.bg}');"
            onclick="selectTeam(${t.id})">
-        <div class="vote-card-name">${t.name}${isMyVote ? ' <span style="font-size:0.7rem;opacity:0.7;">← あなたの票</span>' : ''}</div>
-        <div class="vote-card-members">${t.members}</div>
+        <div class="vote-card-name">${escapeHtml(t.name)}</div>
+        <div class="vote-card-members">投票で応援！</div>
         <div class="vote-bar-wrap">
           <div class="vote-bar" style="width:${pct}%; background:${t.color};"></div>
         </div>
@@ -968,31 +2551,21 @@ function renderRanking() {
 function selectTeam(id) {
   if (voted || checkAlreadyVoted()) return;
   selected = id;
-  document.getElementById('voteBtn').disabled = false;
   const team = teams.find(t => t.id === id);
-  const cls = team ? team.name.toLowerCase() : '';
   const num = String(id).padStart(2, '0');
-  document.getElementById('voteHint').innerHTML =
-    team
-      ? `TEAM ${num} <span class="sched-team ${cls}">${team.name}</span> を選択中`
-      : `TEAM ${id} を選択中`;
+  document.getElementById('voteHint').innerHTML = team
+    ? `TEAM ${num} <strong style="color:${team.color}">${escapeHtml(team.name)}</strong> を選択中（投票するを押すと個人賞投票へ）`
+    : `TEAM ${id} を選択中`;
+  syncVoteActionState();
   renderVote();
 }
 
-function lockVoteUi(team) {
+function lockVoteUi() {
   voted = true;
-  if (team) selected = team.id;
-  if (team) markVoted(team.id);
   document.getElementById('voteBtn').disabled = true;
   document.getElementById('voteHint').textContent = '投票済み';
-  document.getElementById('voteForm').style.display = 'none';
-
-  const msg = document.getElementById('voteSuccessMsg');
-  if (team) {
-    msg.textContent = `✓ ${team.name} に投票しました！ありがとうございます！`;
-  }
-  document.getElementById('voteSuccess').classList.add('show');
-
+  const form = document.getElementById('voteForm');
+  if (form) form.style.display = 'none';
   document.querySelectorAll('.vote-card').forEach(c => c.style.cursor = 'default');
 }
 
@@ -1005,7 +2578,10 @@ async function loadVoteResults() {
     if (!res.ok) throw new Error('Failed to load vote results');
 
     const data = await res.json();
-    applyVoteResults(data.results);
+    applyApiConfig(data.config);
+    if (data.results && data.results.team) {
+      applyTeamResults(data.results.team);
+    }
     renderVote();
     renderRanking();
   } catch (error) {
@@ -1014,75 +2590,244 @@ async function loadVoteResults() {
   }
 }
 
-async function submitToBackend(payload) {
-  const res = await fetch(`${API_BASE}/votes`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+/* ── 個人賞モーダル ── */
+function openVoteModal() {
+  if (!selected || voted || checkAlreadyVoted() || isSubmitting || !isVoteUiInteractive()) return;
 
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    const error = new Error(data.error || 'Vote request failed.');
-    error.status = res.status;
-    error.data = data;
-    throw error;
+  const nameInput = document.getElementById('voterName');
+  const name = nameInput.value.trim();
+  if (!name) {
+    nameInput.focus();
+    nameInput.style.borderColor = 'var(--accent3)';
+    document.getElementById('voteHint').textContent = 'お名前を入力してください';
+    return;
   }
+  nameInput.style.borderColor = '';
 
-  return data;
+  const team = teams.find(t => t.id === selected);
+  if (!team) return;
+
+  // モーダルを開くたびに選択をクリア
+  modalSelections = {};
+  getIndividualCategories().forEach(c => { modalSelections[c.id] = null; });
+
+  document.getElementById('modalTeamName').textContent = team.name;
+  document.getElementById('modalTeamName').style.color = team.color;
+  document.getElementById('modalVoterName').textContent = name;
+  document.getElementById('eventComment').value = '';
+
+  renderAwardSections();
+
+  const overlay = document.getElementById('voteModalOverlay');
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
 }
 
-async function submitVote() {
-  if (!selected || voted || checkAlreadyVoted() || isSubmitting) return;
+function closeVoteModal() {
+  const overlay = document.getElementById('voteModalOverlay');
+  if (overlay) overlay.classList.remove('show');
+  document.body.style.overflow = '';
+}
 
-  const name = document.getElementById('voterName').value.trim();
-  if (!name) {
-    document.getElementById('voterName').focus();
-    document.getElementById('voterName').style.borderColor = 'var(--accent3)';
+function renderAwardSections() {
+  const wrap = document.getElementById('modalAwardsWrap');
+  if (!wrap) return;
+  const indivCats = getIndividualCategories();
+
+  // コメント入力中の値を保存して再描画後に復元
+  const existingComments = {};
+  indivCats.forEach(c => {
+    const ta = document.getElementById(`comment-${c.id}`);
+    if (ta) existingComments[c.id] = ta.value;
+  });
+
+  wrap.innerHTML = indivCats.map(cat => {
+    const allowedIds = new Set((cat.candidateIds || []).map(Number));
+    const teamGroups = teams.map(team => {
+      const teamMembers = members.filter(m => m.teamId === team.id && allowedIds.has(Number(m.id)));
+      const buttons = teamMembers.map(m => {
+        const isSel = modalSelections[cat.id] === m.id;
+        const isUsedElsewhere = Object.entries(modalSelections).some(
+          ([cid, mid]) => cid !== cat.id && mid === m.id
+        );
+        const cls = isSel ? ' selected' : (isUsedElsewhere ? ' disabled-by-other' : '');
+        const disabled = isUsedElsewhere ? 'disabled title="他の賞で選択中"' : '';
+        return `<button type="button" class="member-btn${cls}"
+          onclick="selectMember('${cat.id}', ${m.id})"
+          ${disabled}>${escapeHtml(m.name)}</button>`;
+      }).join('');
+      return teamMembers.length === 0 ? '' : `
+        <div class="member-team-row">
+          <div class="member-team-label" style="color:${team.color};">${escapeHtml(team.name)}</div>
+          <div class="member-team-buttons">${buttons}</div>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="award-section">
+        <div class="award-section-title">${escapeHtml(cat.label)}</div>
+        <div class="member-grid">${teamGroups}</div>
+        <textarea class="award-comment"
+          id="comment-${cat.id}"
+          placeholder="この賞への一言（任意・100文字まで）"
+          maxlength="100"></textarea>
+      </div>
+    `;
+  }).join('');
+
+  // コメント値復元
+  indivCats.forEach(c => {
+    const ta = document.getElementById(`comment-${c.id}`);
+    if (ta && existingComments[c.id] != null) ta.value = existingComments[c.id];
+  });
+
+  updateModalSubmitState();
+}
+
+function selectMember(categoryId, memberId) {
+  // 他の賞で使用中なら何もしない
+  const usedElsewhere = Object.entries(modalSelections).some(
+    ([cid, mid]) => cid !== categoryId && mid === memberId
+  );
+  if (usedElsewhere) return;
+
+  // 同じカテゴリで既に選択されているメンバーをタップ → 解除
+  if (modalSelections[categoryId] === memberId) {
+    modalSelections[categoryId] = null;
+  } else {
+    modalSelections[categoryId] = memberId;
+  }
+  renderAwardSections();
+}
+
+function updateModalSubmitState() {
+  const allChosen = getIndividualCategories().every(c => modalSelections[c.id] != null);
+  const btn = document.getElementById('modalSubmitBtn');
+  const hint = document.getElementById('modalHint');
+  if (btn) btn.disabled = !allChosen;
+  if (hint) {
+    hint.textContent = allChosen
+      ? 'すべての個人賞が選択されました。投票を送信できます'
+      : '3つの賞それぞれにメンバーを1名ずつ選択してください';
+  }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+function buildBulkPicks() {
+  // 設定駆動: categories 配列を回して全カテゴリ分の picks を構築
+  return categories.map(cat => {
+    if (cat.type === 'team') {
+      return { categoryId: cat.id, candidateId: selected, comment: '' };
+    }
+    if (cat.type === 'individual') {
+      const ta = document.getElementById(`comment-${cat.id}`);
+      return {
+        categoryId: cat.id,
+        candidateId: modalSelections[cat.id],
+        comment: ta ? ta.value.trim() : '',
+      };
+    }
+    throw new Error(`Unsupported category type: ${cat.type}`);
+  });
+}
+
+async function submitBulkVote() {
+  if (!selected || voted || checkAlreadyVoted() || isSubmitting) return;
+  if (!isVoteUiInteractive()) {
+    document.getElementById('modalHint').textContent = '投票受付時間外です';
     return;
   }
 
-  const comment = document.getElementById('voterComment').value.trim();
-  const team = teams.find(t => t.id === selected);
-  const payload = {
-    teamId: team.id,
-    teamName: team.name,
-    voterName: name,
-    comment,
-    timestamp: new Date().toISOString(),
-  };
+  const name = document.getElementById('voterName').value.trim();
+  if (!name) return;
+
+  const indivCats = getIndividualCategories();
+  const allChosen = indivCats.every(c => modalSelections[c.id] != null);
+  if (!allChosen) return;
+
+  const picks = buildBulkPicks();
+  const eventComment = document.getElementById('eventComment').value.trim();
 
   isSubmitting = true;
-  document.getElementById('voteBtn').disabled = true;
-  document.getElementById('voteHint').textContent = '送信中...';
+  document.getElementById('modalSubmitBtn').disabled = true;
+  document.getElementById('modalHint').textContent = '送信中...';
 
   try {
-    const data = await submitToBackend(payload);
-    applyVoteResults(data.results);
-    lockVoteUi(team);
-    renderVote();
-    renderRanking();
-    confettiBurst(team.color);
-  } catch (error) {
-    console.error('[Vote submit]', error);
+    const res = await fetch(`${API_BASE}/votes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ voterName: name, picks, eventComment }),
+    });
+    const data = await res.json().catch(() => ({}));
 
-    if (error.status === 409 && error.data && error.data.existingTeamId) {
-      const existingTeam = teams.find(t => t.id === error.data.existingTeamId);
-      if (error.data.results) applyVoteResults(error.data.results);
-      lockVoteUi(existingTeam || team);
-      renderVote();
-      renderRanking();
-      document.getElementById('voteHint').textContent = 'この端末からはすでに投票済みです';
-      return;
+    if (!res.ok) {
+      if (res.status === 409) {
+        // 既投票
+        if (data.results && data.results.team) applyTeamResults(data.results.team);
+        markVoted();
+        closeVoteModal();
+        lockVoteUi();
+        renderVote();
+        renderRanking();
+        document.getElementById('voteHint').textContent = 'この端末からはすでに投票済みです';
+        return;
+      }
+      throw Object.assign(new Error(data.error || 'Vote failed'), { status: res.status });
     }
 
-    document.getElementById('voteBtn').disabled = false;
-    document.getElementById('voteHint').textContent =
+    if (data.results && data.results.team) applyTeamResults(data.results.team);
+    markVoted();
+    closeVoteModal();
+    lockVoteUi();
+    renderVote();
+    renderRanking();
+    showThankYouOverlay();
+
+    const team = teams.find(t => t.id === selected);
+    if (team) confettiBurst(team.color);
+  } catch (error) {
+    console.error('[Vote bulk submit]', error);
+    document.getElementById('modalHint').textContent =
       error.status === 403 ? '投票受付時間外です' : '送信に失敗しました。時間をおいて再度お試しください';
+    document.getElementById('modalSubmitBtn').disabled = false;
   } finally {
     isSubmitting = false;
   }
 }
+
+function showThankYouOverlay() {
+  const ov = document.getElementById('thankYouOverlay');
+  if (!ov) return;
+  ov.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeThankYou() {
+  const ov = document.getElementById('thankYouOverlay');
+  if (ov) ov.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// モーダル外クリックで閉じる + ESC で閉じる
+document.addEventListener('click', (e) => {
+  const overlay = document.getElementById('voteModalOverlay');
+  if (overlay && e.target === overlay) closeVoteModal();
+  const ty = document.getElementById('thankYouOverlay');
+  if (ty && e.target === ty) closeThankYou();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  const overlay = document.getElementById('voteModalOverlay');
+  if (overlay && overlay.classList.contains('show')) { closeVoteModal(); return; }
+  const ty = document.getElementById('thankYouOverlay');
+  if (ty && ty.classList.contains('show')) closeThankYou();
+});
 
 /* ── CONFETTI BURST ── */
 function confettiBurst(color) {
@@ -1188,23 +2933,301 @@ function closeNav() {
   document.getElementById('navDrawer').classList.remove('open');
 }
 
+/* ── VOTE POWER METER ── */
+const VP_CELL_COUNT = 30;
+const VP_MIN = 100, VP_MAX = 5000;
+
+function buildVotePowerBar() {
+  const cellsRoot = document.querySelector('[data-vp-cells]');
+  if (cellsRoot && !cellsRoot.children.length) {
+    for (let i = 0; i < VP_CELL_COUNT; i++) {
+      const c = document.createElement('div');
+      c.className = 'vp-cell';
+      c.style.setProperty('--idx', i);
+      cellsRoot.appendChild(c);
+    }
+  }
+  const ticksRoot = document.querySelector('[data-vp-ticks]');
+  if (ticksRoot && !ticksRoot.children.length) {
+    for (let pct = 0; pct <= 100; pct += 5) {
+      const tick = document.createElement('div');
+      tick.className = 'vp-tick' + (pct % 20 === 0 ? ' major' : '');
+      tick.style.left = pct + '%';
+      ticksRoot.appendChild(tick);
+      if (pct % 20 === 0) {
+        const lbl = document.createElement('div');
+        lbl.className = 'vp-tick-label';
+        lbl.style.left = pct + '%';
+        lbl.textContent = pct;
+        ticksRoot.appendChild(lbl);
+      }
+    }
+  }
+}
+
+function getVotePowerProgress() {
+  const open = new Date(VOTE_OPEN).getTime();
+  const close = new Date(VOTE_CLOSE).getTime();
+  const now = Date.now();
+  if (now <= open)  return 0;
+  if (now >= close) return 1;
+  return (now - open) / (close - open);
+}
+
+function updateVotePower() {
+  const block = document.getElementById('votePowerBlock');
+  if (!block) return;
+  const progress = getVotePowerProgress();
+  const fillPct = progress * 100;
+  const value = VP_MIN + (VP_MAX - VP_MIN) * progress;
+
+  const cells = document.querySelectorAll('[data-vp-cells] .vp-cell');
+  const lit = (fillPct / 100) * VP_CELL_COUNT;
+  cells.forEach((c, i) => {
+    if (i + 1 <= Math.floor(lit)) {
+      c.classList.add('lit'); c.classList.remove('partial');
+      c.style.removeProperty('--p');
+    } else if (i < lit) {
+      c.classList.add('partial'); c.classList.remove('lit');
+      c.style.setProperty('--p', (lit - i).toFixed(2));
+    } else {
+      c.classList.remove('lit', 'partial');
+      c.style.removeProperty('--p');
+    }
+  });
+
+  const edge = document.querySelector('[data-vp-edge]');
+  if (edge) {
+    if (fillPct <= 0.001) {
+      edge.classList.add('is-empty');
+    } else {
+      edge.classList.remove('is-empty');
+      edge.style.left = fillPct.toFixed(2) + '%';
+    }
+  }
+
+  const intPart = Math.floor(value);
+  const decPart = Math.floor((value - intPart) * 100);
+  const intStr = String(intPart).padStart(4, '0');
+  const decStr = String(decPart).padStart(2, '0');
+  for (let i = 0; i < 4; i++) {
+    const el = block.querySelector(`[data-vp-d${3 - i}]`);
+    if (el && el.textContent !== intStr[i]) el.textContent = intStr[i];
+  }
+  const decEl = block.querySelector('[data-vp-dec]');
+  if (decEl && decEl.textContent !== decStr) decEl.textContent = decStr;
+
+  const cur = block.querySelector('[data-vp-current]');
+  if (cur) cur.textContent = intPart;
+  const pct = block.querySelector('[data-vp-pct]');
+  if (pct) pct.textContent = ' · ' + fillPct.toFixed(0) + '%';
+
+  block.style.setProperty('--heat', progress.toFixed(3));
+  block.classList.toggle('high-heat', fillPct >= 80);
+}
+
 /* ── INIT ── */
 async function initVoteSection() {
   if (checkAlreadyVoted()) {
-    selected = getMyVote();
-    const myTeam = teams.find(t => t.id === selected);
-    lockVoteUi(myTeam);
+    voted = true;
+    lockVoteUi();
     document.getElementById('voteHint').textContent = '投票済みです。ありがとうございました！';
   }
 
+  buildVotePowerBar();
   renderVote();
   renderRanking();
   updateStatusBanner();
+  applyVoteVisibility();
+  updateVoteCountdown();
+  updateVotePower();
   await loadVoteResults();
-  setInterval(updateStatusBanner, 30000);
+  setInterval(() => {
+    applyVoteVisibility();
+    const cd = document.getElementById('voteCountdown');
+    if (cd && !cd.hidden) {
+      updateVoteCountdown();
+    } else {
+      updateStatusBanner();
+      updateVotePower();
+    }
+  }, 1000);
+}
+
+/* ── TEST MODE (admin 画面で localStorage に '1' をセット) ── */
+const TEST_MODE_KEY = 'battlefes_test_mode';
+let lastVoteVisibilityState = null;
+function isTestModeOn() {
+  try { return localStorage.getItem(TEST_MODE_KEY) === '1'; } catch (e) { return false; }
+}
+
+function isVoteSubmissionAllowedBySchedule() {
+  const status = getVoteStatus();
+  return status === 'open' || status === 'waiting';
+}
+
+function ensureTestModeBadge() {
+  let badge = document.getElementById('testModeBadge');
+  if (isTestModeOn()) {
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.id = 'testModeBadge';
+      badge.style.cssText = 'position:fixed;top:14px;right:14px;background:#ff9933;color:#fff;font-weight:700;padding:6px 12px;border-radius:999px;font-size:0.78rem;letter-spacing:0.06em;box-shadow:0 4px 12px rgba(0,0,0,0.4);z-index:300;font-family:sans-serif;';
+      badge.textContent = 'TEST MODE';
+      (document.body || document.documentElement).appendChild(badge);
+    }
+  } else if (badge) {
+    badge.remove();
+  }
+}
+
+function isVoteUiInteractive() {
+  // 通常 UI は VOTE_OPEN まで閉じておく。
+  // TEST MODE のときだけブラウザ側で UI を開放する（サーバの時間ゲートは変更しない）。
+  return isTestModeOn() || getVoteStatus() === 'open';
+}
+
+function syncVoteActionState() {
+  const voteBtn = document.getElementById('voteBtn');
+  const hint = document.getElementById('voteHint');
+  if (!voteBtn) return;
+
+  if (voted || checkAlreadyVoted()) {
+    voteBtn.disabled = true;
+    return;
+  }
+
+  if (!isVoteUiInteractive()) {
+    voteBtn.disabled = true;
+    if (hint && isVoteSubmissionAllowedBySchedule()) hint.textContent = '投票開始までお待ちください';
+    if (hint && !isVoteSubmissionAllowedBySchedule()) hint.textContent = '投票は終了しました';
+    return;
+  }
+
+  voteBtn.disabled = !selected;
+  if (hint && !selected) hint.textContent = 'チームを選んでください';
+}
+
+/* ── VOTE COUNTDOWN (CINEMATIC v2) ── */
+// hidden 属性だけだと CSS の `display: flex` に負けるので display も明示する
+function setShown(el, shown) {
+  if (!el) return;
+  const nextDisplay = shown ? '' : 'none';
+  if (el.hidden === !shown && el.style.display === nextDisplay) return;
+  el.hidden = !shown;
+  el.style.display = nextDisplay;
+}
+
+function applyVoteVisibility() {
+  const cd = document.getElementById('voteCountdown');
+  const ui = document.getElementById('voteUI');
+  if (!cd || !ui) return;
+  const status = getVoteStatus();
+
+  const nextState = isTestModeOn()
+    ? 'test'
+    : (status === 'waiting' ? 'countdown' : 'vote');
+
+  ensureTestModeBadge();
+  if (lastVoteVisibilityState !== nextState) {
+    const showCountdown = nextState === 'countdown';
+    setShown(cd, showCountdown);
+    setShown(ui, !showCountdown);
+    if (showCountdown || !isVoteUiInteractive()) closeVoteModal();
+    lastVoteVisibilityState = nextState;
+  }
+  syncVoteActionState();
+}
+
+function buildFlapCell() {
+  const cell = document.createElement('div');
+  cell.className = 'cd-flap';
+  cell.dataset.digit = '0';
+  cell.innerHTML =
+    '<div class="cd-flap-half top back"><span>0</span></div>' +
+    '<div class="cd-flap-half bottom back"><span>0</span></div>' +
+    '<div class="cd-flap-half top flip"><span>0</span></div>' +
+    '<div class="cd-flap-half bottom flip"><span>0</span></div>';
+  return cell;
+}
+
+function ensureFlapCells(numEl, count) {
+  while (numEl.children.length < count) numEl.appendChild(buildFlapCell());
+  while (numEl.children.length > count) numEl.removeChild(numEl.lastChild);
+}
+
+function setFlapDigit(cell, newDigit) {
+  const oldDigit = cell.dataset.digit;
+  if (oldDigit === newDigit) return;
+  const halves = cell.children;
+  const backTop    = halves[0].firstElementChild;
+  const backBottom = halves[1].firstElementChild;
+  const flipTop    = halves[2].firstElementChild;
+  const flipBottom = halves[3].firstElementChild;
+
+  // If a flip is already mid-flight, snap to a clean rest at oldDigit before starting
+  if (cell.classList.contains('flipping')) {
+    cell.classList.remove('flipping');
+    backBottom.textContent = oldDigit;
+    flipTop.textContent    = oldDigit;
+    flipBottom.textContent = oldDigit;
+  }
+
+  backTop.textContent    = newDigit; // revealed when flip-top rotates away
+  flipTop.textContent    = oldDigit; // currently visible, will rotate -90
+  flipBottom.textContent = newDigit; // edge-on, will rotate to 0
+
+  void cell.offsetWidth; // restart animations
+  cell.classList.add('flipping');
+
+  const flipBottomEl = halves[3];
+  const onEnd = (e) => {
+    if (e.target !== flipBottomEl) return;
+    flipBottomEl.removeEventListener('animationend', onEnd);
+    backBottom.textContent = newDigit;
+    flipTop.textContent    = newDigit;
+    cell.classList.remove('flipping');
+    cell.dataset.digit = newDigit;
+  };
+  flipBottomEl.addEventListener('animationend', onEnd);
+}
+
+function setCdNum(id, value) {
+  const numEl = document.getElementById(id);
+  if (!numEl) return;
+  const str = String(Math.max(0, value)).padStart(2, '0');
+  ensureFlapCells(numEl, str.length);
+  for (let i = 0; i < str.length; i++) {
+    setFlapDigit(numEl.children[i], str[i]);
+  }
+}
+
+function updateVoteCountdown() {
+  const root = document.getElementById('voteCountdown');
+  if (!root || root.hidden) return;
+  const target = new Date(VOTE_OPEN).getTime();
+  const diff = Math.max(0, target - Date.now());
+  const days  = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins  = Math.floor((diff % 3600000) / 60000);
+  const secs  = Math.floor((diff % 60000) / 1000);
+  setCdNum('cd-days',  days);
+  setCdNum('cd-hours', hours);
+  setCdNum('cd-mins',  mins);
+  setCdNum('cd-secs',  secs);
+  const totalSec = Math.floor(diff / 1000);
+  root.classList.toggle('cd-final', totalSec > 0 && totalSec <= 60);
 }
 
 initVoteSection();
+window.addEventListener('storage', (event) => {
+  if (event.key && event.key !== TEST_MODE_KEY) return;
+  lastVoteVisibilityState = null;
+  updateStatusBanner();
+  applyVoteVisibility();
+  updateVoteCountdown();
+  updateVotePower();
+});
 </script>
 </body>
 </html>

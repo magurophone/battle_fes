@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vote Power Meter — Compare</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Ops+One&family=Cinzel:wght@600;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'DSEG14 Modern';
+    src: url('/assets/fonts/DSEG14Modern-Bold.woff2') format('woff2'),
+         url('/assets/fonts/DSEG14Modern-Bold.woff') format('woff');
+    font-weight: 700;
+    font-display: block;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: linear-gradient(180deg, #060a1c 0%, #0a0d28 30%, #1e0912 70%, #140407 100%) fixed;
+    color: #fff8ee;
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    padding: 3rem 2rem 5rem;
+  }
+  h1 {
+    text-align: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.4em;
+    color: rgba(255,200,140,0.85);
+    margin: 0 0 1.5rem;
+  }
+  .info {
+    text-align: center;
+    font-size: 0.78rem;
+    color: rgba(255,210,170,0.55);
+    margin-bottom: 1.2rem;
+    letter-spacing: 0.05em;
+  }
+  .info strong { color: rgba(255,210,150,0.95); }
+  .controls {
+    position: sticky; top: 0;
+    z-index: 50;
+    max-width: 1100px;
+    margin: 0 auto 2rem;
+    padding: 1rem 1.4rem;
+    display: flex; align-items: center; gap: 0.9rem;
+    background: rgba(8,3,2,0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,180,80,0.35);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.55);
+  }
+  .ctl-label {
+    color: rgba(255,200,140,0.85);
+    letter-spacing: 0.4em;
+    padding-left: 0.4em;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+  }
+  #manualFill {
+    flex: 1; min-width: 200px; max-width: 500px;
+    height: 8px;
+    -webkit-appearance: none; appearance: none;
+    background: linear-gradient(90deg, #ffd866 0%, #ff7a1e 60%, #ff2030 100%);
+    border-radius: 4px;
+    outline: none;
+  }
+  #manualFill::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 16px; height: 22px;
+    border-radius: 2px;
+    background: #fff;
+    border: 1px solid rgba(255,180,80,0.6);
+    box-shadow: 0 0 8px rgba(255,140,40,0.7), 0 2px 4px rgba(0,0,0,0.6);
+    cursor: pointer;
+  }
+  #manualFill::-moz-range-thumb {
+    width: 16px; height: 22px;
+    border-radius: 2px;
+    background: #fff;
+    border: 1px solid rgba(255,180,80,0.6);
+    box-shadow: 0 0 8px rgba(255,140,40,0.7), 0 2px 4px rgba(0,0,0,0.6);
+    cursor: pointer;
+  }
+  .ctl-val {
+    color: rgba(255,235,180,0.95);
+    min-width: 70px;
+    text-align: right;
+    font-weight: 500;
+  }
+  .ctl-btn {
+    background: rgba(40,15,6,0.6);
+    border: 1px solid rgba(255,180,80,0.5);
+    color: rgba(255,220,160,0.9);
+    padding: 0.45rem 0.9rem;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .ctl-btn:hover {
+    background: rgba(80,30,10,0.8);
+    border-color: rgba(255,200,140,0.7);
+  }
+  .ctl-btn.auto-on {
+    background: rgba(255,140,40,0.25);
+    border-color: rgba(255,200,140,0.85);
+    color: rgba(255,250,210,0.98);
+  }
+  .ctl-hint {
+    color: rgba(255,210,170,0.5);
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+    margin-left: auto;
+  }
+  @media (max-width: 720px) {
+    .controls { flex-wrap: wrap; gap: 0.6rem; padding: 0.8rem; }
+    .ctl-hint { width: 100%; margin-left: 0; }
+  }
+  .variant {
+    max-width: 720px;
+    margin: 0 auto 1.6rem;
+    padding: 1.3rem 1.6rem 1.8rem;
+    border: 1px solid rgba(255,180,80,0.18);
+    border-radius: 6px;
+    background: rgba(0,0,0,0.32);
+  }
+  .variant-label {
+    display: block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.95rem; letter-spacing: 0.45em;
+    color: rgba(255,200,140,0.88);
+    margin-bottom: 0.4rem;
+    padding-left: 0.4em;
+  }
+  .variant-desc {
+    display: block;
+    font-size: 0.78rem;
+    color: rgba(255,210,170,0.55);
+    margin-bottom: 1.4rem;
+  }
+
+  /* === Shared meter chrome === */
+  .meter {
+    display: flex; flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  .meter-eyebrow {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.55em;
+    color: rgba(255,200,140,0.7);
+    padding-left: 0.55em;
+  }
+  .meter-eyebrow-jp {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 400;
+    font-size: 0.66rem;
+    letter-spacing: 0.4em;
+    color: rgba(255,200,140,0.4);
+    padding-left: 0.4em;
+    margin-top: -0.6rem;
+  }
+  .bar {
+    width: 100%;
+    height: 10px;
+    background: rgba(255,180,80,0.12);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255,180,80,0.18);
+  }
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffd866 0%, #ff7a1e 60%, #ff2030 100%);
+    box-shadow: 0 0 14px rgba(255,140,40,0.55);
+    transition: width 0.2s linear;
+  }
+  .bar-meta {
+    width: 100%;
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(255,200,140,0.55);
+    letter-spacing: 0.06em;
+    margin-top: -0.2rem;
+  }
+
+  /* === A. INTEGER ONLY (baseline) === */
+  .va .int {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 4.2rem;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    background: linear-gradient(178deg, #fff 0%, #fff4c2 14%, #ffd866 32%, #ffae3d 55%, #ff7a1e 80%, #e83a14 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 22px rgba(255,150,40,0.4)) drop-shadow(0 4px 10px rgba(0,0,0,0.7));
+  }
+  .va .unit {
+    font-size: 0.32em;
+    margin-left: 0.18em;
+    letter-spacing: 0.18em;
+    -webkit-text-fill-color: rgba(255,200,140,0.65);
+  }
+
+  /* === B. INTEGER + small decimal (user's preference) === */
+  .vb .num-row {
+    display: inline-flex; align-items: baseline;
+    font-family: 'Black Ops One', sans-serif;
+    line-height: 1;
+    background: linear-gradient(178deg, #fff 0%, #fff4c2 14%, #ffd866 32%, #ffae3d 55%, #ff7a1e 80%, #e83a14 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 22px rgba(255,150,40,0.4)) drop-shadow(0 4px 10px rgba(0,0,0,0.7));
+  }
+  .vb .int { font-size: 4.2rem; letter-spacing: 0.02em; }
+  .vb .dot { font-size: 4.2rem; opacity: 0.5; }
+  .vb .dec {
+    font-size: 1.7rem;
+    letter-spacing: 0.05em;
+    margin-left: 0.05em;
+    align-self: baseline;
+  }
+  .vb .unit {
+    font-size: 1.3rem;
+    margin-left: 0.4em;
+    letter-spacing: 0.18em;
+    -webkit-text-fill-color: rgba(255,200,140,0.65);
+  }
+
+  /* === C. ODOMETER (whole rolling number including decimal) === */
+  .vc .num-row {
+    display: inline-flex; align-items: baseline;
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 3.8rem;
+    line-height: 1;
+    background: linear-gradient(178deg, #fff 0%, #ffd866 40%, #ff7a1e 80%, #e83a14 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 18px rgba(255,150,40,0.4));
+  }
+  .vc .col {
+    display: inline-block;
+    width: 0.7em; height: 1em;
+    overflow: hidden;
+    vertical-align: top;
+    position: relative;
+  }
+  .vc .strip {
+    display: flex; flex-direction: column;
+    will-change: transform;
+    /* transition は JS 側で col 種別ごとに付与 */
+  }
+  .vc .col.fast {
+    animation: vcShake 90ms infinite linear;
+  }
+  @keyframes vcShake {
+    0%   { transform: translate(0, 0); }
+    20%  { transform: translate(-0.4px, 0.3px); }
+    40%  { transform: translate(0.5px, -0.2px); }
+    60%  { transform: translate(-0.3px, 0.4px); }
+    80%  { transform: translate(0.4px, 0.2px); }
+    100% { transform: translate(0, 0); }
+  }
+  .vc .strip > span {
+    height: 1em;
+    line-height: 1em;
+    text-align: center;
+    display: block;
+    background: linear-gradient(178deg, #fff 0%, #ffd866 40%, #ff7a1e 80%, #e83a14 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 14px rgba(255,150,40,0.4));
+  }
+  .vc .dot { display: inline-block; opacity: 0.55; }
+  .vc .unit {
+    font-size: 0.34em;
+    margin-left: 0.3em;
+    letter-spacing: 0.18em;
+    -webkit-text-fill-color: rgba(255,200,140,0.6);
+  }
+
+  /* === D. DSEG14 LED scoreboard (meter おとなしい) === */
+  .vd .led-frame {
+    padding: 0.95rem 1.5rem;
+    background: linear-gradient(180deg, #050203, #0a0503);
+    border: 1px solid rgba(255,180,80,0.22);
+    border-radius: 4px;
+    box-shadow:
+      inset 0 0 0 2px rgba(0,0,0,0.55),
+      inset 0 1px 0 rgba(255,210,140,0.08),
+      0 4px 14px rgba(0,0,0,0.5);
+    display: inline-flex; align-items: baseline;
+    font-family: 'DSEG14 Modern', monospace;
+    font-weight: 700;
+    font-size: 2.8rem;
+    color: transparent;
+    line-height: 1;
+    letter-spacing: 0.04em;
+  }
+  .vd .led-num {
+    background: linear-gradient(180deg, #ffd062 0%, #ff8a2c 60%, #d62e0a 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 8px rgba(255,140,40,0.32));
+  }
+  .vd .led-unit {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.38em;
+    margin-left: 0.5em;
+    letter-spacing: 0.3em;
+    color: rgba(255,200,140,0.55);
+    -webkit-text-fill-color: rgba(255,200,140,0.55);
+    align-self: center;
+    padding-bottom: 0.3em;
+  }
+  /* === E's POWER METER — 軍用HUD / 離散LED式 === */
+  .ve .power-wrap {
+    width: 100%;
+    display: flex; flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.2rem;
+  }
+  /* 上部 tick marks */
+  .ve .power-ticks {
+    position: relative;
+    height: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: rgba(255,210,150,0.55);
+    letter-spacing: 0.05em;
+  }
+  .ve .power-ticks .tick {
+    position: absolute;
+    top: 4px;
+    width: 1px;
+    background: rgba(255,180,80,0.4);
+    bottom: 0;
+  }
+  .ve .power-ticks .tick.major {
+    top: 0;
+    background: rgba(255,210,150,0.65);
+  }
+  .ve .power-ticks .tick-label {
+    position: absolute;
+    bottom: 100%;
+    transform: translateX(-50%);
+    line-height: 1;
+    margin-bottom: 1px;
+    font-size: 0.55rem;
+    color: rgba(255,210,150,0.7);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.85);
+  }
+  .ve .bar {
+    position: relative;
+    height: 28px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.85), rgba(8,3,2,0.92));
+    border: 1px solid rgba(255,180,80,0.5);
+    border-radius: 2px;
+    box-shadow:
+      inset 0 1px 3px rgba(0,0,0,0.85),
+      inset 0 -1px 0 rgba(255,180,80,0.18),
+      0 0 0 1px rgba(0,0,0,0.55),
+      0 4px 16px rgba(0,0,0,0.55);
+    overflow: visible;
+  }
+  /* Scan-line overlay (sci-fi HUD) */
+  .ve .bar::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    background:
+      repeating-linear-gradient(0deg,
+        rgba(255,255,255,0) 0 2px,
+        rgba(255,255,255,0.04) 2px 3px);
+    pointer-events: none;
+    z-index: 3;
+    border-radius: 1px;
+  }
+  /* Outer breathing halo */
+  .ve .bar::after {
+    content: '';
+    position: absolute;
+    inset: -14px -10px;
+    background:
+      radial-gradient(ellipse at center,
+        rgba(255,140,40,0.45) 0%,
+        rgba(255,60,20,0.22) 40%,
+        transparent 75%);
+    filter: blur(16px);
+    z-index: -1;
+    pointer-events: none;
+    animation: veHalo 2.6s ease-in-out infinite;
+  }
+  @keyframes veHalo {
+    0%, 100% { opacity: 0.5; transform: scaleY(0.95); }
+    50%      { opacity: 1.0; transform: scaleY(1.15); }
+  }
+  /* セル群 */
+  .ve .bar-cells {
+    position: absolute;
+    inset: 2px;
+    display: flex;
+    gap: 2px;
+    z-index: 1;
+  }
+  .ve .cell {
+    flex: 1;
+    height: 100%;
+    background:
+      linear-gradient(180deg, rgba(255,180,80,0.06) 0%, rgba(255,140,40,0.03) 100%);
+    border-radius: 1px;
+    transition: background 220ms ease-out, box-shadow 220ms ease-out, transform 220ms;
+    position: relative;
+  }
+  /* Cell の色は idx (0-29) に応じてHSLでシフト
+     idx 0=黄金 → 15=オレンジ → 29=深紅
+     hue: 55 (yellow-gold) → 0 (pure red) over 29 cells = -1.9 per idx */
+  .ve .cell.lit {
+    background:
+      linear-gradient(180deg,
+        rgba(255,250,220,0.95) 0%,
+        hsl(calc(55deg - var(--idx) * 1.7deg), 100%, 64%) 28%,
+        hsl(calc(40deg - var(--idx) * 1.4deg), 100%, 50%) 65%,
+        hsl(calc(15deg - var(--idx) * 0.5deg), 100%, 38%) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.55),
+      inset 0 -1px 0 rgba(0,0,0,0.35),
+      0 0 7px hsla(calc(45deg - var(--idx) * 1.5deg), 100%, 55%, 0.85),
+      0 0 14px hsla(calc(35deg - var(--idx) * 1.4deg), 100%, 50%, 0.45);
+  }
+  /* Danger zone (idx 25-29): 軽い pulse */
+  .ve .cell.lit:nth-child(n+26) {
+    animation: veCellHot 0.65s ease-in-out infinite alternate;
+  }
+  @keyframes veCellHot {
+    0%   { filter: brightness(1) saturate(1.0); }
+    100% { filter: brightness(1.25) saturate(1.3); }
+  }
+  .ve .cell.partial {
+    background:
+      linear-gradient(180deg,
+        rgba(255,250,220, calc(var(--p) * 0.95)) 0%,
+        hsla(calc(55deg - var(--idx) * 1.7deg), 100%, 64%, calc(var(--p) * 0.95)) 28%,
+        hsla(calc(40deg - var(--idx) * 1.4deg), 100%, 50%, calc(var(--p) * 0.95)) 65%,
+        hsla(calc(15deg - var(--idx) * 0.5deg), 100%, 38%, calc(var(--p) * 0.85)) 100%);
+    box-shadow:
+      0 0 calc(var(--p) * 7px) hsla(calc(45deg - var(--idx) * 1.5deg), 100%, 55%, calc(var(--p) * 0.85));
+  }
+  /* Leading edge: 縦ビーム + フレア */
+  .ve .bar-edge {
+    position: absolute;
+    top: -6px; bottom: -6px;
+    width: 3px;
+    background:
+      linear-gradient(180deg, transparent 0%, #fff 30%, #fff 70%, transparent 100%);
+    box-shadow:
+      0 0 6px #fff,
+      0 0 14px rgba(255,235,170,0.95),
+      0 0 28px rgba(255,140,40,0.85),
+      0 0 50px rgba(255,80,30,0.7);
+    transform: translateX(-1.5px);
+    z-index: 4;
+    transition: left 0.2s linear;
+    animation: veEdge 0.5s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+  @keyframes veEdge {
+    0%   { opacity: 0.7; box-shadow: 0 0 6px #fff, 0 0 14px rgba(255,235,170,0.85), 0 0 28px rgba(255,140,40,0.7), 0 0 50px rgba(255,80,30,0.55); }
+    100% { opacity: 1.0; box-shadow: 0 0 8px #fff, 0 0 22px rgba(255,235,170,1.0), 0 0 42px rgba(255,140,40,0.95), 0 0 76px rgba(255,80,30,0.85); }
+  }
+  /* edge の左側にフレア (押し出す側) */
+  .ve .bar-edge::before {
+    content: '';
+    position: absolute;
+    right: 100%;
+    top: -2px; bottom: -2px;
+    width: 16px;
+    background:
+      linear-gradient(90deg, transparent 0%, rgba(255,200,100,0.5) 70%, rgba(255,255,255,0.95) 100%);
+    filter: blur(2px);
+    pointer-events: none;
+  }
+  /* edge の右側にスパーク (進行方向、未点灯側に飛び出す) */
+  .ve .bar-edge::after {
+    content: '';
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    background:
+      radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,200,100,0.5) 30%, transparent 65%);
+    filter: blur(1px);
+    pointer-events: none;
+    animation: veSparkBurst 0.4s ease-out infinite;
+  }
+  @keyframes veSparkBurst {
+    0%   { transform: translateY(-50%) scale(0.6); opacity: 1; }
+    100% { transform: translateY(-50%) scale(1.4); opacity: 0; }
+  }
+  /* Bottom: numeric overlay (current / max in mono) */
+  .ve .power-numeric {
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(255,210,150,0.78);
+    letter-spacing: 0.06em;
+    text-shadow: 0 0 8px rgba(255,140,40,0.4);
+  }
+  .ve .power-numeric .pn-current { color: rgba(255,235,180,0.95); font-weight: 500; }
+  .ve .power-numeric .pn-pct {
+    font-size: 0.62rem;
+    opacity: 0.65;
+    margin-left: 0.3em;
+  }
+  .ve .bar-meta { display: none; } /* old meta hidden */
+
+  /* === E. SPLIT-FLAP integer + small decimal sub === */
+  .ve .flap-row {
+    display: inline-flex; align-items: baseline; gap: 0.04em;
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 3.2rem;
+    line-height: 1;
+  }
+  .ve .flap {
+    display: inline-block;
+    width: 0.7em; height: 1em;
+    background: linear-gradient(180deg, #1c0d05, #0a0503);
+    border-radius: 4px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,210,140,0.18),
+      inset 0 -1px 0 rgba(0,0,0,0.55),
+      0 4px 12px rgba(0,0,0,0.5);
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .ve .flap::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 50%;
+    height: 1px;
+    background: rgba(0,0,0,0.7);
+  }
+  .ve {
+    --heat: 0;
+  }
+  .ve .flap span {
+    display: block;
+    background: linear-gradient(178deg,
+      #ffffff 0%,
+      hsl(calc(55deg - var(--heat) * 55deg), 100%, 65%) 32%,
+      hsl(calc(38deg - var(--heat) * 38deg), 100%, 50%) 65%,
+      hsl(calc(15deg - var(--heat) * 15deg), 100%, calc(40% - var(--heat) * 5%)) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 calc(14px + var(--heat) * 12px) hsla(calc(40deg - var(--heat) * 40deg), 100%, 55%, calc(0.45 + var(--heat) * 0.4)));
+    transition: filter 0.4s linear;
+  }
+  .ve.high-heat .flap span {
+    animation: veHeatPulse 0.55s ease-in-out infinite alternate;
+  }
+  @keyframes veHeatPulse {
+    0%   { transform: scale(1);    filter: drop-shadow(0 0 18px rgba(255,80,40,0.65)) brightness(1); }
+    100% { transform: scale(1.025); filter: drop-shadow(0 0 30px rgba(255,80,40,1)) brightness(1.18); }
+  }
+  .ve .dec-wrap {
+    display: inline-flex; align-items: baseline;
+    margin-left: 0.18em;
+  }
+  .ve .dec-dot {
+    font-size: 3.2rem; line-height: 1;
+    color: rgba(255,200,140,0.5);
+    margin-right: 0.05em;
+  }
+  .ve .dec {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 1.4rem;
+    background: linear-gradient(178deg,
+      #ffffff 0%,
+      hsl(calc(55deg - var(--heat) * 55deg), 100%, 65%) 32%,
+      hsl(calc(38deg - var(--heat) * 38deg), 100%, 50%) 65%,
+      hsl(calc(15deg - var(--heat) * 15deg), 100%, calc(40% - var(--heat) * 5%)) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .ve.high-heat .dec {
+    animation: veHeatPulse 0.55s ease-in-out infinite alternate;
+  }
+  .ve .unit {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    margin-left: 0.4em;
+    letter-spacing: 0.18em;
+    color: rgba(255,200,140,0.55);
+  }
+
+</style>
+</head>
+<body>
+
+<h1>VOTE POWER METER COMPARE</h1>
+<p class="info">
+  curve: <strong>100pt → 5000pt linear over 90min</strong>　・　毎秒 +0.91pt 増加
+</p>
+
+<div class="controls">
+  <label class="ctl-label">FILL</label>
+  <input type="range" id="manualFill" min="0" max="100" step="0.1" value="24" />
+  <span id="manualVal" class="ctl-val">24.0%</span>
+  <button id="modeBtn" class="ctl-btn auto-on" type="button">AUTO ▶</button>
+  <span class="ctl-hint">スライダー操作で MANUAL に切替、「AUTO ▶」で本番速度ループに戻る</span>
+</div>
+
+<!-- A. Integer only -->
+<div class="variant va">
+  <span class="variant-label">A. INTEGER ONLY (baseline)</span>
+  <span class="variant-desc">整数のみ、Black Ops One 金グラ。毎秒 1 ずつ整数が変わる演出 (約 1.1 秒に 1 回)</span>
+  <div class="meter">
+    <div class="meter-eyebrow">VOTE POWER</div>
+    <div class="meter-eyebrow-jp">投票パワー</div>
+    <div><span class="int" data-int>1234</span><span class="unit">PT</span></div>
+    <div class="bar"><div class="bar-fill" data-fill style="width: 24%"></div></div>
+    <div class="bar-meta"><span>100 PT</span><span>5000 PT</span></div>
+  </div>
+</div>
+
+<!-- B. Integer + small decimal (user preference) -->
+<div class="variant vb">
+  <span class="variant-label">B. INTEGER + DECIMAL (推奨案)</span>
+  <span class="variant-desc">大きい整数 + 小さめ小数2桁が常時カウントアップ。stopwatch 系のライブ感、ticker</span>
+  <div class="meter">
+    <div class="meter-eyebrow">VOTE POWER</div>
+    <div class="meter-eyebrow-jp">投票パワー</div>
+    <div class="num-row">
+      <span class="int" data-int>1234</span>
+      <span class="dot">.</span>
+      <span class="dec" data-dec>45</span>
+      <span class="unit">PT</span>
+    </div>
+    <div class="bar"><div class="bar-fill" data-fill style="width: 24%"></div></div>
+    <div class="bar-meta"><span>100 PT</span><span>5000 PT</span></div>
+  </div>
+</div>
+
+<!-- C. Odometer rolling -->
+<div class="variant vc">
+  <span class="variant-label">C. ODOMETER ROLLING (各桁が縦スクロール)</span>
+  <span class="variant-desc">各桁が独立した縦ストリップで、変わる桁だけがスムーズに回転。アクションゲーム的</span>
+  <div class="meter">
+    <div class="meter-eyebrow">VOTE POWER</div>
+    <div class="meter-eyebrow-jp">投票パワー</div>
+    <div class="num-row" id="odo-row"></div>
+    <div class="bar"><div class="bar-fill" data-fill style="width: 24%"></div></div>
+    <div class="bar-meta"><span>100 PT</span><span>5000 PT</span></div>
+  </div>
+</div>
+
+<!-- D. DSEG14 LED scoreboard -->
+<div class="variant vd">
+  <span class="variant-label">D. LED SCOREBOARD (DSEG14 14セグLED)</span>
+  <span class="variant-desc">スタジアムの LED スコアボード風、UFC リング下のカウンターっぽい</span>
+  <div class="meter">
+    <div class="meter-eyebrow">VOTE POWER</div>
+    <div class="meter-eyebrow-jp">投票パワー</div>
+    <div class="led-frame">
+      <span class="led-num" data-led>1234.45</span>
+      <span class="led-unit">PT</span>
+    </div>
+    <div class="bar"><div class="bar-fill" data-fill style="width: 24%"></div></div>
+    <div class="bar-meta"><span>100 PT</span><span>5000 PT</span></div>
+  </div>
+</div>
+
+<!-- E. Split-flap + decimal -->
+<div class="variant ve">
+  <span class="variant-label">E. SPLIT-FLAP INTEGER + DECIMAL</span>
+  <span class="variant-desc">countdown と同じ split-flap 方式 (整数のみ機械式) + 横に decimal がスムーズにカウントアップ</span>
+  <div class="meter">
+    <div class="meter-eyebrow">VOTE POWER</div>
+    <div class="meter-eyebrow-jp">投票パワー</div>
+    <div class="flap-row">
+      <span class="flap"><span data-flap-d3>1</span></span>
+      <span class="flap"><span data-flap-d2>2</span></span>
+      <span class="flap"><span data-flap-d1>3</span></span>
+      <span class="flap"><span data-flap-d0>4</span></span>
+      <span class="dec-wrap">
+        <span class="dec-dot">.</span>
+        <span class="dec" data-dec-flap>45</span>
+      </span>
+      <span class="unit">PT</span>
+    </div>
+    <div class="power-wrap">
+      <div class="power-ticks" data-ve-ticks></div>
+      <div class="bar">
+        <div class="bar-cells" data-ve-cells></div>
+        <div class="bar-edge" data-ve-edge></div>
+      </div>
+      <div class="power-numeric">
+        <span><span class="pn-current" data-ve-current>1234</span> PT<span class="pn-pct" data-ve-pct> · 24%</span></span>
+        <span>5000 PT MAX</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// === Live demo: 5x speed simulation of 100→5000 over 90min ===
+// Real curve: 100 + 4900 * (t / 90min)
+// We simulate at 5x speed (90min becomes 18min) and loop every 18 minutes
+// Initial value: 1234.45 (about 24% of the way)
+
+const SIM_DURATION_REAL_MS = 90 * 60 * 1000; // 90 min real
+const SIM_SPEED = 1; // real time
+const SIM_LOOP_MS = SIM_DURATION_REAL_MS / SIM_SPEED; // 90 min loop
+const MIN = 100, MAX = 5000;
+
+// Start at the value that produces 1234.45 = 24% progress
+// (1234.45 - 100) / (5000-100) = 0.2315... so start at 23.15% through the loop
+const START_OFFSET = ((1234.45 - MIN) / (MAX - MIN)) * SIM_LOOP_MS;
+const startTime = performance.now() - START_OFFSET;
+
+// Build odometer columns for variant C
+function buildOdoColumns() {
+  const root = document.getElementById('odo-row');
+  if (!root) return;
+  const cols = ['1','2','3','4','dot','d1','d2'];
+  for (const t of cols) {
+    if (t === 'dot') {
+      const el = document.createElement('span');
+      el.className = 'dot';
+      el.textContent = '.';
+      el.style.fontSize = '3.8rem';
+      el.style.lineHeight = '1';
+      root.appendChild(el);
+    } else {
+      const col = document.createElement('span');
+      col.className = 'col';
+      const strip = document.createElement('span');
+      strip.className = 'strip';
+      strip.dataset.col = t;
+      for (let d = 0; d <= 9; d++) {
+        const span = document.createElement('span');
+        span.textContent = d;
+        strip.appendChild(span);
+      }
+      col.appendChild(strip);
+      root.appendChild(col);
+    }
+  }
+  // Add unit
+  const unit = document.createElement('span');
+  unit.className = 'unit';
+  unit.textContent = 'PT';
+  root.appendChild(unit);
+}
+buildOdoColumns();
+markFastCol('d1');
+markFastCol('d2');
+
+// === E variant: build segmented bar + ticks ===
+const VE_CELL_COUNT = 30;
+function buildVeBar() {
+  const cellsRoot = document.querySelector('[data-ve-cells]');
+  if (cellsRoot) {
+    for (let i = 0; i < VE_CELL_COUNT; i++) {
+      const c = document.createElement('div');
+      c.className = 'cell';
+      c.style.setProperty('--idx', i);
+      cellsRoot.appendChild(c);
+    }
+  }
+  const ticksRoot = document.querySelector('[data-ve-ticks]');
+  if (ticksRoot) {
+    for (let pct = 0; pct <= 100; pct += 5) {
+      const tick = document.createElement('div');
+      tick.className = 'tick' + (pct % 20 === 0 ? ' major' : '');
+      tick.style.left = pct + '%';
+      ticksRoot.appendChild(tick);
+      if (pct % 20 === 0) {
+        const lbl = document.createElement('div');
+        lbl.className = 'tick-label';
+        lbl.style.left = pct + '%';
+        lbl.textContent = pct;
+        ticksRoot.appendChild(lbl);
+      }
+    }
+  }
+}
+buildVeBar();
+
+window.updateVeBar = updateVeBar;
+function updateVeBar(value, fillPct) {
+  // cells
+  const cells = document.querySelectorAll('[data-ve-cells] .cell');
+  const lit = (fillPct / 100) * VE_CELL_COUNT;
+  cells.forEach((c, i) => {
+    if (i + 1 <= Math.floor(lit)) {
+      if (!c.classList.contains('lit')) c.classList.add('lit');
+      if (c.classList.contains('partial')) c.classList.remove('partial');
+      c.style.removeProperty('--p');
+    } else if (i < lit) {
+      if (!c.classList.contains('partial')) c.classList.add('partial');
+      if (c.classList.contains('lit')) c.classList.remove('lit');
+      c.style.setProperty('--p', (lit - i).toFixed(2));
+    } else {
+      if (c.classList.contains('lit')) c.classList.remove('lit');
+      if (c.classList.contains('partial')) c.classList.remove('partial');
+      c.style.removeProperty('--p');
+    }
+  });
+  // edge
+  const edge = document.querySelector('[data-ve-edge]');
+  if (edge) edge.style.left = fillPct.toFixed(2) + '%';
+  // numeric
+  const cur = document.querySelector('[data-ve-current]');
+  if (cur) cur.textContent = Math.floor(value);
+  const pct = document.querySelector('[data-ve-pct]');
+  if (pct) pct.textContent = ' · ' + fillPct.toFixed(0) + '%';
+  // heat (0-1) drives digit color shift via CSS var
+  const veRoot = document.querySelector('.variant.ve');
+  if (veRoot) {
+    veRoot.style.setProperty('--heat', (fillPct / 100).toFixed(3));
+    veRoot.classList.toggle('high-heat', fillPct >= 80);
+  }
+}
+
+function setOdoColTick(name, digit) {
+  // 整数桁: 200ms tick 演出
+  const strip = document.querySelector(`#odo-row .strip[data-col="${name}"]`);
+  if (!strip) return;
+  if (strip.dataset.mode !== 'tick') {
+    strip.style.transition = 'transform 200ms cubic-bezier(0.65, 0.05, 0.36, 1)';
+    strip.dataset.mode = 'tick';
+  }
+  strip.style.transform = `translateY(-${digit * 10}%)`;
+}
+function setOdoColContinuous(name, position) {
+  // 小数桁: 連続 fractional 位置、transition なしでフレームごとに直接位置決め
+  const strip = document.querySelector(`#odo-row .strip[data-col="${name}"]`);
+  if (!strip) return;
+  if (strip.dataset.mode !== 'continuous') {
+    strip.style.transition = 'none';
+    strip.dataset.mode = 'continuous';
+  }
+  strip.style.transform = `translateY(-${(position * 10).toFixed(3)}%)`;
+}
+function markFastCol(name) {
+  const strip = document.querySelector(`#odo-row .strip[data-col="${name}"]`);
+  if (!strip) return;
+  strip.parentElement.classList.add('fast');
+}
+
+// Track previous integer for split-flap animation
+let prevIntForFlap = 1234;
+
+// Manual override via slider
+let manualMode = false;
+let manualPct = 24;
+const slider = document.getElementById('manualFill');
+const valDisp = document.getElementById('manualVal');
+const modeBtn = document.getElementById('modeBtn');
+slider.addEventListener('input', () => {
+  manualMode = true;
+  manualPct = parseFloat(slider.value);
+  valDisp.textContent = manualPct.toFixed(1) + '%';
+  modeBtn.classList.remove('auto-on');
+  modeBtn.textContent = 'MANUAL ◼';
+});
+modeBtn.addEventListener('click', () => {
+  manualMode = false;
+  modeBtn.classList.add('auto-on');
+  modeBtn.textContent = 'AUTO ▶';
+});
+
+function updateAll() {
+  let value, fillPct;
+  if (manualMode) {
+    fillPct = manualPct;
+    value = MIN + (MAX - MIN) * (fillPct / 100);
+  } else {
+    const elapsed = (performance.now() - startTime) % SIM_LOOP_MS;
+    const progress = elapsed / SIM_LOOP_MS;
+    value = MIN + (MAX - MIN) * progress;
+    fillPct = progress * 100;
+    // Reflect AUTO state into slider for visual sync
+    if (slider) {
+      slider.value = fillPct.toFixed(2);
+      valDisp.textContent = fillPct.toFixed(1) + '%';
+    }
+  }
+
+  const intPart = Math.floor(value);
+  const decPart = Math.floor((value - intPart) * 100);
+  const decStr = String(decPart).padStart(2, '0');
+  const intStr = String(intPart).padStart(4, '0');
+
+  // Update progress bars (variants A-D use shared bar)
+  document.querySelectorAll('[data-fill]').forEach(el => {
+    el.style.width = fillPct.toFixed(2) + '%';
+  });
+  // E variant: segmented bar + edge + numeric
+  updateVeBar(value, fillPct);
+
+  // A: integer only
+  document.querySelectorAll('.va [data-int]').forEach(el => el.textContent = intPart);
+  // B: integer + decimal
+  document.querySelectorAll('.vb [data-int]').forEach(el => el.textContent = intPart);
+  document.querySelectorAll('.vb [data-dec]').forEach(el => el.textContent = decStr);
+  // C: odometer (DOM order: col-1 = thousands ... col-4 = ones, d1/d2 = decimal)
+  for (let i = 0; i < 4; i++) {
+    setOdoColTick(String(i + 1), parseInt(intStr[i], 10));
+  }
+  // 小数は fractional 連続スピン
+  const decValue = (value - intPart) * 100; // 0.00 - 99.99
+  setOdoColContinuous('d1', (decValue / 10) % 10);
+  setOdoColContinuous('d2', decValue % 10);
+  // D: LED
+  document.querySelectorAll('[data-led]').forEach(el => el.textContent = `${intPart}.${decStr}`);
+  // E: split-flap (only update integer when changes; decimal smoothly)
+  const flapDigits = intStr.split('');
+  for (let i = 0; i < 4; i++) {
+    const el = document.querySelector(`[data-flap-d${3 - i}]`);
+    if (el && el.textContent !== flapDigits[i]) {
+      el.textContent = flapDigits[i];
+    }
+  }
+  document.querySelectorAll('[data-dec-flap]').forEach(el => el.textContent = decStr);
+}
+
+setInterval(updateAll, 50); // 20fps
+updateAll();
+</script>
+</body>
+</html>
