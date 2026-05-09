@@ -1,0 +1,11 @@
+{
+  "result": null,
+  "success": false,
+  "errors": [
+    {
+      "code": 8000024,
+      "message": "Invalid list options provided. Review the `page` or `per_page` parameter."
+    }
+  ],
+  "messages": []
+}
