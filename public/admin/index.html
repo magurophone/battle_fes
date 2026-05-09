@@ -394,15 +394,15 @@
   <div class="shell">
     <header class="hero">
       <h1>BATTLE FES ADMIN</h1>
-      <div class="subtitle">投票結果の確認、リセット、イベント感想の管理を行う管理画面です。</div>
+      <div class="subtitle">投票集計の確認、リセット、イベント感想の管理を行う管理画面です。</div>
     </header>
 
     <section id="loginPanel" class="panel row">
-      <h2>Admin Login</h2>
-      <p class="lead">管理パスワードを入力してダッシュボードを開きます。</p>
-      <label for="adminToken">Admin Password</label>
+      <h2>管理者ログイン</h2>
+      <p class="lead">管理者パスワードを入力してダッシュボードを開きます。</p>
+      <label for="adminToken">管理者パスワード</label>
       <div class="password-row">
-        <input id="adminToken" type="password" placeholder="管理パスワードを入力" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="statusText">
+        <input id="adminToken" type="password" placeholder="管理者パスワードを入力" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="statusText">
         <button type="button" id="togglePwBtn" class="toggle-password-btn" onclick="togglePasswordVisibility()" aria-label="パスワードを表示" aria-pressed="false">表示</button>
       </div>
       <div class="admin-actions">
@@ -411,7 +411,7 @@
     </section>
 
     <section id="adminBar" class="panel row hidden">
-      <h2>Admin Actions</h2>
+      <h2>管理操作</h2>
       <div class="admin-actions">
         <button type="button" class="primary" onclick="loadAdmin()">再読み込み</button>
         <button type="button" class="danger" onclick="resetVotes()">投票をリセット</button>
@@ -424,8 +424,8 @@
     </div>
 
     <section class="panel testmode row">
-      <h2>Test Mode</h2>
-      <p class="lead">有効時は投票UIにテスト状態を表示します。APIの挙動は変えず、表示だけを切り替えます。</p>
+      <h2>テストモード</h2>
+      <p class="lead">実投票画面の投票UIにテスト表示を反映します。APIの挙動は変えず、表示だけを切り替えます。</p>
       <div class="admin-actions">
         <button type="button" id="testModeToggleBtn" onclick="toggleTestMode()">テストモード OFF</button>
         <span id="testModeStatus" class="status"></span>
@@ -435,7 +435,7 @@
     <main id="dashboard" class="hidden">
       <section class="stats-row">
         <div class="stat-card">
-          <strong>Vote Status</strong>
+          <strong>投票状態</strong>
           <span id="voteStatus">-</span>
         </div>
       </section>
@@ -443,7 +443,7 @@
       <div id="categoriesWrap"></div>
 
       <section class="panel">
-        <h2>Event Impressions</h2>
+        <h2>イベント感想</h2>
         <table>
           <thead>
             <tr>
@@ -520,13 +520,12 @@
       if (!response.ok) {
         let message;
         if (response.status === 401) {
-          message = "認証エラー: 管理パスワードを確認してください";
+          message = "認証エラー: 管理者パスワードを確認してください";
         } else if (response.status === 403) {
           message = data.error || "アクセスが拒否されました";
         } else {
           message = data.error || `Request failed: ${response.status}`;
         }
-        // status を error オブジェクトに保持して isAuthError() で判定可能にする
         const err = new Error(message);
         err.status = response.status;
         err.data = data;
@@ -541,7 +540,7 @@
       const candidate = input.value.trim();
 
       if (!candidate) {
-        setStatus("管理パスワードを入力してください");
+        setStatus("管理者パスワードを入力してください");
         input.focus();
         return;
       }
@@ -587,7 +586,7 @@
 
       if (status) {
         status.textContent = on
-          ? "テスト表示が有効です。投票UIに待機表示を出します。"
+          ? "テスト表示が有効です。投票UIに補助表示を反映します。"
           : "通常表示です。";
       }
     }
@@ -609,13 +608,24 @@
     }
 
     function escapeHtml(value) {
-      return String(value == null ? "" : value).replace(/[&<>"']/g, (char) => ({
+      return String(value == null ? "" : value).replace(/[&<>\"']/g, (char) => ({
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
         "\"": "&quot;",
         "'": "&#39;"
       }[char]));
+    }
+
+    // 日時表示用ヘルパ: 本番は 7/18 の単日イベントなので時刻のみで一意に識別できる
+    function formatJstTime(iso) {
+      if (!iso) return "-";
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return iso;
+      const hh = String(d.getHours()).padStart(2, "0");
+      const mm = String(d.getMinutes()).padStart(2, "0");
+      const ss = String(d.getSeconds()).padStart(2, "0");
+      return `${hh}:${mm}:${ss}`;
     }
 
     function teamName(id) {
@@ -661,7 +671,7 @@
 
       const logRows = voteLog.map((entry) => `
         <tr>
-          <td>${escapeHtml(entry.timestamp || "-")}</td>
+          <td>${escapeHtml(formatJstTime(entry.timestamp))}</td>
           <td>${escapeHtml(candidateName(category, entry.candidateId))}</td>
           <td>${escapeHtml(entry.voterName || "-")}</td>
           <td>${escapeHtml(entry.comment || "")}</td>
@@ -674,9 +684,7 @@
           <div class="meta-grid">
             <div><strong>総投票数:</strong> ${totalVotes}</div>
             <div><strong>ユニーク端末:</strong> ${uniqueFingerprints}</div>
-            <div><strong>送信件数:</strong> ${Number(meta.totalSubmissions) || 0}</div>
-            <div><strong>更新日時:</strong> ${escapeHtml(results.updatedAt || "-")}</div>
-            <div><strong>最終投票:</strong> ${escapeHtml(meta.lastVoteAt || "-")}</div>
+            <div><strong>最終投票:</strong> ${escapeHtml(formatJstTime(meta.lastVoteAt))}</div>
           </div>
           <table>
             <thead>
@@ -721,7 +729,7 @@
       document.getElementById("eventImpressionsBody").innerHTML = impressions.length
         ? impressions.map((entry) => `
             <tr>
-              <td>${escapeHtml(entry.timestamp || "-")}</td>
+              <td>${escapeHtml(formatJstTime(entry.timestamp))}</td>
               <td>${escapeHtml(entry.voterName || "-")}</td>
               <td>${escapeHtml(entry.comment || "")}</td>
             </tr>
@@ -734,7 +742,7 @@
         const data = await api("/api/admin/results");
         renderSnapshot(data);
         setLoggedInUi(true);
-        setStatus(options.successMessage || "管理データを読み込みました");
+        setStatus(options.successMessage || "管理者データを再読み込みしました");
         return data;
       } catch (error) {
         if (isAuthError(error)) {
@@ -747,7 +755,7 @@
     }
 
     async function resetVotes() {
-      const confirmed = window.confirm("すべての投票データとログをリセットします。元に戻せません。実行しますか？");
+      const confirmed = window.confirm("すべての投票データとログをリセットします。本当に実行しますか？");
       if (!confirmed) return;
 
       try {
@@ -771,7 +779,7 @@
 
       const token = getToken();
       if (token) {
-        loadAdmin({ source: "restore", successMessage: "保存済みトークンで管理データを読み込みました" }).catch(() => {});
+        loadAdmin({ source: "restore", successMessage: "保存済みトークンで管理者データを再読み込みしました" }).catch(() => {});
       }
     }
 
@@ -779,7 +787,6 @@
       if (!event.key || event.key === TEST_MODE_KEY) {
         refreshTestModeUI();
       }
-      // 別タブで logout / login が発生した場合に当タブの UI を追従させる
       if (!event.key || event.key === TOKEN_KEY) {
         if (getToken()) {
           loadAdmin({ source: "storage-sync" }).catch(() => {});
