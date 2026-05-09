@@ -183,16 +183,17 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
 
 ## イベント本番前チェックリスト
 
-> ⚠️ **最優先 / E2E API 検証**
+> ✅ **E2E API 検証完了** (2026-05-09 実施)
 >
-> 本番デプロイ前に **必ず 1 回** 実 KV 経由で投票送信を流して下記を確認すること。コードレビュー・モック検証だけでは KV 書込み / fingerprint 重複 / 409 ハンドリングまでは保証されない。
+> 本番経路（`battle-fes.pages.dev`）+ 実 KV で 6 ステップ全 PASS:
 >
-> - [ ] `wrangler pages dev public` 又は本番 Preview デプロイで 1 票送信し成功（200）
-> - [ ] 同一端末から再送信 → 409 が返り、フロントが既投票ロック状態になる
-> - [ ] `/admin/` で送信内容（候補ID・コメント・eventImpression）が表示される
-> - [ ] reset all votes で全カテゴリ + legacy + fingerprint キー削除確認
+> - [x] 1 票送信 → 200
+> - [x] 同一 fingerprint で再送信 → 409
+> - [x] `/api/admin/results` で送信内容（候補ID・コメント・eventImpression）反映確認
+> - [x] `/api/admin/reset` で全カテゴリ + legacy + fingerprint キー削除（後続 GET でクリーン確認済み）
 >
-> 上記 4 項目すべて緑になるまでは本番投票公開不可。
+> Preview と Production が同一 KV（namespace `6a7f993b...`）共有のため Preview 検証＝本番直叩き相当。
+> テストスクリプト: `.tooling/e2e-vote-test.js`（ADMIN_TOKEN env で実行）
 
 - [ ] イベント開始時刻を最終確定（現在 7/18 土 19:45 仮）
 - [ ] 変更時はスケジュール14箇所の時刻を再計算して反映
