@@ -282,12 +282,18 @@
       overflow: hidden;
     }
 
+    .category-block > * {
+      position: relative;
+      z-index: 1;
+    }
+
     .category-block::before {
       content: "";
       position: absolute;
       inset: 0 auto 0 0;
       width: 6px;
       background: var(--accent);
+      z-index: 0;
     }
 
     .category-block.team::before {
@@ -346,6 +352,7 @@
     .table-scroll {
       overflow-x: auto;
       overflow-y: hidden;
+      overflow: hidden auto;
       border-radius: 14px;
       border: 1px solid rgba(255, 255, 255, 0.06);
       background: rgba(255, 255, 255, 0.02);
@@ -353,8 +360,9 @@
       -webkit-overflow-scrolling: touch;
     }
 
-    table {
+    .table-scroll table {
       width: 100%;
+      min-width: 100%;
       border-collapse: collapse;
       table-layout: auto;
     }
@@ -388,40 +396,38 @@
        PC ではテーブルのまま、スマホでは tr 単位でカード化して、
        長文コメント等を縦並び・自然な折り返しで読みやすくする */
     @media (max-width: 720px) {
-      .category-block table,
-      .category-block thead,
-      .category-block tbody,
-      .category-block tr,
-      .category-block td,
-      .panel > table,
-      .panel > table thead,
-      .panel > table tbody,
-      .panel > table tr,
-      .panel > table td {
+      .table-scroll,
+      .table-scroll table,
+      .table-scroll thead,
+      .table-scroll tbody,
+      .table-scroll tr,
+      .table-scroll td {
         display: block;
         width: 100%;
       }
+      .table-scroll {
+        overflow: visible;
+        border: none;
+        background: transparent;
+        border-radius: 0;
+      }
       /* thead は隠して各セルが自分でラベル表示 */
-      .category-block thead,
-      .panel > table thead {
+      .table-scroll thead {
         position: absolute;
         left: -9999px;
         clip: rect(0 0 0 0);
       }
-      .category-block tr,
-      .panel > table tr {
+      .table-scroll tr {
         margin-bottom: 12px;
         padding: 12px 14px;
         background: rgba(255, 255, 255, 0.04);
         border: 1px solid rgba(255, 124, 30, 0.18);
         border-radius: 12px;
       }
-      .category-block tr:last-child,
-      .panel > table tr:last-child {
+      .table-scroll tr:last-child {
         margin-bottom: 0;
       }
-      .category-block td,
-      .panel > table td {
+      .table-scroll td {
         white-space: normal;       /* カード化したので折り返し OK */
         text-align: left;
         padding: 4px 0;
@@ -430,8 +436,7 @@
         position: relative;
         padding-left: 110px;        /* ラベル用スペース */
       }
-      .category-block td::before,
-      .panel > table td::before {
+      .table-scroll td::before {
         content: attr(data-label);
         position: absolute;
         left: 0;
@@ -444,13 +449,11 @@
         letter-spacing: 0.08em;
       }
       /* 空行 (colspan="3" 等) はラベル無しで中央表示 */
-      .category-block td[colspan],
-      .panel > table td[colspan] {
+      .table-scroll td[colspan] {
         padding-left: 0;
         text-align: center;
       }
-      .category-block td[colspan]::before,
-      .panel > table td[colspan]::before {
+      .table-scroll td[colspan]::before {
         content: none;
       }
     }
@@ -761,6 +764,29 @@
       if (category.candidateType === "team") return teamName(candidateId);
       if (category.candidateType === "member") return memberName(candidateId);
       return String(candidateId);
+    }
+
+    function syncResponsiveTableLabels(root = document) {
+      root.querySelectorAll(".table-scroll table").forEach((table) => {
+        const headers = Array.from(table.querySelectorAll("thead th")).map((th) => th.textContent.trim());
+        if (!headers.length) return;
+
+        table.querySelectorAll("tbody tr").forEach((row) => {
+          Array.from(row.cells).forEach((cell, index) => {
+            if (cell.hasAttribute("colspan")) {
+              cell.removeAttribute("data-label");
+              return;
+            }
+
+            const label = headers[index] || "";
+            if (label) {
+              cell.setAttribute("data-label", label);
+            } else {
+              cell.removeAttribute("data-label");
+            }
+          });
+        });
+      });
     }
 
     function renderCategoryBlock(category, payload) {
