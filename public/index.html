@@ -2420,10 +2420,10 @@
       <div class="award-section-title bonus-title">貫通 BONUS キーワード</div>
       <p class="bonus-desc">配信中に出現した文字を集めて入力すると 1 票に <strong>+5000PT</strong> 追加！</p>
       <div class="bonus-input-row">
-        <input type="text" id="bonusKeyword" class="award-comment" placeholder="キーワードを入力" maxlength="100" autocomplete="off">
-        <button type="button" id="bonusCheckBtn" class="btn-vote bonus-check" onclick="checkBonusKeyword()">確認</button>
+        <input type="text" id="bonusKeyword" class="award-comment" placeholder="キーワードを入力" maxlength="100" autocomplete="off" aria-label="BONUSキーワード入力欄">
+        <button type="button" id="bonusCheckBtn" class="btn-vote bonus-check" onclick="checkBonusKeyword()" aria-label="BONUSキーワード確認">確認</button>
       </div>
-      <div class="bonus-status" id="bonusStatus"></div>
+      <div class="bonus-status" id="bonusStatus" role="status" aria-live="polite"></div>
     </div>
 
     <div class="vote-modal-actions">
