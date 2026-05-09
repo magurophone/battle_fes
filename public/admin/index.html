@@ -447,9 +447,9 @@
         <table>
           <thead>
             <tr>
-              <th>Time</th>
-              <th>Name</th>
-              <th>Comment</th>
+              <th>時刻</th>
+              <th>投票者</th>
+              <th>コメント</th>
             </tr>
           </thead>
           <tbody id="eventImpressionsBody"></tbody>
@@ -670,33 +670,33 @@
 
       return `
         <section class="category-block ${escapeHtml(category.type || "")}">
-          <h3>${escapeHtml(category.label)} <small>[${escapeHtml(category.id)} / ${escapeHtml(category.type || "-")}]</small></h3>
+          <h3>${escapeHtml(category.label)}</h3>
           <div class="meta-grid">
-            <div><strong>Total votes:</strong> ${totalVotes}</div>
-            <div><strong>Unique fingerprints:</strong> ${uniqueFingerprints}</div>
-            <div><strong>Total submissions:</strong> ${Number(meta.totalSubmissions) || 0}</div>
-            <div><strong>Updated at:</strong> ${escapeHtml(results.updatedAt || "-")}</div>
-            <div><strong>Last vote at:</strong> ${escapeHtml(meta.lastVoteAt || "-")}</div>
+            <div><strong>総投票数:</strong> ${totalVotes}</div>
+            <div><strong>ユニーク端末:</strong> ${uniqueFingerprints}</div>
+            <div><strong>送信件数:</strong> ${Number(meta.totalSubmissions) || 0}</div>
+            <div><strong>更新日時:</strong> ${escapeHtml(results.updatedAt || "-")}</div>
+            <div><strong>最終投票:</strong> ${escapeHtml(meta.lastVoteAt || "-")}</div>
           </div>
           <table>
             <thead>
               <tr>
-                <th>Candidate</th>
-                <th>Votes</th>
-                <th>Percent</th>
+                <th>候補</th>
+                <th>投票数</th>
+                <th>割合</th>
               </tr>
             </thead>
             <tbody>${rows || '<tr><td colspan="3" class="empty">データがありません</td></tr>'}</tbody>
           </table>
           <details>
-            <summary>Vote Log (${voteLog.length})</summary>
+            <summary>投票ログ (${voteLog.length})</summary>
             <table>
               <thead>
                 <tr>
-                  <th>Time</th>
-                  <th>Candidate</th>
-                  <th>Name</th>
-                  <th>Comment</th>
+                  <th>時刻</th>
+                  <th>候補</th>
+                  <th>投票者</th>
+                  <th>コメント</th>
                 </tr>
               </thead>
               <tbody>${logRows || '<tr><td colspan="4" class="empty">ログがありません</td></tr>'}</tbody>
