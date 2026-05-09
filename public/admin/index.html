@@ -300,8 +300,9 @@
 
     /* カテゴリ見出しをバッジ風カードにして他要素と差別化 */
     .category-block h3 {
-      display: inline-block;
-      margin: 0 0 16px;
+      display: block;
+      width: fit-content;
+      margin: 0 auto 16px;          /* バッジを横方向中央寄せ */
       padding: 8px 18px;
       font-size: 1.35rem;
       letter-spacing: 0.14em;
@@ -310,6 +311,7 @@
       border: 1px solid rgba(255,124,30,0.45);
       color: var(--accent);
       box-shadow: 0 4px 14px rgba(255,124,30,0.18);
+      text-align: center;
     }
     .category-block.team h3 {
       background: linear-gradient(135deg, rgba(255,124,30,0.22), rgba(255,224,64,0.10));
