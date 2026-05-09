@@ -27,6 +27,20 @@
       padding: 10px;
       width: min(420px, 100%);
     }
+    .password-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: min(520px, 100%);
+      flex-wrap: wrap;
+    }
+    .password-row input {
+      flex: 1 1 280px;
+      min-width: 0;
+    }
+    .toggle-password-btn {
+      min-width: 72px;
+    }
     .row { margin-bottom: 16px; }
     .hidden { display: none; }
     .status {
@@ -79,8 +93,10 @@
 
   <div class="row">
     <label for="adminToken">Admin password</label><br>
-    <input id="adminToken" type="password" placeholder="管理画面パスワード" autocomplete="current-password">
-    <button type="button" id="togglePwBtn" onclick="togglePasswordVisibility()" aria-label="パスワード表示切替">表示</button>
+    <div class="password-row">
+      <input id="adminToken" type="password" placeholder="管理画面パスワード" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <button type="button" id="togglePwBtn" class="toggle-password-btn" onclick="togglePasswordVisibility()" aria-label="パスワードを表示" aria-pressed="false">表示</button>
+    </div>
     <button type="button" onclick="saveToken()">Log in</button>
     <button type="button" onclick="loadAdmin()">Load status</button>
   </div>
@@ -129,13 +145,20 @@
       document.getElementById('statusText').textContent = message || '';
     }
 
+    function syncPasswordToggleUI(isVisible) {
+      const btn = document.getElementById('togglePwBtn');
+      if (!btn) return;
+      btn.textContent = isVisible ? '隠す' : '表示';
+      btn.setAttribute('aria-label', isVisible ? 'パスワードを隠す' : 'パスワードを表示');
+      btn.setAttribute('aria-pressed', isVisible ? 'true' : 'false');
+    }
+
     function togglePasswordVisibility() {
       const input = document.getElementById('adminToken');
-      const btn = document.getElementById('togglePwBtn');
-      if (!input || !btn) return;
-      const showing = input.type === 'text';
-      input.type = showing ? 'password' : 'text';
-      btn.textContent = showing ? '表示' : '隠す';
+      if (!input) return;
+      const isVisible = input.type !== 'password';
+      input.type = isVisible ? 'password' : 'text';
+      syncPasswordToggleUI(!isVisible);
     }
 
     const TEST_MODE_KEY = 'battlefes_test_mode';
@@ -347,6 +370,7 @@
     }
 
     document.getElementById('adminToken').value = getToken();
+    syncPasswordToggleUI(false);
     window.addEventListener('storage', (event) => {
       if (!event.key || event.key === TEST_MODE_KEY) refreshTestModeUI();
     });
