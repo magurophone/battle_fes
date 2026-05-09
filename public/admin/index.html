@@ -510,6 +510,14 @@
         font-size: 0.78rem;
         letter-spacing: 0.08em;
       }
+      /* data-label 無しの td (識別子列) はラベル領域なし、値だけ大きく見せる */
+      .table-scroll td:not([data-label]) {
+        padding-left: 0;
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 700;
+      }
+      .table-scroll td:not([data-label])::before { content: none; }
       /* 空行 (colspan="3" 等) はラベル無しで中央表示 */
       .table-scroll td[colspan] {
         padding-left: 0;
@@ -882,7 +890,7 @@
           const v = Number(counts[id] || 0);
           const percent = totalVotes > 0 ? Math.round((v / totalVotes) * 100) : 0;
           return `<tr>
-            <td data-label="メンバー">${escapeHtml(m.name)}</td>
+            <td>${escapeHtml(m.name)}</td>
             <td data-label="投票数">${v}</td>
             <td data-label="割合">${percent}%</td>
           </tr>`;
@@ -892,7 +900,7 @@
             <div class="team-group-header">${escapeHtml(team.name)}</div>
             <div class="table-scroll">
               <table>
-                <thead><tr><th>メンバー</th><th>投票数</th><th>割合</th></tr></thead>
+                <thead><tr><th></th><th>投票数</th><th>割合</th></tr></thead>
                 <tbody>${rows}</tbody>
               </table>
             </div>
@@ -957,7 +965,7 @@
           const pts = pointsByCandidate[id] || 0;
           return `
             <tr>
-              <td data-label="候補">${candidateHtml(category, id)}</td>
+              <td>${candidateHtml(category, id)}</td>
               <td data-label="投票数">${votes}</td>
               <td data-label="投票ポイント">${pts.toLocaleString()}</td>
               <td data-label="割合">${percent}%</td>
@@ -966,7 +974,7 @@
         }
         return `
           <tr>
-            <td data-label="候補">${candidateHtml(category, id)}</td>
+            <td>${candidateHtml(category, id)}</td>
             <td data-label="投票数">${votes}</td>
             <td data-label="割合">${percent}%</td>
           </tr>
@@ -986,7 +994,7 @@
         return `
           <tr>
             <td data-label="時刻">${escapeHtml(formatJstTime(entry.timestamp))}</td>
-            <td data-label="候補">${candidateHtml(category, entry.candidateId)}</td>
+            <td>${candidateHtml(category, entry.candidateId)}</td>
             <td data-label="投票者">${escapeHtml(entry.voterName || "-")}</td>
             ${ptCell}
             <td data-label="コメント">${escapeHtml(entry.comment || "")}</td>
@@ -994,14 +1002,15 @@
         `;
       }).join("");
 
+      // 「候補」「メンバー」ヘッダーは省略 (第1列の値自体が識別子になる)
       const tableHead = isTeamCategory
-        ? `<tr><th>候補</th><th>投票数</th><th>投票ポイント</th><th>割合</th></tr>`
-        : `<tr><th>候補</th><th>投票数</th><th>割合</th></tr>`;
+        ? `<tr><th></th><th>投票数</th><th>投票ポイント</th><th>割合</th></tr>`
+        : `<tr><th></th><th>投票数</th><th>割合</th></tr>`;
       const tableEmptyCols = isTeamCategory ? 4 : 3;
 
       const logHead = isTeamCategory
-        ? `<tr><th>時刻</th><th>候補</th><th>投票者</th><th>ポイント</th><th>コメント</th></tr>`
-        : `<tr><th>時刻</th><th>候補</th><th>投票者</th><th>コメント</th></tr>`;
+        ? `<tr><th>時刻</th><th></th><th>投票者</th><th>ポイント</th><th>コメント</th></tr>`
+        : `<tr><th>時刻</th><th></th><th>投票者</th><th>コメント</th></tr>`;
       const logEmptyCols = isTeamCategory ? 5 : 4;
 
       const teamPointRow = isTeamCategory
