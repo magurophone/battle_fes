@@ -14,6 +14,7 @@ import {
 const MAX_NAME_LEN = 30;
 const MAX_COMMENT_LEN = 100;
 const MAX_EVENT_COMMENT_LEN = 300;
+const MAX_BONUS_KEYWORD_LEN = 100;
 
 async function sha256(text) {
   const bytes = new TextEncoder().encode(text);
@@ -78,11 +79,17 @@ function normalizePayload(body) {
     return { error: "Event comment too long." };
   }
 
+  const bonusKeyword = String(body.bonusKeyword || "").trim();
+  if (bonusKeyword.length > MAX_BONUS_KEYWORD_LEN) {
+    return { error: "Bonus keyword is too long." };
+  }
+
   return {
     payload: {
       voterName,
       picks: normalizedPicks,
       eventComment,
+      bonusKeyword,
     },
   };
 }
@@ -114,11 +121,16 @@ export async function onRequestPost(context) {
   const userAgent = context.request.headers.get("user-agent") || "unknown-ua";
   const acceptLanguage = context.request.headers.get("accept-language") || "unknown-lang";
   const fingerprint = await sha256(`${ip}|${userAgent}|${acceptLanguage}`);
+  const expectedBonusKeyword = String(context.env.BONUS_KEYWORD || "").trim();
+  const submittedBonusKeyword = String(payload.bonusKeyword || "").trim();
+  const bonusGranted =
+    Boolean(expectedBonusKeyword) && submittedBonusKeyword === expectedBonusKeyword;
 
   const writeResult = await recordBulkVotes(
     context.env.BATTLE_FES_VOTE_STORE,
     fingerprint,
-    payload
+    payload,
+    { bonusGranted }
   );
 
   if (!writeResult.ok && writeResult.duplicate) {

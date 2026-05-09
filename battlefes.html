@@ -1871,6 +1871,75 @@
   .event-impression-section .award-section-title { color: var(--accent); }
   .event-impression-section textarea { width: 100%; min-height: 80px; }
 
+  /* ── 貫通 BONUS キーワード入力 (本投票期間中のみ表示) ── */
+  .bonus-keyword-section {
+    margin-top: 1.4rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(255, 214, 10, 0.45);
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(255,214,10,0.10), rgba(255,124,30,0.08));
+    box-shadow: 0 0 24px rgba(255, 214, 10, 0.12);
+  }
+  .bonus-keyword-section .bonus-title {
+    color: var(--gold);
+    margin-bottom: 0.4rem;
+  }
+  .bonus-desc {
+    color: var(--muted);
+    font-size: 0.82rem;
+    margin-bottom: 0.7rem;
+    line-height: 1.5;
+  }
+  .bonus-desc strong { color: var(--gold); }
+  .bonus-input-row { display: flex; gap: 0.5rem; align-items: stretch; }
+  .bonus-input-row input { flex: 1 1 auto; min-height: 44px; }
+  .bonus-input-row .bonus-check {
+    flex: 0 0 auto;
+    padding: 0 1.2rem;
+    min-height: 44px;
+    width: auto;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    border: none;
+    color: #1d0900;
+    font-weight: 700;
+  }
+  .bonus-input-row .bonus-check:disabled { opacity: 0.5; cursor: not-allowed; }
+  .bonus-status {
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+    min-height: 1.2em;
+  }
+  .bonus-status.success { color: var(--gold); font-weight: 700; }
+  .bonus-status.error { color: var(--accent3); }
+
+  /* 貫通 BONUS GET! 派手エフェクト (overlay) */
+  .bonus-burst-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 280;
+  }
+  .bonus-burst-overlay.show { display: flex; animation: bonus-fade 2.4s ease-out forwards; }
+  .bonus-burst-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.6rem, 9vw, 6rem);
+    letter-spacing: 0.18em;
+    background: linear-gradient(135deg, var(--gold), var(--accent), var(--accent3));
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 40px rgba(255,214,10,0.45);
+    transform: scale(0.6);
+    animation: bonus-pop 1.4s cubic-bezier(0.18, 0.8, 0.32, 1.6) forwards;
+    text-align: center;
+    line-height: 1.0;
+  }
+  .bonus-burst-text small { display: block; font-size: 0.42em; color: var(--gold); opacity: 0.95; margin-top: 0.4em; letter-spacing: 0.32em; }
+  @keyframes bonus-pop { 0% { transform: scale(0.4); opacity: 0; } 40% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes bonus-fade { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+
   .vote-modal-actions { display: flex; flex-direction: column; gap: 0.7rem; align-items: center; margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,0.12); }
   .vote-modal-actions .btn-vote { width: 100%; max-width: 360px; }
   .vote-modal-hint { font-size: 0.8rem; color: var(--muted); text-align: center; }
@@ -2346,6 +2415,17 @@
       <textarea class="award-comment" id="eventComment" placeholder="ご感想・印象に残ったシーンなど（任意・300文字まで）" maxlength="300"></textarea>
     </div>
 
+    <!-- 貫通 BONUS キーワード入力 (本投票期間中のみ表示) -->
+    <div class="bonus-keyword-section" id="bonusKeywordSection" hidden>
+      <div class="award-section-title bonus-title">貫通 BONUS キーワード</div>
+      <p class="bonus-desc">配信中に出現した文字を集めて入力すると 1 票に <strong>+5000PT</strong> 追加！</p>
+      <div class="bonus-input-row">
+        <input type="text" id="bonusKeyword" class="award-comment" placeholder="キーワードを入力" maxlength="100" autocomplete="off">
+        <button type="button" id="bonusCheckBtn" class="btn-vote bonus-check" onclick="checkBonusKeyword()">確認</button>
+      </div>
+      <div class="bonus-status" id="bonusStatus"></div>
+    </div>
+
     <div class="vote-modal-actions">
       <button class="btn-vote" id="modalSubmitBtn" disabled onclick="submitBulkVote()">投票を送信する</button>
       <span class="vote-modal-hint" id="modalHint">3つの賞それぞれにメンバーを1名ずつ選択してください</span>
@@ -2360,6 +2440,14 @@
     <h3 id="thankYouTitle">ありがとうございました</h3>
     <p>あなたの一票を受け付けました。<br>引き続き BATTLE FES をお楽しみください！</p>
     <button type="button" onclick="closeThankYou()">閉じる</button>
+  </div>
+</div>
+
+<!-- 貫通 BONUS GET! 派手エフェクト (キーワード一致時に一瞬表示) -->
+<div class="bonus-burst-overlay" id="bonusBurstOverlay" aria-hidden="true">
+  <div class="bonus-burst-text">
+    貫通 BONUS GET!!
+    <small>+5000PT 加算</small>
   </div>
 </div>
 
@@ -2617,10 +2705,91 @@ function openVoteModal() {
   document.getElementById('eventComment').value = '';
 
   renderAwardSections();
+  refreshBonusKeywordSection();
 
   const overlay = document.getElementById('voteModalOverlay');
   overlay.classList.add('show');
   document.body.style.overflow = 'hidden';
+}
+
+/* ── 貫通 BONUS キーワード入力 (本投票時間限定) ── */
+const MAIN_VOTE_OPEN_ISO  = "2026-07-18T22:15:00+09:00";
+let bonusVerifiedKeyword = "";  // 直前に "確認" で valid 判定された値 (送信時に payload に含める)
+
+function isMainVotingNow() {
+  // テストモード ON のときも演出だけは確認できるように true 扱い
+  if (isTestModeOn && isTestModeOn()) return true;
+  const now = Date.now();
+  const open = new Date(MAIN_VOTE_OPEN_ISO).getTime();
+  const close = new Date(VOTE_CLOSE).getTime();
+  return now >= open && now <= close;
+}
+
+function refreshBonusKeywordSection() {
+  const sec = document.getElementById('bonusKeywordSection');
+  if (!sec) return;
+  if (isMainVotingNow()) {
+    sec.hidden = false;
+    const input = document.getElementById('bonusKeyword');
+    const status = document.getElementById('bonusStatus');
+    if (input) input.value = '';
+    if (status) { status.textContent = ''; status.className = 'bonus-status'; }
+    bonusVerifiedKeyword = '';
+  } else {
+    sec.hidden = true;
+    bonusVerifiedKeyword = '';
+  }
+}
+
+async function checkBonusKeyword() {
+  const input = document.getElementById('bonusKeyword');
+  const status = document.getElementById('bonusStatus');
+  if (!input || !status) return;
+  const keyword = input.value.trim();
+  if (!keyword) {
+    status.textContent = 'キーワードを入力してください';
+    status.className = 'bonus-status error';
+    return;
+  }
+  status.textContent = '照合中...';
+  status.className = 'bonus-status';
+  try {
+    const res = await fetch(`${API_BASE}/check-bonus`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keyword }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (data && data.valid === true) {
+      bonusVerifiedKeyword = keyword;
+      // 成功時は派手エフェクト 1 本で伝える、追加文言なし
+      status.textContent = '';
+      status.className = 'bonus-status';
+      input.disabled = true;
+      const btn = document.getElementById('bonusCheckBtn');
+      if (btn) { btn.disabled = true; btn.textContent = 'BONUS 確定'; }
+      triggerBonusBurst();
+    } else {
+      bonusVerifiedKeyword = '';
+      status.textContent = 'キーワードが違います';
+      status.className = 'bonus-status error';
+    }
+  } catch (e) {
+    bonusVerifiedKeyword = '';
+    status.textContent = '通信エラー、もう一度お試しください';
+    status.className = 'bonus-status error';
+  }
+}
+
+function triggerBonusBurst() {
+  const ov = document.getElementById('bonusBurstOverlay');
+  if (!ov) return;
+  ov.classList.remove('show');
+  void ov.offsetWidth;  // restart animation
+  ov.classList.add('show');
+  setTimeout(() => ov.classList.remove('show'), 2400);
+  // 紙吹雪も
+  if (typeof confettiBurst === 'function') confettiBurst('#ffe040');
 }
 
 function closeVoteModal() {
@@ -2759,10 +2928,13 @@ async function submitBulkVote() {
   document.getElementById('modalHint').textContent = '送信中...';
 
   try {
+    const bonusKeyword = (typeof bonusVerifiedKeyword === 'string' && bonusVerifiedKeyword)
+      ? bonusVerifiedKeyword
+      : '';
     const res = await fetch(`${API_BASE}/votes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ voterName: name, picks, eventComment }),
+      body: JSON.stringify({ voterName: name, picks, eventComment, bonusKeyword }),
     });
     const data = await res.json().catch(() => ({}));
 

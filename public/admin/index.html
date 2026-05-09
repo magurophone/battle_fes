@@ -71,6 +71,7 @@
         radial-gradient(circle at top left, rgba(255, 224, 64, 0.1), transparent 26%),
         rgba(7, 12, 24, 0.66);
       box-shadow: var(--shadow);
+      text-align: center;          /* タイトル + サブタイトル中央揃え */
     }
 
     .subtitle {
@@ -390,6 +391,26 @@
 
     tr:last-child td {
       border-bottom: none;
+    }
+
+    /* チーム名色分け (public 側 TEAM_DISPLAY と同色) */
+    .team-tag { font-weight: 700; letter-spacing: 0.04em; }
+    .team-tag[data-team="1"] { color: #ff2d78; }   /* CRIMSON */
+    .team-tag[data-team="2"] { color: #7c3aff; }   /* NOVA */
+    .team-tag[data-team="3"] { color: #ffd700; }   /* GOLDEN */
+
+    /* 貫通 BONUS バッジ (ポイント列の値の右に固定位置で表示) */
+    .bonus-mark {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 1px 8px;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      color: #1d0900;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      border-radius: 999px;
+      vertical-align: middle;
     }
 
     /* ── モバイル時カードビュー (≤ 720px) ──
@@ -748,6 +769,26 @@
       return `${hh}:${mm}:${ss}`;
     }
 
+    /* ── 時間加重ポイント計算 (public 側 VOTE POWER と同一仕様) ──
+       受付開始 100PT → 本投票直前 5000PT への線形上昇。
+       VOTE_OPEN / VOTE_CLOSE は functions/api/_lib/vote-store.js と同期必須。 */
+    const VOTE_OPEN_ISO  = "2026-07-18T20:45:00+09:00";
+    const VOTE_CLOSE_ISO = "2026-07-18T22:25:00+09:00";
+    const VP_MIN = 100;
+    const VP_MAX = 5000;
+
+    function calcVotePoint(iso) {
+      if (!iso) return VP_MIN;
+      const t = new Date(iso).getTime();
+      if (isNaN(t)) return VP_MIN;
+      const open  = new Date(VOTE_OPEN_ISO).getTime();
+      const close = new Date(VOTE_CLOSE_ISO).getTime();
+      if (t <= open)  return VP_MIN;
+      if (t >= close) return VP_MAX;
+      const progress = (t - open) / (close - open);
+      return Math.round(VP_MIN + (VP_MAX - VP_MIN) * progress);
+    }
+
     function teamName(id) {
       const team = configCache.teams.find((entry) => Number(entry.id) === Number(id));
       return team ? team.name : `team#${id}`;
@@ -764,6 +805,26 @@
       if (category.candidateType === "team") return teamName(candidateId);
       if (category.candidateType === "member") return memberName(candidateId);
       return String(candidateId);
+    }
+
+    /* ── チーム色付き表示用 HTML ヘルパ (public 側 TEAM_DISPLAY と同色) ──
+       戻り値はサニタイズ済み HTML 断片。innerHTML に直接埋めて OK。 */
+    function teamTagHtml(teamId) {
+      const id = Number(teamId);
+      const team = configCache.teams.find((entry) => Number(entry.id) === id);
+      const name = team ? team.name : `team#${teamId}`;
+      return `<span class="team-tag" data-team="${id}">${escapeHtml(name)}</span>`;
+    }
+
+    function candidateHtml(category, candidateId) {
+      if (!category) return escapeHtml(String(candidateId));
+      if (category.candidateType === "team") return teamTagHtml(candidateId);
+      if (category.candidateType === "member") {
+        const member = configCache.members.find((entry) => Number(entry.id) === Number(candidateId));
+        if (!member) return escapeHtml(`member#${candidateId}`);
+        return `${escapeHtml(member.name)} (${teamTagHtml(member.teamId)})`;
+      }
+      return escapeHtml(String(candidateId));
     }
 
     function syncResponsiveTableLabels(root = document) {
@@ -800,26 +861,79 @@
         ? category.candidateIds
         : Object.keys(counts).map((id) => Number(id));
 
+      // 優勝チーム投票のみ、各候補の投票ポイントを timestamp から再計算
+      const isTeamCategory = category.id === "team";
+      const pointsByCandidate = {};
+      let totalPoints = 0;
+      if (isTeamCategory) {
+        for (const id of orderedIds) pointsByCandidate[id] = 0;
+        for (const entry of voteLog) {
+          const cid = Number(entry.candidateId);
+          const pt = calcVotePoint(entry.timestamp);
+          pointsByCandidate[cid] = (pointsByCandidate[cid] || 0) + pt;
+          totalPoints += pt;
+        }
+      }
+
       const rows = orderedIds.map((id) => {
         const votes = Number(counts[id] || 0);
         const percent = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
+        if (isTeamCategory) {
+          const pts = pointsByCandidate[id] || 0;
+          return `
+            <tr>
+              <td data-label="候補">${candidateHtml(category, id)}</td>
+              <td data-label="投票数">${votes}</td>
+              <td data-label="投票ポイント">${pts.toLocaleString()}</td>
+              <td data-label="割合">${percent}%</td>
+            </tr>
+          `;
+        }
         return `
           <tr>
-            <td data-label="候補">${escapeHtml(candidateName(category, id))}</td>
+            <td data-label="候補">${candidateHtml(category, id)}</td>
             <td data-label="投票数">${votes}</td>
             <td data-label="割合">${percent}%</td>
           </tr>
         `;
       }).join("");
 
-      const logRows = voteLog.map((entry) => `
-        <tr>
-          <td data-label="時刻">${escapeHtml(formatJstTime(entry.timestamp))}</td>
-          <td data-label="候補">${escapeHtml(candidateName(category, entry.candidateId))}</td>
-          <td data-label="投票者">${escapeHtml(entry.voterName || "-")}</td>
-          <td data-label="コメント">${escapeHtml(entry.comment || "")}</td>
-        </tr>
-      `).join("");
+      const logRows = voteLog.map((entry) => {
+        let ptCell = "";
+        if (isTeamCategory) {
+          // entry.votePoint / entry.bonusPoint は backend が保存。旧データは calcVotePoint() でフォールバック
+          const vp = Number.isFinite(Number(entry.votePoint)) ? Number(entry.votePoint) : calcVotePoint(entry.timestamp);
+          const bp = Number(entry.bonusPoint) || 0;
+          const total = vp + bp;
+          const badge = bp > 0 ? '<span class="bonus-mark">BONUS</span>' : "";
+          ptCell = `<td data-label="ポイント">${total.toLocaleString()}${badge}</td>`;
+        }
+        return `
+          <tr>
+            <td data-label="時刻">${escapeHtml(formatJstTime(entry.timestamp))}</td>
+            <td data-label="候補">${candidateHtml(category, entry.candidateId)}</td>
+            <td data-label="投票者">${escapeHtml(entry.voterName || "-")}</td>
+            ${ptCell}
+            <td data-label="コメント">${escapeHtml(entry.comment || "")}</td>
+          </tr>
+        `;
+      }).join("");
+
+      const tableHead = isTeamCategory
+        ? `<tr><th>候補</th><th>投票数</th><th>投票ポイント</th><th>割合</th></tr>`
+        : `<tr><th>候補</th><th>投票数</th><th>割合</th></tr>`;
+      const tableEmptyCols = isTeamCategory ? 4 : 3;
+
+      const logHead = isTeamCategory
+        ? `<tr><th>時刻</th><th>候補</th><th>投票者</th><th>ポイント</th><th>コメント</th></tr>`
+        : `<tr><th>時刻</th><th>候補</th><th>投票者</th><th>コメント</th></tr>`;
+      const logEmptyCols = isTeamCategory ? 5 : 4;
+
+      const teamPointRow = isTeamCategory
+        ? `<div><strong>総ポイント:</strong> ${totalPoints.toLocaleString()}</div>
+           <div><strong>ライブスコア:</strong> 未入力</div>
+           <div><strong>総合スコア:</strong> ${totalPoints.toLocaleString()} <small style="color:var(--muted);">(+ライブスコア)</small></div>`
+        : "";
 
       return `
         <section class="category-block ${escapeHtml(category.type || "")}">
@@ -828,32 +942,20 @@
             <div><strong>総投票数:</strong> ${totalVotes}</div>
             <div><strong>ユニーク端末:</strong> ${uniqueFingerprints}</div>
             <div><strong>最終投票:</strong> ${escapeHtml(formatJstTime(meta.lastVoteAt))}</div>
+            ${teamPointRow}
           </div>
           <div class="table-scroll">
             <table>
-              <thead>
-                <tr>
-                  <th>候補</th>
-                  <th>投票数</th>
-                  <th>割合</th>
-                </tr>
-              </thead>
-              <tbody>${rows || '<tr><td colspan="3" class="empty">データがありません</td></tr>'}</tbody>
+              <thead>${tableHead}</thead>
+              <tbody>${rows || `<tr><td colspan="${tableEmptyCols}" class="empty">データがありません</td></tr>`}</tbody>
             </table>
           </div>
           <details>
             <summary>投票ログ (${voteLog.length})</summary>
             <div class="table-scroll">
               <table>
-                <thead>
-                  <tr>
-                    <th>時刻</th>
-                    <th>候補</th>
-                    <th>投票者</th>
-                    <th>コメント</th>
-                  </tr>
-                </thead>
-                <tbody>${logRows || '<tr><td colspan="4" class="empty">ログがありません</td></tr>'}</tbody>
+                <thead>${logHead}</thead>
+                <tbody>${logRows || `<tr><td colspan="${logEmptyCols}" class="empty">ログがありません</td></tr>`}</tbody>
               </table>
             </div>
           </details>
