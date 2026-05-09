@@ -298,6 +298,26 @@
       background: linear-gradient(180deg, var(--teal), #b2f6ff);
     }
 
+    /* カテゴリ見出しをバッジ風カードにして他要素と差別化 */
+    .category-block h3 {
+      display: inline-block;
+      margin: 0 0 16px;
+      padding: 8px 18px;
+      font-size: 1.35rem;
+      letter-spacing: 0.14em;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(255,124,30,0.22), rgba(255,224,64,0.10));
+      border: 1px solid rgba(255,124,30,0.45);
+      color: var(--accent);
+      box-shadow: 0 4px 14px rgba(255,124,30,0.18);
+    }
+    .category-block.individual h3 {
+      background: linear-gradient(135deg, rgba(56,212,255,0.22), rgba(178,246,255,0.10));
+      border-color: rgba(56,212,255,0.45);
+      color: var(--teal);
+      box-shadow: 0 4px 14px rgba(56,212,255,0.18);
+    }
+
     .meta-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -305,11 +325,14 @@
       margin-bottom: 14px;
       color: var(--muted);
       font-size: 0.88rem;
+      justify-items: center;
+      text-align: center;
     }
 
     .meta-grid strong {
       color: var(--text);
     }
+    .meta-grid div { white-space: nowrap; }
 
     table {
       width: 100%;
@@ -318,21 +341,27 @@
       border-radius: 14px;
       background: rgba(255, 255, 255, 0.02);
       border: 1px solid rgba(255, 255, 255, 0.06);
+      table-layout: auto;
     }
 
     th,
     td {
       padding: 10px 12px;
-      text-align: left;
-      vertical-align: top;
+      text-align: center;          /* テーブル全体センター揃え */
+      vertical-align: middle;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       font-size: 0.92rem;
+      white-space: nowrap;          /* th/td の不要な改行を抑止 */
     }
+    /* 自由記述 (コメント等) は改行・折り返し許可 */
+    td.wrap, th.wrap { white-space: normal; }
+    /* イベント感想 / 投票ログのコメント列 (最終列) は折り返しを許可 */
+    table tbody tr td:last-child { white-space: normal; text-align: left; }
 
     th {
       color: var(--accent2);
       background: rgba(255, 124, 30, 0.12);
-      letter-spacing: 0.11em;
+      letter-spacing: 0.06em;       /* 0.11em → 0.06em で詰めて改行リスク軽減 */
       font-size: 0.95rem;
     }
 
