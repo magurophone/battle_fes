@@ -4,28 +4,115 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BATTLE FES Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg: #060c1a;
+      --bg2: #0a1028;
+      --panel: rgba(255,255,255,0.04);
+      --border: rgba(255,160,60,0.22);
+      --accent: #ff7c1e;
+      --accent2: #ffe040;
+      --accent3: #ff4455;
+      --teal: #38d4ff;
+      --text: #fff8ee;
+      --muted: #b09870;
+      --ok: #5eda9a;
+      --warn: #ffb84a;
+      --err: #ff7388;
+    }
+    * { box-sizing: border-box; }
+    html, body { background: var(--bg); }
     body {
-      font-family: sans-serif;
-      margin: 24px;
-      line-height: 1.5;
-      color: #1c1c1c;
-      background: #fff;
+      font-family: 'Noto Sans JP', system-ui, sans-serif;
+      margin: 0;
+      padding: 36px 28px 80px;
+      line-height: 1.55;
+      color: var(--text);
+      background: linear-gradient(180deg, #060c1a 0%, #0a1028 35%, #120926 70%, #1e0912 100%) fixed;
+      min-height: 100vh;
     }
-    h1 { margin-top: 0; }
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.4rem;
+      letter-spacing: 0.16em;
+      margin: 0 0 4px;
+      color: var(--accent);
+      text-shadow: 0 0 18px rgba(255,124,30,0.35);
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      margin-bottom: 28px;
+    }
     h2 {
-      margin-top: 32px;
-      border-bottom: 2px solid #ccc;
-      padding-bottom: 4px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 0.18em;
+      color: var(--accent2);
+      border-bottom: 1px solid var(--border);
+      padding: 0 0 6px;
+      margin: 36px 0 14px;
     }
-    h3 { margin-top: 24px; }
+    h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.15rem;
+      letter-spacing: 0.12em;
+      margin: 0 0 8px;
+      color: var(--text);
+    }
+    h3 small { font-family: 'Noto Sans JP', sans-serif; font-size: 0.7rem; font-weight: 400; }
+    label {
+      display: block;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
     button {
-      padding: 10px 14px;
+      background: rgba(10,16,40,0.7);
+      border: 1px solid rgba(255,160,60,0.45);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 9px 18px;
+      border-radius: 999px;
       cursor: pointer;
+      transition: all 0.16s;
     }
+    button:hover { border-color: var(--accent); background: rgba(255,140,40,0.16); color: var(--accent); }
+    button:active { transform: translateY(1px); }
+    button.primary {
+      background: linear-gradient(135deg, #ff8c1a, #ff3344);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(255,107,26,0.35);
+    }
+    button.primary:hover { color: #fff; box-shadow: 0 6px 22px rgba(255,107,26,0.5); }
+    button.danger {
+      border-color: rgba(255,68,85,0.55);
+      color: #ffb0bb;
+    }
+    button.danger:hover { border-color: var(--accent3); background: rgba(255,68,85,0.14); color: var(--accent3); }
     input {
-      padding: 10px;
+      background: rgba(10,16,40,0.55);
+      border: 1px solid rgba(255,160,60,0.25);
+      color: var(--text);
+      padding: 11px 14px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
       width: min(420px, 100%);
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    input:focus {
+      border-color: var(--accent);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255,124,30,0.18);
     }
     .password-row {
       display: flex;
@@ -33,93 +120,130 @@
       gap: 8px;
       width: min(520px, 100%);
       flex-wrap: wrap;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
-    .password-row input {
-      flex: 1 1 280px;
-      min-width: 0;
-    }
-    .toggle-password-btn {
-      min-width: 72px;
-    }
-    .admin-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .row { margin-bottom: 16px; }
-    .hidden { display: none; }
+    .password-row input { flex: 1 1 280px; min-width: 0; }
+    .toggle-password-btn { min-width: 76px; }
+    .admin-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .row { margin-bottom: 18px; }
+    .hidden { display: none !important; }
     .status {
       display: inline-block;
-      margin-left: 12px;
-      color: #444;
+      font-size: 0.86rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
     }
-    pre {
-      background: #f5f5f5;
-      padding: 12px;
-      overflow: auto;
-      max-height: 400px;
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
     }
+    .panel.testmode {
+      border-color: rgba(255,140,60,0.45);
+      background: rgba(255,140,60,0.08);
+    }
+    .panel.testmode strong { color: var(--accent); letter-spacing: 0.08em; }
+    .panel.testmode .desc { font-size: 0.82rem; color: var(--muted); margin: 4px 0 10px; }
+
     table {
       border-collapse: collapse;
       width: 100%;
       max-width: 960px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
+      background: rgba(0,0,0,0.18);
+      border-radius: 8px;
+      overflow: hidden;
     }
     th, td {
-      border: 1px solid #ccc;
-      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255,160,60,0.12);
+      padding: 9px 12px;
       text-align: left;
       vertical-align: top;
+      font-size: 0.92rem;
     }
-    th { background: #f0f0f0; }
+    th {
+      background: rgba(255,160,60,0.12);
+      color: var(--accent2);
+      font-family: 'Bebas Neue', sans-serif;
+      letter-spacing: 0.12em;
+      font-weight: 400;
+    }
+    tr:last-child td { border-bottom: none; }
+
     .category-block {
-      border-left: 4px solid #888;
-      padding: 8px 16px;
+      border-left: 4px solid var(--muted);
+      background: var(--panel);
+      border-radius: 0 12px 12px 0;
+      padding: 14px 20px;
       margin: 16px 0;
-      background: #fafafa;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.22);
     }
-    .category-block.team { border-left-color: #ff6b1a; }
-    .category-block.individual { border-left-color: #5b9eff; }
+    .category-block.team { border-left-color: var(--accent); }
+    .category-block.individual { border-left-color: var(--teal); }
+
     .meta-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 4px 16px;
-      font-size: 0.92em;
-      color: #555;
-      margin-bottom: 8px;
+      gap: 6px 18px;
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin-bottom: 12px;
     }
-    .meta-grid strong { color: #1c1c1c; }
-    details { margin-top: 12px; }
-    summary { cursor: pointer; }
+    .meta-grid strong { color: var(--text); }
+
+    details { margin-top: 14px; }
+    summary {
+      cursor: pointer;
+      color: var(--accent2);
+      font-size: 0.86rem;
+      letter-spacing: 0.06em;
+      padding: 4px 0;
+    }
+    summary:hover { color: var(--accent); }
+
+    @media (max-width: 600px) {
+      body { padding: 24px 14px 60px; }
+      h1 { font-size: 1.9rem; }
+      .panel { padding: 14px; }
+      table { font-size: 0.85rem; }
+    }
   </style>
 </head>
 <body>
-  <h1>BATTLE FES Admin</h1>
+  <h1>BATTLE FES ADMIN</h1>
+  <div class="subtitle">運営コンソール — リスナー投票結果と感想ログ</div>
 
-  <div class="row">
-    <label for="adminToken">Admin password</label><br>
+  <div id="loginPanel" class="panel row">
+    <label for="adminToken">Admin Password</label>
     <div class="password-row">
-      <input id="adminToken" type="password" placeholder="管理画面パスワード" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <input id="adminToken" type="password" placeholder="管理画面パスワード" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="statusText">
       <button type="button" id="togglePwBtn" class="toggle-password-btn" onclick="togglePasswordVisibility()" aria-label="パスワードを表示" aria-pressed="false">表示</button>
     </div>
     <div class="admin-actions">
-      <button type="button" onclick="login()">ログイン</button>
-      <button type="button" onclick="loadAdmin()">再読み込み</button>
+      <button type="button" class="primary" id="loginBtn" onclick="login()">ログイン</button>
+    </div>
+  </div>
+
+  <div id="adminBar" class="panel row hidden">
+    <div class="admin-actions">
+      <button type="button" class="primary" onclick="loadAdmin()">再読み込み</button>
+      <button type="button" class="danger" onclick="resetVotes()">投票データをリセット</button>
+      <button type="button" onclick="logout()">ログアウト</button>
     </div>
   </div>
 
   <div class="row">
-    <button type="button" onclick="resetVotes()">Reset all votes</button>
-    <span id="statusText" class="status"></span>
+    <span id="statusText" class="status" role="status" aria-live="polite"></span>
   </div>
 
-  <div class="row" style="border:1px dashed #f08c2a; padding:10px 14px; border-radius:8px; background:#fff8ef;">
-    <strong style="color:#c4651a;">テストモード</strong>
-    <span style="font-size:0.85em; color:#555; margin-left:8px;">
-      ONにするとこの端末だけ投票期間外でも投票UIが開放されます（API側は waiting 状態を許可済み）
-    </span>
-    <div style="margin-top:8px;">
+  <div class="panel testmode row">
+    <strong>テストモード</strong>
+    <div class="desc">ONにするとこの端末だけ投票期間外でも投票UIが開放されます（API側は waiting 状態を許可済み）</div>
+    <div class="admin-actions">
       <button type="button" id="testModeToggleBtn" onclick="toggleTestMode()">テストモード OFF</button>
       <span id="testModeStatus" class="status"></span>
     </div>
@@ -141,9 +265,6 @@
       </thead>
       <tbody id="eventImpressionsBody"></tbody>
     </table>
-
-    <h2>Raw JSON</h2>
-    <pre id="rawJson"></pre>
   </div>
 
   <script>
@@ -200,6 +321,18 @@
       return localStorage.getItem('battlefes_admin_token') || '';
     }
 
+    function setLoggedInUi(isLoggedIn) {
+      document.getElementById('loginPanel').classList.toggle('hidden', isLoggedIn);
+      document.getElementById('adminBar').classList.toggle('hidden', !isLoggedIn);
+      document.getElementById('dashboard').classList.toggle('hidden', !isLoggedIn);
+      if (!isLoggedIn) {
+        // パスワード欄は表示状態をリセット (toggle ボタン文言も同期)
+        const input = document.getElementById('adminToken');
+        if (input) input.type = 'password';
+        syncPasswordToggleUI(false);
+      }
+    }
+
     async function login() {
       const input = document.getElementById('adminToken');
       const typed = input.value.trim();
@@ -216,7 +349,9 @@
       try {
         const data = await api('/api/admin/results');
         renderSnapshot(data);
+        setLoggedInUi(true);
         setStatus('ログインしました');
+        input.value = ''; // 入力欄に平文を残さない
       } catch (error) {
         // 認証失敗時は保存したトークンを破棄して使い回しを防ぐ
         if (/認証エラー|アクセスが拒否/.test(error.message)) {
@@ -224,6 +359,12 @@
         }
         setStatus(error.message);
       }
+    }
+
+    function logout() {
+      localStorage.removeItem('battlefes_admin_token');
+      setLoggedInUi(false);
+      setStatus('ログアウトしました');
     }
 
     async function api(path, options = {}) {
@@ -365,8 +506,6 @@
             <td>${escapeHtml(entry.comment || '')}</td>
           </tr>`).join('')
         : '<tr><td colspan="3" style="text-align:center;color:#888;">感想なし</td></tr>';
-
-      document.getElementById('rawJson').textContent = JSON.stringify(data, null, 2);
     }
 
     async function loadAdmin() {
@@ -375,6 +514,10 @@
         renderSnapshot(data);
         setStatus('読み込み完了');
       } catch (error) {
+        if (/認証エラー|アクセスが拒否/.test(error.message)) {
+          localStorage.removeItem('battlefes_admin_token');
+          setLoggedInUi(false);
+        }
         setStatus(error.message);
       }
     }
