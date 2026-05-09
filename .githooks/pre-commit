@@ -1,4 +1,0 @@
-#!/bin/sh
-repo_root="$(git rev-parse --show-toplevel)"
-cd "$repo_root" || exit 1
-powershell -ExecutionPolicy Bypass -File ".\\scripts\\preflight-check.ps1"
