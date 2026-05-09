@@ -28,11 +28,12 @@
       width: min(420px, 100%);
     }
     .password-row {
-      display: inline-flex;
+      display: flex;
       align-items: center;
       gap: 8px;
       width: min(520px, 100%);
       flex-wrap: wrap;
+      margin-bottom: 8px;
     }
     .password-row input {
       flex: 1 1 280px;
@@ -40,6 +41,11 @@
     }
     .toggle-password-btn {
       min-width: 72px;
+    }
+    .admin-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
     .row { margin-bottom: 16px; }
     .hidden { display: none; }
@@ -97,8 +103,10 @@
       <input id="adminToken" type="password" placeholder="管理画面パスワード" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false">
       <button type="button" id="togglePwBtn" class="toggle-password-btn" onclick="togglePasswordVisibility()" aria-label="パスワードを表示" aria-pressed="false">表示</button>
     </div>
-    <button type="button" onclick="saveToken()">Log in</button>
-    <button type="button" onclick="loadAdmin()">Load status</button>
+    <div class="admin-actions">
+      <button type="button" onclick="saveToken()">Log in</button>
+      <button type="button" onclick="loadAdmin()">Load status</button>
+    </div>
   </div>
 
   <div class="row">
