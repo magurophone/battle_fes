@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BATTLE FES 2026 | ColorSing</title>
 <link rel="preload" as="image" href="/hero-bg.webp" type="image/webp">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Ops+One&family=Cinzel:wght@600;800&family=Dela+Gothic+One&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;700;900&family=Reggae+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Ops+One&family=Cinzel:wght@600;800&family=Dela+Gothic+One&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;700;900&family=Noto+Serif+JP:wght@700;900&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #060c1a;
@@ -1912,7 +1912,7 @@
   .bonus-status.success { color: var(--gold); font-weight: 700; }
   .bonus-status.error { color: var(--accent3); }
 
-  /* 貫通 BONUS GET! 派手エフェクト (overlay) */
+  /* 貫通 BONUS GET! 戦績碑風エフェクト (about coliseum stats と同質の重厚 marble + 金縁) */
   .bonus-burst-overlay {
     position: fixed;
     inset: 0;
@@ -1922,202 +1922,167 @@
     justify-content: center;
     z-index: 280;
     overflow: hidden;
-  }
-  .bonus-burst-overlay.show { display: flex; animation: bonus-overlay-fade 3.2s ease-out forwards; }
-  .bonus-burst-overlay::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: rgba(255,250,230,0.92);
-    opacity: 0;
-    animation: bonus-flash 0.22s ease-out forwards;
-  }
-  .bonus-burst-bg {
-    position: absolute; inset: 0;
     background:
-      radial-gradient(ellipse at 50% 50%, rgba(255,180,40,0.45) 0%, rgba(255,90,20,0.16) 38%, transparent 72%),
-      radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.88) 78%);
+      radial-gradient(ellipse at 50% 50%, rgba(80,42,18,0.55) 0%, rgba(0,0,0,0.94) 70%),
+      rgba(0,0,0,0.5);
     opacity: 0;
-    animation: bonus-bg-in 0.4s 0.05s ease-out forwards;
   }
-  .bonus-burst-stripes {
-    position: absolute; inset: -50%;
-    background: repeating-conic-gradient(
-      from 0deg at 50% 50%,
-      rgba(255,200,80,0.22) 0deg 4deg,
-      transparent 4deg 18deg
-    );
-    opacity: 0;
-    mix-blend-mode: screen;
-    animation:
-      bonus-stripes-in 0.45s 0.1s ease-out forwards,
-      bonus-stripes-rotate 22s linear infinite;
-  }
-  .bonus-burst-rings {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .bonus-burst-rings span {
+  .bonus-burst-overlay.show { display: flex; animation: bonus-overlay-cycle 3.0s ease-out forwards; }
+
+  /* 細い金の halo が一度だけ静かに広がる。装飾はこれだけ。 */
+  .bonus-burst-overlay::after {
+    content: '';
     position: absolute;
-    width: 80px; height: 80px;
+    width: 220px; height: 220px;
     border-radius: 50%;
-    border: 5px solid rgba(255,224,80,0.9);
-    box-shadow:
-      0 0 38px rgba(255,180,40,0.75),
-      inset 0 0 22px rgba(255,180,40,0.4);
+    border: 1px solid rgba(220,170,90,0.7);
     opacity: 0;
-    animation: bonus-ring-expand 1.7s ease-out forwards;
+    animation: bonus-halo 2.4s 0.25s ease-out forwards;
+    pointer-events: none;
   }
-  .bonus-burst-rings span:nth-child(2) {
-    animation-delay: 0.2s;
-    border-color: rgba(255,124,30,0.9);
-    box-shadow: 0 0 38px rgba(255,90,40,0.75), inset 0 0 22px rgba(255,90,40,0.4);
-  }
-  .bonus-burst-rings span:nth-child(3) {
-    animation-delay: 0.4s;
-    border-color: rgba(255,68,85,0.85);
-    box-shadow: 0 0 38px rgba(255,68,85,0.7), inset 0 0 22px rgba(255,68,85,0.35);
-  }
-  /* 大理石 + 金枠 plate (hero date-chip と同じ素材コンテキスト) */
+
+  /* 大理石 + 4 重金縁 plate (about .stat-card のクオリティ基準) */
   .bonus-burst-plate {
     position: relative;
     z-index: 2;
-    padding: 1.7rem 2.8rem 1.9rem;
+    padding: 2.4rem 3.2rem 2.1rem;
     text-align: center;
     background:
-      radial-gradient(ellipse at 50% 100%, rgba(255,140,40,0.45) 0%, transparent 75%),
-      linear-gradient(rgba(28,12,5,0.78), rgba(12,5,3,0.9)),
+      radial-gradient(ellipse at 50% 25%, rgba(80,42,18,0.55), transparent 70%),
+      linear-gradient(rgba(20,10,6,0.82), rgba(8,4,3,0.95)),
       url('/assets/textures/marble-dark.png') center/cover no-repeat;
-    border: 2px solid rgba(255,210,140,0.85);
-    border-radius: 14px;
+    border: 1px solid rgba(190,140,70,0.6);
+    border-radius: 4px;
     box-shadow:
-      inset 0 1px 0 rgba(255,235,170,0.6),
-      inset 0 -1px 0 rgba(0,0,0,0.55),
-      0 18px 60px rgba(0,0,0,0.85),
-      0 0 90px rgba(255,160,50,0.55);
-    transform: translateY(-180vh) scale(0.7);
-    opacity: 0;
+      inset 0 0 0 5px rgba(0,0,0,0.55),
+      inset 0 0 0 6px rgba(190,140,70,0.5),
+      inset 0 1px 0 rgba(255,225,170,0.14),
+      0 24px 80px rgba(0,0,0,0.85),
+      0 0 90px rgba(180,90,30,0.22);
     max-width: min(92vw, 720px);
-    animation:
-      bonus-plate-slam 0.7s 0.12s cubic-bezier(0.55, 0.08, 0.4, 1.4) forwards,
-      bonus-plate-shake 0.35s 0.82s ease-in-out 2;
+    transform: translateY(-150vh) scale(0.94);
+    opacity: 0;
+    animation: bonus-plate-descend 0.9s 0.18s cubic-bezier(0.5, 0.05, 0.3, 1.0) forwards;
   }
   .bonus-burst-plate::before {
     content: '';
     position: absolute;
-    inset: 6px;
-    border: 1px solid rgba(255,224,140,0.35);
-    border-radius: 10px;
+    top: 14px; left: 14px; right: 14px; bottom: 14px;
+    border: 1px solid rgba(190,140,70,0.32);
+    pointer-events: none;
+  }
+  /* 深紅 hint: 下部に細く一筋 */
+  .bonus-burst-plate::after {
+    content: '';
+    position: absolute;
+    left: 28%; right: 28%; bottom: 6px; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,68,85,0.7), transparent);
     pointer-events: none;
   }
   .bonus-burst-eyebrow {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(0.85rem, 2.4vw, 1.3rem);
+    font-size: clamp(0.85rem, 2.3vw, 1.15rem);
     letter-spacing: 0.55em;
-    color: rgba(255,224,80,0.95);
-    margin-bottom: 0.45rem;
-    text-shadow: 0 0 12px rgba(255,200,60,0.55);
+    color: rgba(220,180,120,0.9);
+    margin-bottom: 1.1rem;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9em;
+  }
+  .bonus-burst-eyebrow::before, .bonus-burst-eyebrow::after {
+    content: '';
+    width: 36px;
+    height: 1px;
+    background: rgba(190,140,70,0.55);
+    display: inline-block;
   }
   .bonus-burst-headline {
-    /* パチンコ煽り感の極太レトロ。日本語+英字を同フォントで派手に演出 */
-    font-family: 'Reggae One', 'Black Ops One', 'Noto Sans JP', cursive;
-    font-size: clamp(1.8rem, 5.6vw, 3rem);
-    letter-spacing: 0.06em;
-    background: linear-gradient(180deg, #fff8d6 0%, #ffe040 40%, #ff7c1e 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    filter:
-      drop-shadow(0 0 16px rgba(255,200,60,0.85))
-      drop-shadow(0 3px 0 rgba(120,40,0,0.7));
-    margin-bottom: 0.5rem;
+    /* Cinzel 800 (英字 BONUS) + Noto Serif JP 900 fallback (日本語 貫通) で戦績碑感 */
+    font-family: 'Cinzel', 'Noto Serif JP', serif;
+    font-weight: 800;
+    font-size: clamp(1.5rem, 4.2vw, 2.4rem);
+    letter-spacing: 0.18em;
+    color: rgba(245,225,180,0.96);
+    text-shadow:
+      0 0 18px rgba(190,140,70,0.55),
+      0 2px 4px rgba(0,0,0,0.85);
+    margin-bottom: 1.2rem;
     line-height: 1;
   }
   .bonus-burst-numbers {
-    display: flex;
+    display: inline-flex;
     align-items: baseline;
     justify-content: center;
     gap: 0.05em;
-    line-height: 0.9;
-    font-family: 'Black Ops One', cursive;
+    line-height: 0.95;
+    font-family: 'Cinzel', serif;
+    font-weight: 800;
   }
   .bonus-burst-plus {
-    font-size: clamp(2.6rem, 8vw, 5rem);
-    color: var(--gold);
-    text-shadow:
-      0 0 28px rgba(255,224,80,0.9),
-      0 4px 0 rgba(120,60,0,0.65);
+    font-size: clamp(2.2rem, 5.5vw, 3.4rem);
+    background: linear-gradient(180deg, #f4dca0 0%, #d9a55a 35%, #8c5a22 70%, #5b3a14 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter:
+      drop-shadow(0 1px 0 rgba(0,0,0,0.55))
+      drop-shadow(0 4px 8px rgba(0,0,0,0.7));
     margin-right: 0.05em;
   }
   .bonus-burst-points {
-    font-size: clamp(4.5rem, 16vw, 10rem);
-    background: linear-gradient(180deg, #fff5b8 0%, #ffe040 38%, #ff8c1a 100%);
+    font-size: clamp(4.4rem, 13vw, 7.8rem);
+    background: linear-gradient(180deg, #f4dca0 0%, #d9a55a 35%, #8c5a22 70%, #5b3a14 100%);
     -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     background-clip: text;
-    color: transparent;
     filter:
-      drop-shadow(0 0 18px rgba(255,224,80,0.85))
-      drop-shadow(0 4px 0 rgba(120,60,0,0.6));
+      drop-shadow(0 1px 0 rgba(0,0,0,0.55))
+      drop-shadow(0 -1px 0 rgba(255,235,170,0.22))
+      drop-shadow(0 4px 8px rgba(0,0,0,0.7));
     letter-spacing: 0.04em;
   }
   .bonus-burst-pt-unit {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(1.2rem, 3.4vw, 2rem);
-    color: var(--gold);
-    letter-spacing: 0.18em;
-    margin-left: 0.2em;
-    text-shadow: 0 0 12px rgba(255,200,60,0.6);
+    font-weight: 400;
+    font-size: clamp(1.1rem, 2.8vw, 1.6rem);
+    color: rgba(220,180,120,0.92);
+    letter-spacing: 0.22em;
+    margin-left: 0.35em;
     align-self: center;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.85);
   }
   .bonus-burst-tagline {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(0.95rem, 2.6vw, 1.45rem);
-    letter-spacing: 0.4em;
-    color: rgba(255,224,140,0.88);
-    margin-top: 0.55rem;
-    text-shadow: 0 0 10px rgba(255,180,40,0.55);
+    font-size: clamp(0.78rem, 2vw, 1rem);
+    letter-spacing: 0.5em;
+    color: rgba(220,180,120,0.7);
+    margin-top: 1.1rem;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.85);
   }
 
-  body.bonus-shake { animation: bonus-body-shake 0.45s ease-in-out 1; }
-
-  @keyframes bonus-overlay-fade { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }
-  @keyframes bonus-bg-in { 0% { opacity: 0; } 100% { opacity: 1; } }
-  @keyframes bonus-stripes-in { 0% { opacity: 0; } 100% { opacity: 0.7; } }
-  @keyframes bonus-stripes-rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-  @keyframes bonus-ring-expand {
-    0% { opacity: 0; transform: scale(0.2); }
-    10% { opacity: 1; }
-    100% { opacity: 0; transform: scale(40); }
+  @keyframes bonus-overlay-cycle {
+    0%        { opacity: 0; }
+    10%, 80%  { opacity: 1; }
+    100%      { opacity: 0; }
   }
-  @keyframes bonus-plate-slam {
-    0%   { transform: translateY(-180vh) scale(0.7) rotate(-3deg); opacity: 0; }
-    55%  { transform: translateY(2vh) scale(1.06) rotate(0.6deg); opacity: 1; }
-    78%  { transform: translateY(-1vh) scale(0.97) rotate(-0.4deg); opacity: 1; }
+  @keyframes bonus-plate-descend {
+    0%   { transform: translateY(-150vh) scale(0.94) rotate(-1deg); opacity: 0; }
+    55%  { transform: translateY(1vh) scale(1.02) rotate(0.3deg); opacity: 1; }
+    75%  { transform: translateY(-0.4vh) scale(0.99) rotate(-0.15deg); opacity: 1; }
     100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
   }
-  @keyframes bonus-plate-shake {
-    0%, 100% { translate: 0 0; }
-    20% { translate: -6px 1px; }
-    40% { translate: 5px -2px; }
-    60% { translate: -3px 2px; }
-    80% { translate: 4px -1px; }
+  @keyframes bonus-halo {
+    0%   { opacity: 0; transform: scale(0.4); }
+    18%  { opacity: 1; }
+    100% { opacity: 0; transform: scale(8); }
   }
-  @keyframes bonus-flash {
-    0% { opacity: 0; }
-    40% { opacity: 0.95; }
-    100% { opacity: 0; }
-  }
-  @keyframes bonus-body-shake {
-    0%, 100% { transform: translate(0, 0); }
-    20% { transform: translate(-4px, 1px); }
-    40% { transform: translate(4px, -2px); }
-    60% { transform: translate(-3px, 1px); }
-    80% { transform: translate(2px, -1px); }
-  }
+
   @media (prefers-reduced-motion: reduce) {
+    .bonus-burst-overlay.show { animation: bonus-overlay-cycle 1.5s linear forwards; }
     .bonus-burst-plate { animation: none; transform: none; opacity: 1; }
-    .bonus-burst-rings span { animation: none; opacity: 0; }
-    .bonus-burst-stripes { animation: bonus-stripes-in 0.4s ease-out forwards; }
-    body.bonus-shake { animation: none; }
+    .bonus-burst-overlay::after { display: none; }
   }
 
   .vote-modal-actions { display: flex; flex-direction: column; gap: 0.7rem; align-items: center; margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,0.12); }
@@ -2619,20 +2584,17 @@
   </div>
 </div>
 
-<!-- 貫通 BONUS GET! 派手エフェクト (キーワード一致時に一瞬表示) -->
+<!-- 貫通 BONUS GET! 戦績碑風エフェクト (キーワード一致時に一瞬表示) -->
 <div class="bonus-burst-overlay" id="bonusBurstOverlay" aria-hidden="true">
-  <div class="bonus-burst-bg"></div>
-  <div class="bonus-burst-stripes"></div>
-  <div class="bonus-burst-rings"><span></span><span></span><span></span></div>
   <div class="bonus-burst-plate">
-    <div class="bonus-burst-eyebrow">BREAKTHROUGH</div>
+    <div class="bonus-burst-eyebrow">PIERCED BREAKTHROUGH</div>
     <div class="bonus-burst-headline">貫通 BONUS</div>
     <div class="bonus-burst-numbers">
       <span class="bonus-burst-plus">+</span>
       <span class="bonus-burst-points">5000</span>
-      <span class="bonus-burst-pt-unit">PT</span>
+      <span class="bonus-burst-pt-unit">POINTS</span>
     </div>
-    <div class="bonus-burst-tagline">POINTS BREAKTHROUGH</div>
+    <div class="bonus-burst-tagline">— GLORIA —</div>
   </div>
 </div>
 
@@ -2923,21 +2885,10 @@ function triggerBonusBurst() {
   ov.classList.remove('show');
   void ov.offsetWidth;  // restart animation
   ov.classList.add('show');
-  setTimeout(() => ov.classList.remove('show'), 3200);
+  setTimeout(() => ov.classList.remove('show'), 3000);
 
-  // body shake (一瞬の衝撃)
-  document.body.classList.remove('bonus-shake');
-  void document.body.offsetWidth;
-  document.body.classList.add('bonus-shake');
-  setTimeout(() => document.body.classList.remove('bonus-shake'), 600);
-
-  // 紙吹雪を時間差・多色で連射 (gold → crimson → nova → gold)
-  if (typeof confettiBurst === 'function') {
-    confettiBurst('#ffe040');
-    setTimeout(() => confettiBurst('#ff5594'), 220);
-    setTimeout(() => confettiBurst('#b389ff'), 440);
-    setTimeout(() => confettiBurst('#ffd700'), 760);
-  }
+  // 紙吹雪は控えめに gold 1 発のみ (戦績碑の gravitas を保つ)
+  if (typeof confettiBurst === 'function') confettiBurst('#d9a55a');
 }
 
 function closeVoteModal() {
@@ -3117,8 +3068,8 @@ async function submitBulkVote() {
       : Boolean(data && data.bonusGranted);
     if (shouldBurst) {
       triggerBonusBurst();
-      // burst (3.2s) が落ち着いてからサンクスへ。短すぎると派手演出に thank-you が被ってしまう。
-      setTimeout(() => showThankYouOverlay(), 3000);
+      // burst の fade-out 開始 (2.4s 時点) に thank-you をクロスで出す
+      setTimeout(() => showThankYouOverlay(), 2500);
     } else {
       showThankYouOverlay();
     }
