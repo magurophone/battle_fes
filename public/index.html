@@ -1999,8 +1999,8 @@
     display: inline-block;
   }
   .bonus-burst-headline {
-    /* Cinzel 800 (英字 BONUS) + Noto Serif JP 900 fallback (日本語 貫通) で戦績碑感 */
-    font-family: 'Cinzel', 'Noto Serif JP', serif;
+    /* 英字 BONUS は Cinzel 800、日本語 貫通 は span で明示し Noto Serif JP 900 を当てる */
+    font-family: 'Cinzel', serif;
     font-weight: 800;
     font-size: clamp(1.5rem, 4.2vw, 2.4rem);
     letter-spacing: 0.18em;
@@ -2010,6 +2010,13 @@
       0 2px 4px rgba(0,0,0,0.85);
     margin-bottom: 1.2rem;
     line-height: 1;
+  }
+  .bonus-burst-headline-jp {
+    /* synthetic bold 回避のため明示 span 化 (Noto Serif JP 900 を確実に当てる) */
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    margin-right: 0.15em;
   }
   .bonus-burst-numbers {
     display: inline-flex;
@@ -2588,7 +2595,7 @@
 <div class="bonus-burst-overlay" id="bonusBurstOverlay" aria-hidden="true">
   <div class="bonus-burst-plate">
     <div class="bonus-burst-eyebrow">PIERCED BREAKTHROUGH</div>
-    <div class="bonus-burst-headline">貫通 BONUS</div>
+    <div class="bonus-burst-headline"><span class="bonus-burst-headline-jp">貫通</span>BONUS</div>
     <div class="bonus-burst-numbers">
       <span class="bonus-burst-plus">+</span>
       <span class="bonus-burst-points">5000</span>
@@ -2879,16 +2886,22 @@ function refreshBonusKeywordSection() {
   sec.hidden = !isMainVotingNow();
 }
 
+function isReducedMotion() {
+  return Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+}
+
 function triggerBonusBurst() {
   const ov = document.getElementById('bonusBurstOverlay');
   if (!ov) return;
+  const reduced = isReducedMotion();
+  const dur = reduced ? 1500 : 3000;
   ov.classList.remove('show');
   void ov.offsetWidth;  // restart animation
   ov.classList.add('show');
-  setTimeout(() => ov.classList.remove('show'), 3000);
+  setTimeout(() => ov.classList.remove('show'), dur);
 
-  // 紙吹雪は控えめに gold 1 発のみ (戦績碑の gravitas を保つ)
-  if (typeof confettiBurst === 'function') confettiBurst('#d9a55a');
+  // 紙吹雪は控えめに gold 1 発のみ (reduced-motion 利用者には出さない)
+  if (!reduced && typeof confettiBurst === 'function') confettiBurst('#d9a55a');
 }
 
 function closeVoteModal() {
@@ -3068,8 +3081,9 @@ async function submitBulkVote() {
       : Boolean(data && data.bonusGranted);
     if (shouldBurst) {
       triggerBonusBurst();
-      // burst の fade-out 開始 (2.4s 時点) に thank-you をクロスで出す
-      setTimeout(() => showThankYouOverlay(), 2500);
+      // burst の fade-out 開始に thank-you をクロスで出す。reduced-motion 時は短尺に合わせる。
+      const thankYouDelay = isReducedMotion() ? 1200 : 2500;
+      setTimeout(() => showThankYouOverlay(), thankYouDelay);
     } else {
       showThankYouOverlay();
     }
