@@ -104,8 +104,8 @@
       <button type="button" id="togglePwBtn" class="toggle-password-btn" onclick="togglePasswordVisibility()" aria-label="パスワードを表示" aria-pressed="false">表示</button>
     </div>
     <div class="admin-actions">
-      <button type="button" onclick="saveToken()">Log in</button>
-      <button type="button" onclick="loadAdmin()">Load status</button>
+      <button type="button" onclick="login()">ログイン</button>
+      <button type="button" onclick="loadAdmin()">再読み込み</button>
     </div>
   </div>
 
@@ -200,15 +200,30 @@
       return localStorage.getItem('battlefes_admin_token') || '';
     }
 
-    function saveToken() {
-      const token = document.getElementById('adminToken').value.trim();
-      if (token) {
-        localStorage.setItem('battlefes_admin_token', token);
-        setStatus('パスワードをこのブラウザに保存しました');
+    async function login() {
+      const input = document.getElementById('adminToken');
+      const typed = input.value.trim();
+      // 入力欄が空なら保存済みトークンで再検証する
+      const candidate = typed || getToken();
+      if (!candidate) {
+        setStatus('パスワードを入力してください');
+        input.focus();
         return;
       }
-      localStorage.removeItem('battlefes_admin_token');
-      setStatus('保存済みパスワードをクリアしました');
+      // 入力中のものを先に保存して api() に拾わせる
+      localStorage.setItem('battlefes_admin_token', candidate);
+      setStatus('ログイン中...');
+      try {
+        const data = await api('/api/admin/results');
+        renderSnapshot(data);
+        setStatus('ログインしました');
+      } catch (error) {
+        // 認証失敗時は保存したトークンを破棄して使い回しを防ぐ
+        if (/認証エラー|アクセスが拒否/.test(error.message)) {
+          localStorage.removeItem('battlefes_admin_token');
+        }
+        setStatus(error.message);
+      }
     }
 
     async function api(path, options = {}) {
