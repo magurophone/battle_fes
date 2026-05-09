@@ -311,6 +311,12 @@
       color: var(--accent);
       box-shadow: 0 4px 14px rgba(255,124,30,0.18);
     }
+    .category-block.team h3 {
+      background: linear-gradient(135deg, rgba(255,124,30,0.22), rgba(255,224,64,0.10));
+      border-color: rgba(255,124,30,0.45);
+      color: var(--accent);
+      box-shadow: 0 4px 14px rgba(255,124,30,0.18);
+    }
     .category-block.individual h3 {
       background: linear-gradient(135deg, rgba(56,212,255,0.22), rgba(178,246,255,0.10));
       border-color: rgba(56,212,255,0.45);
@@ -334,39 +340,116 @@
     }
     .meta-grid div { white-space: nowrap; }
 
+    /* PC: テーブルが横にはみ出した場合のスクロール用ラッパー */
+    .table-scroll {
+      overflow-x: auto;
+      overflow-y: hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.02);
+      margin-bottom: 12px;
+      -webkit-overflow-scrolling: touch;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      overflow: hidden;
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.06);
       table-layout: auto;
     }
 
     th,
     td {
       padding: 10px 12px;
-      text-align: center;          /* テーブル全体センター揃え */
       vertical-align: middle;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       font-size: 0.92rem;
-      white-space: nowrap;          /* th/td の不要な改行を抑止 */
+      white-space: nowrap;
     }
-    /* 自由記述 (コメント等) は改行・折り返し許可 */
-    td.wrap, th.wrap { white-space: normal; }
-    /* イベント感想 / 投票ログのコメント列 (最終列) は折り返しを許可 */
-    table tbody tr td:last-child { white-space: normal; text-align: left; }
-
+    /* th だけセンター揃え (中央寄せはヘッダーのみ) */
     th {
+      text-align: center;
       color: var(--accent2);
       background: rgba(255, 124, 30, 0.12);
-      letter-spacing: 0.06em;       /* 0.11em → 0.06em で詰めて改行リスク軽減 */
+      letter-spacing: 0.06em;
       font-size: 0.95rem;
+    }
+
+    tbody td {
+      text-align: left;
     }
 
     tr:last-child td {
       border-bottom: none;
+    }
+
+    /* ── モバイル時カードビュー (≤ 720px) ──
+       PC ではテーブルのまま、スマホでは tr 単位でカード化して、
+       長文コメント等を縦並び・自然な折り返しで読みやすくする */
+    @media (max-width: 720px) {
+      .category-block table,
+      .category-block thead,
+      .category-block tbody,
+      .category-block tr,
+      .category-block td,
+      .panel > table,
+      .panel > table thead,
+      .panel > table tbody,
+      .panel > table tr,
+      .panel > table td {
+        display: block;
+        width: 100%;
+      }
+      /* thead は隠して各セルが自分でラベル表示 */
+      .category-block thead,
+      .panel > table thead {
+        position: absolute;
+        left: -9999px;
+        clip: rect(0 0 0 0);
+      }
+      .category-block tr,
+      .panel > table tr {
+        margin-bottom: 12px;
+        padding: 12px 14px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 124, 30, 0.18);
+        border-radius: 12px;
+      }
+      .category-block tr:last-child,
+      .panel > table tr:last-child {
+        margin-bottom: 0;
+      }
+      .category-block td,
+      .panel > table td {
+        white-space: normal;       /* カード化したので折り返し OK */
+        text-align: left;
+        padding: 4px 0;
+        border-bottom: none;
+        font-size: 0.9rem;
+        position: relative;
+        padding-left: 110px;        /* ラベル用スペース */
+      }
+      .category-block td::before,
+      .panel > table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        top: 4px;
+        width: 100px;
+        color: var(--accent2);
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* 空行 (colspan="3" 等) はラベル無しで中央表示 */
+      .category-block td[colspan],
+      .panel > table td[colspan] {
+        padding-left: 0;
+        text-align: center;
+      }
+      .category-block td[colspan]::before,
+      .panel > table td[colspan]::before {
+        content: none;
+      }
     }
 
     details {
@@ -473,16 +556,18 @@
 
       <section class="panel">
         <h2>イベント感想</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>時刻</th>
-              <th>投票者</th>
-              <th>コメント</th>
-            </tr>
-          </thead>
-          <tbody id="eventImpressionsBody"></tbody>
-        </table>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>時刻</th>
+                <th>投票者</th>
+                <th>コメント</th>
+              </tr>
+            </thead>
+            <tbody id="eventImpressionsBody"></tbody>
+          </table>
+        </div>
       </section>
     </main>
   </div>
@@ -691,19 +776,19 @@
         const percent = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
         return `
           <tr>
-            <td>${escapeHtml(candidateName(category, id))}</td>
-            <td>${votes}</td>
-            <td>${percent}%</td>
+            <td data-label="候補">${escapeHtml(candidateName(category, id))}</td>
+            <td data-label="投票数">${votes}</td>
+            <td data-label="割合">${percent}%</td>
           </tr>
         `;
       }).join("");
 
       const logRows = voteLog.map((entry) => `
         <tr>
-          <td>${escapeHtml(formatJstTime(entry.timestamp))}</td>
-          <td>${escapeHtml(candidateName(category, entry.candidateId))}</td>
-          <td>${escapeHtml(entry.voterName || "-")}</td>
-          <td>${escapeHtml(entry.comment || "")}</td>
+          <td data-label="時刻">${escapeHtml(formatJstTime(entry.timestamp))}</td>
+          <td data-label="候補">${escapeHtml(candidateName(category, entry.candidateId))}</td>
+          <td data-label="投票者">${escapeHtml(entry.voterName || "-")}</td>
+          <td data-label="コメント">${escapeHtml(entry.comment || "")}</td>
         </tr>
       `).join("");
 
@@ -715,29 +800,33 @@
             <div><strong>ユニーク端末:</strong> ${uniqueFingerprints}</div>
             <div><strong>最終投票:</strong> ${escapeHtml(formatJstTime(meta.lastVoteAt))}</div>
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th>候補</th>
-                <th>投票数</th>
-                <th>割合</th>
-              </tr>
-            </thead>
-            <tbody>${rows || '<tr><td colspan="3" class="empty">データがありません</td></tr>'}</tbody>
-          </table>
-          <details>
-            <summary>投票ログ (${voteLog.length})</summary>
+          <div class="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th>時刻</th>
                   <th>候補</th>
-                  <th>投票者</th>
-                  <th>コメント</th>
+                  <th>投票数</th>
+                  <th>割合</th>
                 </tr>
               </thead>
-              <tbody>${logRows || '<tr><td colspan="4" class="empty">ログがありません</td></tr>'}</tbody>
+              <tbody>${rows || '<tr><td colspan="3" class="empty">データがありません</td></tr>'}</tbody>
             </table>
+          </div>
+          <details>
+            <summary>投票ログ (${voteLog.length})</summary>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>時刻</th>
+                    <th>候補</th>
+                    <th>投票者</th>
+                    <th>コメント</th>
+                  </tr>
+                </thead>
+                <tbody>${logRows || '<tr><td colspan="4" class="empty">ログがありません</td></tr>'}</tbody>
+              </table>
+            </div>
           </details>
         </section>
       `;
@@ -758,9 +847,9 @@
       document.getElementById("eventImpressionsBody").innerHTML = impressions.length
         ? impressions.map((entry) => `
             <tr>
-              <td>${escapeHtml(formatJstTime(entry.timestamp))}</td>
-              <td>${escapeHtml(entry.voterName || "-")}</td>
-              <td>${escapeHtml(entry.comment || "")}</td>
+              <td data-label="時刻">${escapeHtml(formatJstTime(entry.timestamp))}</td>
+              <td data-label="投票者">${escapeHtml(entry.voterName || "-")}</td>
+              <td data-label="コメント">${escapeHtml(entry.comment || "")}</td>
             </tr>
           `).join("")
         : '<tr><td colspan="3" class="empty">感想はまだありません</td></tr>';
