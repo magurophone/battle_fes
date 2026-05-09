@@ -123,14 +123,15 @@ export async function onRequestPost(context) {
   const fingerprint = await sha256(`${ip}|${userAgent}|${acceptLanguage}`);
   const expectedBonusKeyword = String(context.env.BONUS_KEYWORD || "").trim();
   const submittedBonusKeyword = String(payload.bonusKeyword || "").trim();
-  const bonusGranted =
+  // env 照合のみの結果（時間判定なし）。テストモード時の burst 演出判定用にレスポンスへ乗せる。
+  const bonusKeywordMatched =
     Boolean(expectedBonusKeyword) && submittedBonusKeyword === expectedBonusKeyword;
 
   const writeResult = await recordBulkVotes(
     context.env.BATTLE_FES_VOTE_STORE,
     fingerprint,
     payload,
-    { bonusGranted }
+    { bonusGranted: bonusKeywordMatched }
   );
 
   if (!writeResult.ok && writeResult.duplicate) {
@@ -151,5 +152,9 @@ export async function onRequestPost(context) {
     ok: true,
     duplicate: false,
     results: writeResult.results,
+    // 実加算されたか（env 一致 かつ 本投票期間内）。本番フローでは burst 発動条件。
+    bonusGranted: Boolean(writeResult.bonusGranted),
+    // env 一致のみ（時間判定なし）。テストモード時の burst 演出判定用。
+    bonusKeywordMatched,
   });
 }

@@ -2907,8 +2907,14 @@ async function submitBulkVote() {
     renderVote();
     renderRanking();
 
-    // 貫通 BONUS 取得時はサンクスより先に派手 burst を出す
-    if (data && data.bonusGranted) {
+    // 貫通 BONUS 取得時はサンクスより先に派手 burst を出す。
+    // 本番では bonusGranted (env 一致 かつ 本投票期間内 = 実加算)、
+    // テストモードでは時間ガードを通らず実加算は 0 だが、env 照合のみの bonusKeywordMatched で演出を確認可能にする。
+    const isTest = (typeof isTestModeOn === 'function') && isTestModeOn();
+    const shouldBurst = isTest
+      ? Boolean(data && data.bonusKeywordMatched)
+      : Boolean(data && data.bonusGranted);
+    if (shouldBurst) {
       triggerBonusBurst();
       // burst が落ち着いてからサンクスへ
       setTimeout(() => showThankYouOverlay(), 2400);
