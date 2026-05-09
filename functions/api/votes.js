@@ -1,9 +1,24 @@
-import { createEmptyResults, getVoteWindowStatus, isVoteSubmissionAllowed, recordVote } from "./_lib/vote-store.js";
+import {
+  getVoteWindowStatus,
+  isVoteSubmissionAllowed,
+  readAllResults,
+  recordBulkVotes,
+} from "./_lib/vote-store.js";
+import {
+  CATEGORIES,
+  CATEGORY_IDS,
+  INDIVIDUAL_CATEGORY_IDS,
+  isValidCandidateForCategory,
+} from "./_lib/vote-categories.js";
+
+const MAX_NAME_LEN = 30;
+const MAX_COMMENT_LEN = 100;
+const MAX_EVENT_COMMENT_LEN = 300;
 
 async function sha256(text) {
   const bytes = new TextEncoder().encode(text);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
-  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 function json(data, init = {}) {
@@ -14,22 +29,62 @@ function json(data, init = {}) {
 }
 
 function badRequest(message) {
-  return json({ ok: false, error: message, results: createEmptyResults() }, { status: 400 });
+  return json({ ok: false, error: message }, { status: 400 });
 }
 
 function normalizePayload(body) {
-  if (!body || typeof body !== "object") return null;
+  if (!body || typeof body !== "object") return { error: "Invalid payload." };
 
-  const teamId = Number(body.teamId);
   const voterName = String(body.voterName || "").trim();
-  const comment = String(body.comment || "").trim();
-  const timestamp = String(body.timestamp || new Date().toISOString());
+  if (!voterName) return { error: "Name is required." };
+  if (voterName.length > MAX_NAME_LEN) return { error: "Name is too long." };
 
-  if (![1, 2, 3, 4].includes(teamId)) return null;
-  if (!voterName || voterName.length > 30) return null;
-  if (comment.length > 100) return null;
+  if (!Array.isArray(body.picks)) return { error: "picks must be an array." };
+  if (body.picks.length !== CATEGORY_IDS.length) {
+    return { error: "picks must include all categories." };
+  }
 
-  return { teamId, voterName, comment, timestamp };
+  const seenCategories = new Set();
+  const normalizedPicks = [];
+  for (const raw of body.picks) {
+    if (!raw || typeof raw !== "object") return { error: "Invalid pick entry." };
+    const cid = String(raw.categoryId || "");
+    if (!CATEGORY_IDS.includes(cid)) return { error: `Unknown category: ${cid}` };
+    if (seenCategories.has(cid)) return { error: `Duplicate category: ${cid}` };
+    seenCategories.add(cid);
+
+    const candidateId = Number(raw.candidateId);
+    if (!isValidCandidateForCategory(cid, candidateId)) {
+      return { error: `Invalid candidate for category ${cid}.` };
+    }
+
+    const comment = String(raw.comment || "").trim();
+    if (comment.length > MAX_COMMENT_LEN) return { error: `Comment too long for ${cid}.` };
+
+    normalizedPicks.push({ categoryId: cid, candidateId, comment });
+  }
+
+  // 個人賞は同じ人物を複数賞に選択不可
+  const individualCandidates = normalizedPicks
+    .filter((p) => INDIVIDUAL_CATEGORY_IDS.includes(p.categoryId))
+    .map((p) => p.candidateId);
+  const uniqueCount = new Set(individualCandidates).size;
+  if (uniqueCount !== individualCandidates.length) {
+    return { error: "Individual award picks must be distinct people." };
+  }
+
+  const eventComment = String(body.eventComment || "").trim();
+  if (eventComment.length > MAX_EVENT_COMMENT_LEN) {
+    return { error: "Event comment too long." };
+  }
+
+  return {
+    payload: {
+      voterName,
+      picks: normalizedPicks,
+      eventComment,
+    },
+  };
 }
 
 export async function onRequestPost(context) {
@@ -45,8 +100,12 @@ export async function onRequestPost(context) {
     );
   }
 
-  const payload = normalizePayload(await context.request.json().catch(() => null));
-  if (!payload) return badRequest("Invalid vote payload.");
+  const body = await context.request.json().catch(() => null);
+  const result = normalizePayload(body);
+  if (result.error) return badRequest(result.error);
+  const { payload } = result;
+  // タイムスタンプはサーバー時刻に固定（クライアント入力は信用しない）
+  payload.timestamp = new Date().toISOString();
 
   const ip =
     context.request.headers.get("CF-Connecting-IP") ||
@@ -56,16 +115,21 @@ export async function onRequestPost(context) {
   const acceptLanguage = context.request.headers.get("accept-language") || "unknown-lang";
   const fingerprint = await sha256(`${ip}|${userAgent}|${acceptLanguage}`);
 
-  const result = await recordVote(context.env.BATTLE_FES_VOTE_STORE, fingerprint, payload);
+  const writeResult = await recordBulkVotes(
+    context.env.BATTLE_FES_VOTE_STORE,
+    fingerprint,
+    payload
+  );
 
-  if (!result.ok && result.duplicate) {
+  if (!writeResult.ok && writeResult.duplicate) {
     return json(
       {
         ok: false,
         error: "This device has already voted.",
         duplicate: true,
-        existingTeamId: result.existing.teamId,
-        results: result.results,
+        conflicts: writeResult.conflicts,
+        existing: writeResult.existing,
+        results: await readAllResults(context.env.BATTLE_FES_VOTE_STORE),
       },
       { status: 409 }
     );
@@ -74,6 +138,6 @@ export async function onRequestPost(context) {
   return json({
     ok: true,
     duplicate: false,
-    results: result.results,
+    results: writeResult.results,
   });
 }

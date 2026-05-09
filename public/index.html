@@ -1816,8 +1816,7 @@
   .vote-bar-wrap { height: 6px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem; }
   .vote-bar { height: 100%; background: var(--team-color, var(--accent)); border-radius: 3px; transition: width 0.6s cubic-bezier(.4,0,.2,1); }
   .vote-count { font-size: 0.75rem; color: var(--muted); display: flex; justify-content: space-between; }
-  .vote-form { width: 100%; margin: 2rem 0; display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; }
-  @media (max-width: 600px) { .vote-form { grid-template-columns: 1fr; } }
+  .vote-form { width: 100%; max-width: 480px; margin: 2rem 0; }
   .vote-form label { font-size: 0.8rem; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.3rem; display: block; }
   .vote-form input, .vote-form textarea { width: 100%; background: rgba(10,16,40,0.78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid rgba(255,160,60,0.25); border-radius: 10px; padding: 0.75rem 1rem; color: var(--text); font-family: inherit; font-size: 16px; outline: none; transition: border-color 0.2s; box-sizing: border-box; }
   .vote-form input:focus, .vote-form textarea:focus { border-color: var(--accent); }
@@ -1841,6 +1840,58 @@
   .vote-success.show { display: block; }
   .vote-success p { color: var(--gold); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.3rem; }
   .vote-success small { color: var(--muted); font-size: 0.82rem; }
+
+  /* ── 投票モーダル（個人賞 + イベント感想）── */
+  .vote-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 200; padding: 1.5rem; overflow-y: auto; }
+  .vote-modal-overlay.show { display: flex; }
+  .vote-modal-panel { background: rgba(14,18,42,0.96); border: 1px solid rgba(255,160,60,0.35); border-radius: 16px; padding: 1.8rem 1.6rem; width: 100%; max-width: 720px; max-height: calc(100vh - 3rem); overflow-y: auto; position: relative; box-shadow: 0 20px 80px rgba(0,0,0,0.6); }
+  .vote-modal-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.12); }
+  .vote-modal-header h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.18em; margin: 0; color: var(--accent); }
+  .vote-modal-close { background: none; border: none; color: var(--muted); font-size: 1.6rem; cursor: pointer; padding: 0.2rem 0.6rem; line-height: 1; transition: color 0.2s; }
+  .vote-modal-close:hover { color: var(--text); }
+  .vote-modal-team-display { background: rgba(10,16,40,0.65); border-radius: 10px; padding: 0.8rem 1rem; margin-bottom: 1.4rem; display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; font-size: 0.88rem; }
+  .vote-modal-team-display strong { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.12em; }
+  .vote-modal-team-display .vmd-voter { color: var(--muted); font-size: 0.78rem; }
+
+  .award-section { margin-bottom: 1.6rem; padding-bottom: 1.4rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .award-section:last-of-type { border-bottom: none; padding-bottom: 0; }
+  .award-section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; letter-spacing: 0.16em; color: var(--gold); margin-bottom: 0.85rem; }
+  .member-grid { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 0.8rem; }
+  .member-team-row { display: flex; align-items: flex-start; gap: 0.8rem; flex-wrap: wrap; }
+  .member-team-label { font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 0.16em; min-width: 80px; padding-top: 0.45rem; }
+  .member-team-buttons { display: flex; gap: 0.45rem; flex-wrap: wrap; flex: 1; }
+  .member-btn { background: rgba(10,16,40,0.78); border: 1px solid rgba(255,255,255,0.18); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 0.85rem; font-weight: 600; padding: 0.5rem 0.9rem; border-radius: 999px; cursor: pointer; transition: all 0.18s; min-height: 38px; }
+  .member-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(255,140,40,0.12); }
+  .member-btn.selected { background: linear-gradient(135deg, #ff8c1a, #ff3344); border-color: transparent; color: #fff; box-shadow: 0 0 18px rgba(255,107,26,0.45); }
+  .member-btn:disabled, .member-btn.disabled-by-other { opacity: 0.32; cursor: not-allowed; background: rgba(40,40,55,0.6); }
+  .award-comment { width: 100%; background: rgba(10,16,40,0.78); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.6rem 0.85rem; color: var(--text); font-family: inherit; font-size: 0.88rem; resize: vertical; min-height: 56px; box-sizing: border-box; outline: none; transition: border-color 0.2s; }
+  .award-comment:focus { border-color: var(--accent); }
+
+  .event-impression-section { margin-top: 1.4rem; padding-top: 1.3rem; border-top: 1px solid rgba(255,255,255,0.12); }
+  .event-impression-section .award-section-title { color: var(--accent); }
+  .event-impression-section textarea { width: 100%; min-height: 80px; }
+
+  .vote-modal-actions { display: flex; flex-direction: column; gap: 0.7rem; align-items: center; margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,0.12); }
+  .vote-modal-actions .btn-vote { width: 100%; max-width: 360px; }
+  .vote-modal-hint { font-size: 0.8rem; color: var(--muted); text-align: center; }
+
+  .thank-you-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 250; padding: 1.5rem; }
+  .thank-you-overlay.show { display: flex; }
+  .thank-you-panel { background: rgba(14,18,42,0.97); border: 1px solid rgba(255,214,10,0.5); border-radius: 18px; padding: 2.4rem 2rem; max-width: 460px; width: 100%; text-align: center; box-shadow: 0 20px 80px rgba(0,0,0,0.7); }
+  .thank-you-panel .ty-mark { font-size: 2.6rem; color: var(--gold); line-height: 1; margin-bottom: 1rem; }
+  .thank-you-panel h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.2em; margin: 0 0 0.6rem; color: var(--gold); }
+  .thank-you-panel p { color: var(--text); margin-bottom: 1.4rem; line-height: 1.7; font-size: 0.92rem; }
+  .thank-you-panel button { background: rgba(10,16,40,0.85); border: 1px solid rgba(255,255,255,0.25); color: var(--text); font-weight: 700; padding: 0.7rem 1.8rem; border-radius: 999px; cursor: pointer; font-family: 'Noto Sans JP', sans-serif; letter-spacing: 0.08em; transition: all 0.2s; }
+  .thank-you-panel button:hover { border-color: var(--accent); color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .vote-modal-panel { padding: 1.4rem 1.1rem; }
+    .vote-modal-header h3 { font-size: 1.2rem; }
+    .member-team-row { flex-direction: column; gap: 0.4rem; }
+    .member-team-label { min-width: 0; padding-top: 0; }
+    .member-btn { font-size: 0.82rem; padding: 0.45rem 0.8rem; }
+    .thank-you-panel { padding: 2rem 1.4rem; }
+  }
   .vote-result-wrap { display: none; margin-top: 3rem; }
   .vote-result-wrap.show { display: block; }
   .vote-result-title { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.35em; color: var(--muted); margin-bottom: 1.5rem; }
@@ -2257,23 +2308,14 @@
         <label for="voterName">お名前（ハンドルネーム）<span style="color:var(--accent3)">*</span></label>
         <input type="text" id="voterName" placeholder="例：カラーシングファン" maxlength="30">
       </div>
-      <div>
-        <label for="voterComment">応援コメント（任意）</label>
-        <textarea id="voterComment" placeholder="推しチームへの応援メッセージをどうぞ！" maxlength="100"></textarea>
-      </div>
     </div>
 
     <div class="vote-teams" id="voteTeams"></div>
 
     <div class="vote-actions">
-      <button class="btn-vote" id="voteBtn" disabled onclick="submitVote()">投票する</button>
+      <button class="btn-vote" id="voteBtn" disabled onclick="openVoteModal()">投票する</button>
       <button class="btn-reset" type="button" onclick="resetTrialVotes()">試験リセット</button>
       <span class="vote-hint" id="voteHint">チームを選んでください</span>
-    </div>
-
-    <div class="vote-success" id="voteSuccess">
-      <p id="voteSuccessMsg">✓ 投票ありがとうございます！</p>
-      <small>あなたの1票がチームの力になります。引き続き配信を楽しんでください！</small>
     </div>
 
     <div class="vote-result-wrap" id="voteResultWrap">
@@ -2283,6 +2325,44 @@
   </div>
 </section>
 
+<!-- 個人賞 + イベント感想モーダル（section 外に置く: #vote > * の position 上書きを回避） -->
+<div class="vote-modal-overlay" id="voteModalOverlay" role="dialog" aria-modal="true" aria-labelledby="voteModalTitle">
+  <div class="vote-modal-panel">
+    <div class="vote-modal-header">
+      <h3 id="voteModalTitle">個人賞投票</h3>
+      <button type="button" class="vote-modal-close" onclick="closeVoteModal()" aria-label="閉じる">×</button>
+    </div>
+
+    <div class="vote-modal-team-display">
+      <span>選択中のチーム:</span>
+      <strong id="modalTeamName">—</strong>
+      <span class="vmd-voter">投票者: <span id="modalVoterName">—</span></span>
+    </div>
+
+    <div id="modalAwardsWrap"></div>
+
+    <div class="event-impression-section">
+      <div class="award-section-title">イベント全体の感想（任意）</div>
+      <textarea class="award-comment" id="eventComment" placeholder="ご感想・印象に残ったシーンなど（任意・300文字まで）" maxlength="300"></textarea>
+    </div>
+
+    <div class="vote-modal-actions">
+      <button class="btn-vote" id="modalSubmitBtn" disabled onclick="submitBulkVote()">投票を送信する</button>
+      <span class="vote-modal-hint" id="modalHint">3つの賞それぞれにメンバーを1名ずつ選択してください</span>
+    </div>
+  </div>
+</div>
+
+<!-- 投票完了サンクスオーバーレイ -->
+<div class="thank-you-overlay" id="thankYouOverlay" role="dialog" aria-modal="true" aria-labelledby="thankYouTitle">
+  <div class="thank-you-panel">
+    <div class="ty-mark">✓</div>
+    <h3 id="thankYouTitle">ありがとうございました</h3>
+    <p>あなたの一票を受け付けました。<br>引き続き BATTLE FES をお楽しみください！</p>
+    <button type="button" onclick="closeThankYou()">閉じる</button>
+  </div>
+</div>
+
 <footer>
   <strong>BATTLE FES 2026</strong><br>
   ColorSing チーム対抗歌唱バトルフェスティバル<br><br>
@@ -2290,12 +2370,21 @@
 </footer>
 
 <script>
-/* ── TEAMS DATA ── */
-const teams = [
-  { id: 1, name: 'CRIMSON', members: 'Coming soon', color: '#ff2d78', bg: '/assets/teams/crimson.png', votes: 0 },
-  { id: 2, name: 'NOVA',    members: 'Coming soon', color: '#7c3aff', bg: '/assets/teams/nova.png',    votes: 0 },
-  { id: 3, name: 'GOLDEN',  members: 'Coming soon', color: '#ffd700', bg: '/assets/teams/golden.png',  votes: 0 },
+/* ── TEAMS / MEMBERS / CATEGORIES (API config と同期) ── */
+// チームの色・背景は UI 固定値、ID と name は API config が正本。
+const TEAM_DISPLAY = {
+  1: { color: '#ff2d78', bg: '/assets/teams/crimson.png' },
+  2: { color: '#7c3aff', bg: '/assets/teams/nova.png'    },
+  3: { color: '#ffd700', bg: '/assets/teams/golden.png'  },
+};
+
+let teams = [
+  { id: 1, name: 'CRIMSON', color: '#ff2d78', bg: '/assets/teams/crimson.png', votes: 0 },
+  { id: 2, name: 'NOVA',    color: '#7c3aff', bg: '/assets/teams/nova.png',    votes: 0 },
+  { id: 3, name: 'GOLDEN',  color: '#ffd700', bg: '/assets/teams/golden.png',  votes: 0 },
 ];
+let members = [];      // [{ id, teamId, name }]
+let categories = [];   // [{ id, type, label, candidateType, candidateIds }]
 
 /* ── VOTE STATE ── */
 const API_BASE = '/api';
@@ -2304,29 +2393,53 @@ const VOTE_KEY = 'battlefes2026_vote';
 let selected = null;
 let voted = false;
 let isSubmitting = false;
+let modalSelections = {}; // { mvp: memberId, entertainer: memberId, moment: memberId }
 
 function checkAlreadyVoted() {
   try { return !!localStorage.getItem(VOTE_KEY); } catch(e) { return false; }
 }
 
-function markVoted(teamId) {
-  try { localStorage.setItem(VOTE_KEY, String(teamId)); } catch(e) {}
-}
-
-function getMyVote() {
-  try { return parseInt(localStorage.getItem(VOTE_KEY)) || null; } catch(e) { return null; }
+function markVoted() {
+  try { localStorage.setItem(VOTE_KEY, '1'); } catch(e) {}
 }
 
 function clearVotedMarker() {
   try { localStorage.removeItem(VOTE_KEY); } catch(e) {}
 }
 
-function applyVoteResults(results) {
-  const counts = results && results.counts ? results.counts : {};
+function applyTeamResults(teamResults) {
+  if (!teamResults || !teamResults.counts) return;
+  const counts = teamResults.counts;
   teams.forEach(t => {
     const value = counts[t.id] ?? counts[String(t.id)] ?? 0;
     t.votes = Number.isFinite(Number(value)) ? Number(value) : 0;
   });
+}
+
+function applyApiConfig(config) {
+  if (!config) return;
+  if (Array.isArray(config.teams) && config.teams.length) {
+    teams = config.teams.map(t => {
+      const display = TEAM_DISPLAY[t.id] || {};
+      return {
+        id: t.id,
+        name: t.name,
+        color: display.color || '#fff',
+        bg: display.bg || '',
+        votes: 0,
+      };
+    });
+  }
+  if (Array.isArray(config.members)) {
+    members = config.members.slice();
+  }
+  if (Array.isArray(config.categories)) {
+    categories = config.categories.slice();
+  }
+}
+
+function getIndividualCategories() {
+  return categories.filter(c => c.type === 'individual');
 }
 
 function resetTrialVotes() {
@@ -2335,15 +2448,16 @@ function resetTrialVotes() {
 
   selected = null;
   voted = false;
+  modalSelections = {};
   clearVotedMarker();
 
   document.getElementById('voterName').value = '';
-  document.getElementById('voterComment').value = '';
   document.getElementById('voterName').style.borderColor = '';
   document.getElementById('voteBtn').disabled = true;
   document.getElementById('voteHint').textContent = 'チームを選んでください';
-  document.getElementById('voteForm').style.display = 'grid';
-  document.getElementById('voteSuccess').classList.remove('show');
+  document.getElementById('voteForm').style.display = '';
+  closeVoteModal();
+  closeThankYou();
 
   loadVoteResults();
 }
@@ -2382,24 +2496,23 @@ function updateStatusBanner() {
 
 /* ── VOTE RENDER ── */
 function totalVotes() {
-  return teams.reduce((s, t) => s + t.votes, 0);
+  return teams.reduce((s, t) => s + (t.votes || 0), 0);
 }
 
 function renderVote() {
   const container = document.getElementById('voteTeams');
+  if (!container) return;
   const total = totalVotes();
-  const myVote = getMyVote();
 
   container.innerHTML = teams.map(t => {
     const pct = total > 0 ? Math.round(t.votes / total * 100) : 0;
     const isSelected = selected === t.id;
-    const isMyVote   = myVote === t.id;
     return `
       <div class="vote-card${isSelected ? ' selected' : ''}"
            style="--team-color:${t.color}; --team-bg:url('${t.bg}');"
            onclick="selectTeam(${t.id})">
-        <div class="vote-card-name">${t.name}${isMyVote ? ' <span style="font-size:0.7rem;opacity:0.7;">← あなたの票</span>' : ''}</div>
-        <div class="vote-card-members">${t.members}</div>
+        <div class="vote-card-name">${escapeHtml(t.name)}</div>
+        <div class="vote-card-members">投票で応援！</div>
         <div class="vote-bar-wrap">
           <div class="vote-bar" style="width:${pct}%; background:${t.color};"></div>
         </div>
@@ -2438,31 +2551,21 @@ function renderRanking() {
 function selectTeam(id) {
   if (voted || checkAlreadyVoted()) return;
   selected = id;
-  document.getElementById('voteBtn').disabled = false;
   const team = teams.find(t => t.id === id);
-  const cls = team ? team.name.toLowerCase() : '';
   const num = String(id).padStart(2, '0');
-  document.getElementById('voteHint').innerHTML =
-    team
-      ? `TEAM ${num} <span class="sched-team ${cls}">${team.name}</span> を選択中`
-      : `TEAM ${id} を選択中`;
+  document.getElementById('voteHint').innerHTML = team
+    ? `TEAM ${num} <strong style="color:${team.color}">${escapeHtml(team.name)}</strong> を選択中（投票するを押すと個人賞投票へ）`
+    : `TEAM ${id} を選択中`;
+  syncVoteActionState();
   renderVote();
 }
 
-function lockVoteUi(team) {
+function lockVoteUi() {
   voted = true;
-  if (team) selected = team.id;
-  if (team) markVoted(team.id);
   document.getElementById('voteBtn').disabled = true;
   document.getElementById('voteHint').textContent = '投票済み';
-  document.getElementById('voteForm').style.display = 'none';
-
-  const msg = document.getElementById('voteSuccessMsg');
-  if (team) {
-    msg.textContent = `✓ ${team.name} に投票しました！ありがとうございます！`;
-  }
-  document.getElementById('voteSuccess').classList.add('show');
-
+  const form = document.getElementById('voteForm');
+  if (form) form.style.display = 'none';
   document.querySelectorAll('.vote-card').forEach(c => c.style.cursor = 'default');
 }
 
@@ -2475,7 +2578,10 @@ async function loadVoteResults() {
     if (!res.ok) throw new Error('Failed to load vote results');
 
     const data = await res.json();
-    applyVoteResults(data.results);
+    applyApiConfig(data.config);
+    if (data.results && data.results.team) {
+      applyTeamResults(data.results.team);
+    }
     renderVote();
     renderRanking();
   } catch (error) {
@@ -2484,75 +2590,244 @@ async function loadVoteResults() {
   }
 }
 
-async function submitToBackend(payload) {
-  const res = await fetch(`${API_BASE}/votes`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+/* ── 個人賞モーダル ── */
+function openVoteModal() {
+  if (!selected || voted || checkAlreadyVoted() || isSubmitting || !isVoteUiInteractive()) return;
 
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    const error = new Error(data.error || 'Vote request failed.');
-    error.status = res.status;
-    error.data = data;
-    throw error;
+  const nameInput = document.getElementById('voterName');
+  const name = nameInput.value.trim();
+  if (!name) {
+    nameInput.focus();
+    nameInput.style.borderColor = 'var(--accent3)';
+    document.getElementById('voteHint').textContent = 'お名前を入力してください';
+    return;
   }
+  nameInput.style.borderColor = '';
 
-  return data;
+  const team = teams.find(t => t.id === selected);
+  if (!team) return;
+
+  // モーダルを開くたびに選択をクリア
+  modalSelections = {};
+  getIndividualCategories().forEach(c => { modalSelections[c.id] = null; });
+
+  document.getElementById('modalTeamName').textContent = team.name;
+  document.getElementById('modalTeamName').style.color = team.color;
+  document.getElementById('modalVoterName').textContent = name;
+  document.getElementById('eventComment').value = '';
+
+  renderAwardSections();
+
+  const overlay = document.getElementById('voteModalOverlay');
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
 }
 
-async function submitVote() {
-  if (!selected || voted || checkAlreadyVoted() || isSubmitting) return;
+function closeVoteModal() {
+  const overlay = document.getElementById('voteModalOverlay');
+  if (overlay) overlay.classList.remove('show');
+  document.body.style.overflow = '';
+}
 
-  const name = document.getElementById('voterName').value.trim();
-  if (!name) {
-    document.getElementById('voterName').focus();
-    document.getElementById('voterName').style.borderColor = 'var(--accent3)';
+function renderAwardSections() {
+  const wrap = document.getElementById('modalAwardsWrap');
+  if (!wrap) return;
+  const indivCats = getIndividualCategories();
+
+  // コメント入力中の値を保存して再描画後に復元
+  const existingComments = {};
+  indivCats.forEach(c => {
+    const ta = document.getElementById(`comment-${c.id}`);
+    if (ta) existingComments[c.id] = ta.value;
+  });
+
+  wrap.innerHTML = indivCats.map(cat => {
+    const allowedIds = new Set((cat.candidateIds || []).map(Number));
+    const teamGroups = teams.map(team => {
+      const teamMembers = members.filter(m => m.teamId === team.id && allowedIds.has(Number(m.id)));
+      const buttons = teamMembers.map(m => {
+        const isSel = modalSelections[cat.id] === m.id;
+        const isUsedElsewhere = Object.entries(modalSelections).some(
+          ([cid, mid]) => cid !== cat.id && mid === m.id
+        );
+        const cls = isSel ? ' selected' : (isUsedElsewhere ? ' disabled-by-other' : '');
+        const disabled = isUsedElsewhere ? 'disabled title="他の賞で選択中"' : '';
+        return `<button type="button" class="member-btn${cls}"
+          onclick="selectMember('${cat.id}', ${m.id})"
+          ${disabled}>${escapeHtml(m.name)}</button>`;
+      }).join('');
+      return teamMembers.length === 0 ? '' : `
+        <div class="member-team-row">
+          <div class="member-team-label" style="color:${team.color};">${escapeHtml(team.name)}</div>
+          <div class="member-team-buttons">${buttons}</div>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="award-section">
+        <div class="award-section-title">${escapeHtml(cat.label)}</div>
+        <div class="member-grid">${teamGroups}</div>
+        <textarea class="award-comment"
+          id="comment-${cat.id}"
+          placeholder="この賞への一言（任意・100文字まで）"
+          maxlength="100"></textarea>
+      </div>
+    `;
+  }).join('');
+
+  // コメント値復元
+  indivCats.forEach(c => {
+    const ta = document.getElementById(`comment-${c.id}`);
+    if (ta && existingComments[c.id] != null) ta.value = existingComments[c.id];
+  });
+
+  updateModalSubmitState();
+}
+
+function selectMember(categoryId, memberId) {
+  // 他の賞で使用中なら何もしない
+  const usedElsewhere = Object.entries(modalSelections).some(
+    ([cid, mid]) => cid !== categoryId && mid === memberId
+  );
+  if (usedElsewhere) return;
+
+  // 同じカテゴリで既に選択されているメンバーをタップ → 解除
+  if (modalSelections[categoryId] === memberId) {
+    modalSelections[categoryId] = null;
+  } else {
+    modalSelections[categoryId] = memberId;
+  }
+  renderAwardSections();
+}
+
+function updateModalSubmitState() {
+  const allChosen = getIndividualCategories().every(c => modalSelections[c.id] != null);
+  const btn = document.getElementById('modalSubmitBtn');
+  const hint = document.getElementById('modalHint');
+  if (btn) btn.disabled = !allChosen;
+  if (hint) {
+    hint.textContent = allChosen
+      ? 'すべての個人賞が選択されました。投票を送信できます'
+      : '3つの賞それぞれにメンバーを1名ずつ選択してください';
+  }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+function buildBulkPicks() {
+  // 設定駆動: categories 配列を回して全カテゴリ分の picks を構築
+  return categories.map(cat => {
+    if (cat.type === 'team') {
+      return { categoryId: cat.id, candidateId: selected, comment: '' };
+    }
+    if (cat.type === 'individual') {
+      const ta = document.getElementById(`comment-${cat.id}`);
+      return {
+        categoryId: cat.id,
+        candidateId: modalSelections[cat.id],
+        comment: ta ? ta.value.trim() : '',
+      };
+    }
+    throw new Error(`Unsupported category type: ${cat.type}`);
+  });
+}
+
+async function submitBulkVote() {
+  if (!selected || voted || checkAlreadyVoted() || isSubmitting) return;
+  if (!isVoteUiInteractive()) {
+    document.getElementById('modalHint').textContent = '投票受付時間外です';
     return;
   }
 
-  const comment = document.getElementById('voterComment').value.trim();
-  const team = teams.find(t => t.id === selected);
-  const payload = {
-    teamId: team.id,
-    teamName: team.name,
-    voterName: name,
-    comment,
-    timestamp: new Date().toISOString(),
-  };
+  const name = document.getElementById('voterName').value.trim();
+  if (!name) return;
+
+  const indivCats = getIndividualCategories();
+  const allChosen = indivCats.every(c => modalSelections[c.id] != null);
+  if (!allChosen) return;
+
+  const picks = buildBulkPicks();
+  const eventComment = document.getElementById('eventComment').value.trim();
 
   isSubmitting = true;
-  document.getElementById('voteBtn').disabled = true;
-  document.getElementById('voteHint').textContent = '送信中...';
+  document.getElementById('modalSubmitBtn').disabled = true;
+  document.getElementById('modalHint').textContent = '送信中...';
 
   try {
-    const data = await submitToBackend(payload);
-    applyVoteResults(data.results);
-    lockVoteUi(team);
-    renderVote();
-    renderRanking();
-    confettiBurst(team.color);
-  } catch (error) {
-    console.error('[Vote submit]', error);
+    const res = await fetch(`${API_BASE}/votes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ voterName: name, picks, eventComment }),
+    });
+    const data = await res.json().catch(() => ({}));
 
-    if (error.status === 409 && error.data && error.data.existingTeamId) {
-      const existingTeam = teams.find(t => t.id === error.data.existingTeamId);
-      if (error.data.results) applyVoteResults(error.data.results);
-      lockVoteUi(existingTeam || team);
-      renderVote();
-      renderRanking();
-      document.getElementById('voteHint').textContent = 'この端末からはすでに投票済みです';
-      return;
+    if (!res.ok) {
+      if (res.status === 409) {
+        // 既投票
+        if (data.results && data.results.team) applyTeamResults(data.results.team);
+        markVoted();
+        closeVoteModal();
+        lockVoteUi();
+        renderVote();
+        renderRanking();
+        document.getElementById('voteHint').textContent = 'この端末からはすでに投票済みです';
+        return;
+      }
+      throw Object.assign(new Error(data.error || 'Vote failed'), { status: res.status });
     }
 
-    document.getElementById('voteBtn').disabled = false;
-    document.getElementById('voteHint').textContent =
+    if (data.results && data.results.team) applyTeamResults(data.results.team);
+    markVoted();
+    closeVoteModal();
+    lockVoteUi();
+    renderVote();
+    renderRanking();
+    showThankYouOverlay();
+
+    const team = teams.find(t => t.id === selected);
+    if (team) confettiBurst(team.color);
+  } catch (error) {
+    console.error('[Vote bulk submit]', error);
+    document.getElementById('modalHint').textContent =
       error.status === 403 ? '投票受付時間外です' : '送信に失敗しました。時間をおいて再度お試しください';
+    document.getElementById('modalSubmitBtn').disabled = false;
   } finally {
     isSubmitting = false;
   }
 }
+
+function showThankYouOverlay() {
+  const ov = document.getElementById('thankYouOverlay');
+  if (!ov) return;
+  ov.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeThankYou() {
+  const ov = document.getElementById('thankYouOverlay');
+  if (ov) ov.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// モーダル外クリックで閉じる + ESC で閉じる
+document.addEventListener('click', (e) => {
+  const overlay = document.getElementById('voteModalOverlay');
+  if (overlay && e.target === overlay) closeVoteModal();
+  const ty = document.getElementById('thankYouOverlay');
+  if (ty && e.target === ty) closeThankYou();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  const overlay = document.getElementById('voteModalOverlay');
+  if (overlay && overlay.classList.contains('show')) { closeVoteModal(); return; }
+  const ty = document.getElementById('thankYouOverlay');
+  if (ty && ty.classList.contains('show')) closeThankYou();
+});
 
 /* ── CONFETTI BURST ── */
 function confettiBurst(color) {
@@ -2754,9 +3029,8 @@ function updateVotePower() {
 /* ── INIT ── */
 async function initVoteSection() {
   if (checkAlreadyVoted()) {
-    selected = getMyVote();
-    const myTeam = teams.find(t => t.id === selected);
-    lockVoteUi(myTeam);
+    voted = true;
+    lockVoteUi();
     document.getElementById('voteHint').textContent = '投票済みです。ありがとうございました！';
   }
 
@@ -2780,15 +3054,89 @@ async function initVoteSection() {
   }, 1000);
 }
 
-/* ── VOTE COUNTDOWN (CINEMATIC v2) ── */
-function applyVoteVisibility() {
+/* ── TEST MODE (admin 画面で localStorage に '1' をセット) ── */
+const TEST_MODE_KEY = 'battlefes_test_mode';
+let lastVoteVisibilityState = null;
+function isTestModeOn() {
+  try { return localStorage.getItem(TEST_MODE_KEY) === '1'; } catch (e) { return false; }
+}
+
+function isVoteSubmissionAllowedBySchedule() {
   const status = getVoteStatus();
+  return status === 'open' || status === 'waiting';
+}
+
+function ensureTestModeBadge() {
+  let badge = document.getElementById('testModeBadge');
+  if (isTestModeOn()) {
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.id = 'testModeBadge';
+      badge.style.cssText = 'position:fixed;top:14px;right:14px;background:#ff9933;color:#fff;font-weight:700;padding:6px 12px;border-radius:999px;font-size:0.78rem;letter-spacing:0.06em;box-shadow:0 4px 12px rgba(0,0,0,0.4);z-index:300;font-family:sans-serif;';
+      badge.textContent = 'TEST MODE';
+      (document.body || document.documentElement).appendChild(badge);
+    }
+  } else if (badge) {
+    badge.remove();
+  }
+}
+
+function isVoteUiInteractive() {
+  // 通常 UI は VOTE_OPEN まで閉じておく。
+  // TEST MODE のときだけブラウザ側で UI を開放する（サーバの時間ゲートは変更しない）。
+  return isTestModeOn() || getVoteStatus() === 'open';
+}
+
+function syncVoteActionState() {
+  const voteBtn = document.getElementById('voteBtn');
+  const hint = document.getElementById('voteHint');
+  if (!voteBtn) return;
+
+  if (voted || checkAlreadyVoted()) {
+    voteBtn.disabled = true;
+    return;
+  }
+
+  if (!isVoteUiInteractive()) {
+    voteBtn.disabled = true;
+    if (hint && isVoteSubmissionAllowedBySchedule()) hint.textContent = '投票開始までお待ちください';
+    if (hint && !isVoteSubmissionAllowedBySchedule()) hint.textContent = '投票は終了しました';
+    return;
+  }
+
+  voteBtn.disabled = !selected;
+  if (hint && !selected) hint.textContent = 'チームを選んでください';
+}
+
+/* ── VOTE COUNTDOWN (CINEMATIC v2) ── */
+// hidden 属性だけだと CSS の `display: flex` に負けるので display も明示する
+function setShown(el, shown) {
+  if (!el) return;
+  const nextDisplay = shown ? '' : 'none';
+  if (el.hidden === !shown && el.style.display === nextDisplay) return;
+  el.hidden = !shown;
+  el.style.display = nextDisplay;
+}
+
+function applyVoteVisibility() {
   const cd = document.getElementById('voteCountdown');
   const ui = document.getElementById('voteUI');
   if (!cd || !ui) return;
-  const showCountdown = status === 'waiting';
-  cd.hidden = !showCountdown;
-  ui.hidden = showCountdown;
+  const status = getVoteStatus();
+
+  const nextState = isTestModeOn()
+    ? 'test'
+    : (status === 'waiting' ? 'countdown' : 'vote');
+
+  ensureTestModeBadge();
+  if (lastVoteVisibilityState !== nextState) {
+    const showCountdown = nextState === 'countdown';
+    setShown(cd, showCountdown);
+    setShown(ui, !showCountdown);
+    if (showCountdown || !isVoteUiInteractive()) closeVoteModal();
+    lastVoteVisibilityState = nextState;
+  }
+  syncVoteActionState();
 }
 
 function buildFlapCell() {
@@ -2872,6 +3220,14 @@ function updateVoteCountdown() {
 }
 
 initVoteSection();
+window.addEventListener('storage', (event) => {
+  if (event.key && event.key !== TEST_MODE_KEY) return;
+  lastVoteVisibilityState = null;
+  updateStatusBanner();
+  applyVoteVisibility();
+  updateVoteCountdown();
+  updateVotePower();
+});
 </script>
 </body>
 </html>

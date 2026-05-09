@@ -9,7 +9,16 @@
       font-family: sans-serif;
       margin: 24px;
       line-height: 1.5;
+      color: #1c1c1c;
+      background: #fff;
     }
+    h1 { margin-top: 0; }
+    h2 {
+      margin-top: 32px;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 4px;
+    }
+    h3 { margin-top: 24px; }
     button {
       padding: 10px 14px;
       cursor: pointer;
@@ -18,27 +27,51 @@
       padding: 10px;
       width: min(420px, 100%);
     }
-    .row {
-      margin-bottom: 16px;
-    }
-    .hidden {
-      display: none;
+    .row { margin-bottom: 16px; }
+    .hidden { display: none; }
+    .status {
+      display: inline-block;
+      margin-left: 12px;
+      color: #444;
     }
     pre {
       background: #f5f5f5;
       padding: 12px;
       overflow: auto;
+      max-height: 400px;
     }
     table {
       border-collapse: collapse;
       width: 100%;
-      max-width: 720px;
+      max-width: 960px;
+      margin-bottom: 16px;
     }
     th, td {
       border: 1px solid #ccc;
       padding: 8px 10px;
       text-align: left;
+      vertical-align: top;
     }
+    th { background: #f0f0f0; }
+    .category-block {
+      border-left: 4px solid #888;
+      padding: 8px 16px;
+      margin: 16px 0;
+      background: #fafafa;
+    }
+    .category-block.team { border-left-color: #ff6b1a; }
+    .category-block.individual { border-left-color: #5b9eff; }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 4px 16px;
+      font-size: 0.92em;
+      color: #555;
+      margin-bottom: 8px;
+    }
+    .meta-grid strong { color: #1c1c1c; }
+    details { margin-top: 12px; }
+    summary { cursor: pointer; }
   </style>
 </head>
 <body>
@@ -53,56 +86,74 @@
 
   <div class="row">
     <button type="button" onclick="resetVotes()">Reset all votes</button>
-    <span id="statusText"></span>
+    <span id="statusText" class="status"></span>
+  </div>
+
+  <div class="row" style="border:1px dashed #f08c2a; padding:10px 14px; border-radius:8px; background:#fff8ef;">
+    <strong style="color:#c4651a;">テストモード</strong>
+    <span style="font-size:0.85em; color:#555; margin-left:8px;">
+      ONにするとこの端末だけ投票期間外でも投票UIが開放されます（API側は waiting 状態を許可済み）
+    </span>
+    <div style="margin-top:8px;">
+      <button type="button" id="testModeToggleBtn" onclick="toggleTestMode()">テストモード OFF</button>
+      <span id="testModeStatus" class="status"></span>
+    </div>
   </div>
 
   <div id="dashboard" class="hidden">
     <div class="row"><strong>Vote status:</strong> <span id="voteStatus"></span></div>
-    <div class="row"><strong>Total votes:</strong> <span id="totalVotes"></span></div>
-    <div class="row"><strong>Unique fingerprints:</strong> <span id="uniqueFingerprints"></span></div>
-    <div class="row"><strong>Total submissions:</strong> <span id="totalSubmissions"></span></div>
-    <div class="row"><strong>Updated at:</strong> <span id="updatedAt"></span></div>
-    <div class="row"><strong>Last vote at:</strong> <span id="lastVoteAt"></span></div>
 
+    <div id="categoriesWrap"></div>
+
+    <h2>イベント全体感想ログ</h2>
     <table>
       <thead>
         <tr>
-          <th>Team</th>
-          <th>Votes</th>
-          <th>Percent</th>
+          <th>Time</th>
+          <th>Name</th>
+          <th>Comment</th>
         </tr>
       </thead>
-      <tbody id="resultsBody"></tbody>
+      <tbody id="eventImpressionsBody"></tbody>
     </table>
 
-    <div class="row">
-      <h2>Raw JSON</h2>
-      <pre id="rawJson"></pre>
-    </div>
-
-    <div class="row">
-      <h2>Vote Log</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Team</th>
-            <th>Name</th>
-            <th>Comment</th>
-          </tr>
-        </thead>
-        <tbody id="logBody"></tbody>
-      </table>
-    </div>
+    <h2>Raw JSON</h2>
+    <pre id="rawJson"></pre>
   </div>
 
   <script>
-    const TEAMS = {
-      1: 'CRIMSON',
-      2: 'NOVA',
-      3: 'AZURE',
-      4: 'GOLDEN',
-    };
+    let configCache = { categories: [], teams: [], members: [] };
+
+    function setStatus(message) {
+      document.getElementById('statusText').textContent = message || '';
+    }
+
+    const TEST_MODE_KEY = 'battlefes_test_mode';
+
+    function isTestMode() {
+      try { return localStorage.getItem(TEST_MODE_KEY) === '1'; } catch (e) { return false; }
+    }
+
+    function refreshTestModeUI() {
+      const on = isTestMode();
+      const btn = document.getElementById('testModeToggleBtn');
+      const status = document.getElementById('testModeStatus');
+      if (btn) btn.textContent = on ? 'テストモード ON（クリックで OFF）' : 'テストモード OFF（クリックで ON）';
+      if (btn) btn.style.background = on ? '#ff9933' : '';
+      if (btn) btn.style.color = on ? '#fff' : '';
+      if (status) status.textContent = on
+        ? 'この端末では投票UIが期間外でも開放されます'
+        : '通常モード（時間ゲートが有効）';
+    }
+
+    function toggleTestMode() {
+      try {
+        if (isTestMode()) localStorage.removeItem(TEST_MODE_KEY);
+        else localStorage.setItem(TEST_MODE_KEY, '1');
+      } catch (e) {}
+      refreshTestModeUI();
+      setStatus(isTestMode() ? 'TEST MODE を ON にしました' : 'TEST MODE を OFF にしました');
+    }
 
     function getToken() {
       return localStorage.getItem('battlefes_admin_token') || '';
@@ -112,11 +163,11 @@
       const token = document.getElementById('adminToken').value.trim();
       if (token) {
         localStorage.setItem('battlefes_admin_token', token);
-        document.getElementById('statusText').textContent = 'Password saved in this browser.';
-      } else {
-        localStorage.removeItem('battlefes_admin_token');
-        document.getElementById('statusText').textContent = 'Saved password cleared.';
+        setStatus('パスワードをこのブラウザに保存しました');
+        return;
       }
+      localStorage.removeItem('battlefes_admin_token');
+      setStatus('保存済みパスワードをクリアしました');
     }
 
     async function api(path, options = {}) {
@@ -126,36 +177,139 @@
 
       const response = await fetch(path, { ...options, headers });
       const data = await response.json().catch(() => ({}));
+
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('認証エラー: パスワードを確認してください');
+        }
+        if (response.status === 403) {
+          throw new Error(data.error || 'アクセスが拒否されました');
+        }
         throw new Error(data.error || `Request failed: ${response.status}`);
       }
+
       return data;
     }
 
-    function renderSnapshot(data) {
-      document.getElementById('dashboard').classList.remove('hidden');
-      document.getElementById('voteStatus').textContent = data.status || '-';
-      document.getElementById('totalVotes').textContent = data.results.totalVotes ?? 0;
-      document.getElementById('uniqueFingerprints').textContent = data.uniqueFingerprints ?? 0;
-      document.getElementById('totalSubmissions').textContent = data.meta.totalSubmissions ?? 0;
-      document.getElementById('updatedAt').textContent = data.results.updatedAt || '-';
-      document.getElementById('lastVoteAt').textContent = data.meta.lastVoteAt || '-';
+    function escapeHtml(value) {
+      return String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      }[char]));
+    }
 
-      const totalVotes = data.results.totalVotes || 0;
-      const rows = Object.entries(data.results.counts || {}).map(([teamId, votes]) => {
+    function teamName(id) {
+      const team = configCache.teams.find((entry) => Number(entry.id) === Number(id));
+      return team ? team.name : `team#${id}`;
+    }
+
+    function memberName(id) {
+      const member = configCache.members.find((entry) => Number(entry.id) === Number(id));
+      if (!member) return `member#${id}`;
+      return `${member.name}（${teamName(member.teamId)}）`;
+    }
+
+    function candidateName(category, candidateId) {
+      if (!category) return String(candidateId);
+      if (category.candidateType === 'team') return teamName(candidateId);
+      if (category.candidateType === 'member') return memberName(candidateId);
+      return String(candidateId);
+    }
+
+    function renderCategoryBlock(category, payload) {
+      const results = payload && payload.results
+        ? payload.results
+        : { counts: {}, totalVotes: 0, updatedAt: null };
+      const meta = payload && payload.meta
+        ? payload.meta
+        : { totalSubmissions: 0, lastVoteAt: null };
+      const voteLog = Array.isArray(payload && payload.voteLog) ? payload.voteLog : [];
+      const uniqueFingerprints = Number(payload && payload.uniqueFingerprints) || 0;
+      const counts = results.counts || {};
+      const totalVotes = Number(results.totalVotes) || 0;
+      const orderedIds = Array.isArray(category.candidateIds) && category.candidateIds.length
+        ? category.candidateIds
+        : Object.keys(counts).map((id) => Number(id));
+
+      const rows = orderedIds.map((id) => {
+        const votes = Number(counts[id] || 0);
         const percent = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
-        return `<tr><td>${TEAMS[teamId] || teamId}</td><td>${votes}</td><td>${percent}%</td></tr>`;
-      }).join('');
-
-      document.getElementById('resultsBody').innerHTML = rows;
-      document.getElementById('logBody').innerHTML = (data.voteLog || []).map(entry => {
         return `<tr>
-          <td>${entry.timestamp || '-'}</td>
-          <td>${TEAMS[entry.teamId] || entry.teamId}</td>
-          <td>${entry.voterName || '-'}</td>
-          <td>${entry.comment || ''}</td>
+          <td>${escapeHtml(candidateName(category, id))}</td>
+          <td>${votes}</td>
+          <td>${percent}%</td>
         </tr>`;
       }).join('');
+
+      const logRows = voteLog.map((entry) => `<tr>
+        <td>${escapeHtml(entry.timestamp || '-')}</td>
+        <td>${escapeHtml(candidateName(category, entry.candidateId))}</td>
+        <td>${escapeHtml(entry.voterName || '-')}</td>
+        <td>${escapeHtml(entry.comment || '')}</td>
+      </tr>`).join('');
+
+      return `
+        <div class="category-block ${escapeHtml(category.type || '')}">
+          <h3>${escapeHtml(category.label)} <small style="color:#888;">[${escapeHtml(category.id)} / ${escapeHtml(category.type)}]</small></h3>
+          <div class="meta-grid">
+            <div><strong>Total votes:</strong> ${totalVotes}</div>
+            <div><strong>Unique fingerprints:</strong> ${uniqueFingerprints}</div>
+            <div><strong>Total submissions:</strong> ${Number(meta.totalSubmissions) || 0}</div>
+            <div><strong>Updated at:</strong> ${escapeHtml(results.updatedAt || '-')}</div>
+            <div><strong>Last vote at:</strong> ${escapeHtml(meta.lastVoteAt || '-')}</div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Candidate</th>
+                <th>Votes</th>
+                <th>Percent</th>
+              </tr>
+            </thead>
+            <tbody>${rows || '<tr><td colspan="3" style="text-align:center;color:#888;">候補なし</td></tr>'}</tbody>
+          </table>
+          <details>
+            <summary>Vote Log（${voteLog.length}件）</summary>
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Candidate</th>
+                  <th>Name</th>
+                  <th>Comment</th>
+                </tr>
+              </thead>
+              <tbody>${logRows || '<tr><td colspan="4" style="text-align:center;color:#888;">ログなし</td></tr>'}</tbody>
+            </table>
+          </details>
+        </div>
+      `;
+    }
+
+    function renderSnapshot(data) {
+      configCache = data.config || { categories: [], teams: [], members: [] };
+
+      document.getElementById('dashboard').classList.remove('hidden');
+      document.getElementById('voteStatus').textContent = data.status || '-';
+
+      const categories = Array.isArray(configCache.categories) ? configCache.categories : [];
+      const categoriesData = data.categories || {};
+      document.getElementById('categoriesWrap').innerHTML = categories
+        .map((category) => renderCategoryBlock(category, categoriesData[category.id]))
+        .join('');
+
+      const impressions = Array.isArray(data.eventImpressions) ? data.eventImpressions : [];
+      document.getElementById('eventImpressionsBody').innerHTML = impressions.length
+        ? impressions.map((entry) => `<tr>
+            <td>${escapeHtml(entry.timestamp || '-')}</td>
+            <td>${escapeHtml(entry.voterName || '-')}</td>
+            <td>${escapeHtml(entry.comment || '')}</td>
+          </tr>`).join('')
+        : '<tr><td colspan="3" style="text-align:center;color:#888;">感想なし</td></tr>';
+
       document.getElementById('rawJson').textContent = JSON.stringify(data, null, 2);
     }
 
@@ -163,26 +317,30 @@
       try {
         const data = await api('/api/admin/results');
         renderSnapshot(data);
-        document.getElementById('statusText').textContent = 'Loaded.';
+        setStatus('読み込み完了');
       } catch (error) {
-        document.getElementById('statusText').textContent = error.message;
+        setStatus(error.message);
       }
     }
 
     async function resetVotes() {
-      const ok = window.confirm('すべての投票データをリセットします。よろしいですか？');
-      if (!ok) return;
+      const confirmed = window.confirm('すべての投票データとログをリセットします。元に戻せません。よろしいですか？');
+      if (!confirmed) return;
 
       try {
         const data = await api('/api/admin/reset', { method: 'POST' });
         renderSnapshot(data);
-        document.getElementById('statusText').textContent = 'All votes reset.';
+        setStatus('すべての投票をリセットしました');
       } catch (error) {
-        document.getElementById('statusText').textContent = error.message;
+        setStatus(error.message);
       }
     }
 
     document.getElementById('adminToken').value = getToken();
+    window.addEventListener('storage', (event) => {
+      if (!event.key || event.key === TEST_MODE_KEY) refreshTestModeUI();
+    });
+    refreshTestModeUI();
   </script>
 </body>
 </html>
