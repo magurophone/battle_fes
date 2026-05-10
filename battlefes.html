@@ -1927,9 +1927,9 @@
       rgba(0,0,0,0.5);
     opacity: 0;
   }
-  .bonus-burst-overlay.show { display: flex; animation: bonus-overlay-cycle 3.0s ease-out forwards; }
+  .bonus-burst-overlay.show { display: flex; animation: bonus-overlay-cycle 4.5s ease-out forwards; }
 
-  /* 細い金の halo が一度だけ静かに広がる。装飾はこれだけ。 */
+  /* 細い金の halo が一度だけ静かに広がる。.show が付いたときだけ起動 */
   .bonus-burst-overlay::after {
     content: '';
     position: absolute;
@@ -1937,8 +1937,10 @@
     border-radius: 50%;
     border: 1px solid rgba(220,170,90,0.7);
     opacity: 0;
-    animation: bonus-halo 2.4s 0.25s ease-out forwards;
     pointer-events: none;
+  }
+  .bonus-burst-overlay.show::after {
+    animation: bonus-halo 3.2s 0.3s ease-out forwards;
   }
 
   /* 大理石 + 4 重金縁 plate (about .stat-card のクオリティ基準) */
@@ -1960,9 +1962,12 @@
       0 24px 80px rgba(0,0,0,0.85),
       0 0 90px rgba(180,90,30,0.22);
     max-width: min(92vw, 720px);
-    transform: translateY(-150vh) scale(0.94);
     opacity: 0;
-    animation: bonus-plate-descend 0.9s 0.18s cubic-bezier(0.5, 0.05, 0.3, 1.0) forwards;
+  }
+  /* .show が付いた時にだけアニメ起動。default で animation 適用すると
+     ページ load 時に再生完了 → overlay 表示時には静止状態になる */
+  .bonus-burst-overlay.show .bonus-burst-plate {
+    animation: bonus-plate-descend 1.0s 0s cubic-bezier(0.5, 0.05, 0.3, 1.0) forwards;
   }
   .bonus-burst-plate::before {
     content: '';
@@ -2071,7 +2076,7 @@
 
   @keyframes bonus-overlay-cycle {
     0%        { opacity: 0; }
-    10%, 80%  { opacity: 1; }
+    8%, 82%   { opacity: 1; }
     100%      { opacity: 0; }
   }
   @keyframes bonus-plate-descend {
@@ -2088,8 +2093,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     .bonus-burst-overlay.show { animation: bonus-overlay-cycle 1.5s linear forwards; }
-    .bonus-burst-plate { animation: none; transform: none; opacity: 1; }
-    .bonus-burst-overlay::after { display: none; }
+    .bonus-burst-overlay.show .bonus-burst-plate { animation: none; opacity: 1; }
+    .bonus-burst-overlay.show::after { display: none; }
   }
 
   .vote-modal-actions { display: flex; flex-direction: column; gap: 0.7rem; align-items: center; margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,0.12); }
@@ -2894,7 +2899,7 @@ function triggerBonusBurst() {
   const ov = document.getElementById('bonusBurstOverlay');
   if (!ov) return;
   const reduced = isReducedMotion();
-  const dur = reduced ? 1500 : 3000;
+  const dur = reduced ? 1500 : 4500;
   ov.classList.remove('show');
   void ov.offsetWidth;  // restart animation
   ov.classList.add('show');
@@ -3081,8 +3086,8 @@ async function submitBulkVote() {
       : Boolean(data && data.bonusGranted);
     if (shouldBurst) {
       triggerBonusBurst();
-      // burst の fade-out 開始に thank-you をクロスで出す。reduced-motion 時は短尺に合わせる。
-      const thankYouDelay = isReducedMotion() ? 1200 : 2500;
+      // burst の fade-out 開始 (4.5s 尺なら 82% = 3.7s) に thank-you をクロス
+      const thankYouDelay = isReducedMotion() ? 1200 : 3800;
       setTimeout(() => showThankYouOverlay(), thankYouDelay);
     } else {
       showThankYouOverlay();
