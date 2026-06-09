@@ -210,6 +210,16 @@
     align-items: center; justify-content: center; flex-wrap: wrap;
     opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
   }
+  .date-chip-live {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+  }
+  .date-chip-live .dc-time {
+    font-weight: 800; letter-spacing: 0.06em;
+  }
+  .date-chip-live .dc-sep {
+    width: 1px; height: 1em;
+    background: rgba(255,200,140,0.5);
+  }
   .date-chip {
     position: relative;
     font-family: 'Noto Sans JP', sans-serif;
@@ -270,6 +280,7 @@
     margin-top: 1.8rem; display: flex; gap: 1rem;
     opacity: 0; animation: fadeUp 0.8s 1s forwards;
   }
+  .hero-btns[hidden] { display: none; }
   .btn {
     display: inline-block; padding: 0.9rem 2.6rem;
     border-radius: 100px; font-weight: 700;
@@ -1115,6 +1126,7 @@
     border-left: 3px solid rgba(255,140,40,0.55);
     border-radius: 3px;
   }
+  .entry-reg[hidden] { display: none; }
   .entry-reg-label {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.7rem;
@@ -1266,6 +1278,7 @@
   }
   .team-genre {
     display: inline-block;
+    align-self: flex-start;
     margin: 0.7rem 1.6rem 0;
     padding: 0.28rem 0.72rem;
     border-radius: 3px;
@@ -1279,37 +1292,101 @@
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
   }
-  .team-members {
-    display: flex; flex-wrap: wrap;
-    gap: 0.45rem;
-    padding: 1rem 1.6rem 0;
-    margin-top: auto;
+  .team-roster {
+    display: flex; align-items: flex-end; gap: 1.2rem;
+    padding: 1.4rem 1.6rem 0;
   }
-  .member-tag {
-    display: inline-block;
-    background: rgba(0,0,0,0.55);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 4px;
-    padding: 0.32rem 0.78rem;
-    font-size: 0.74rem;
-    color: rgba(255,255,255,0.88);
+  .roster-members {
+    flex: 1; min-width: 0;
+    display: flex; flex-direction: row; align-items: flex-end; gap: 0.9rem;
+  }
+  /* リーダー・メンバー共通: 正方形アイコン + 下に名前。底辺揃えで並べる */
+  .roster-leader, .roster-member {
+    display: flex; flex-direction: column; align-items: center; gap: 0.45rem;
+    min-width: 0;
+  }
+  .roster-link {
+    color: inherit;
     text-decoration: none;
-    transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+    cursor: pointer;
+    border-radius: 6px;
   }
-  a.member-tag:hover {
-    background: var(--team-color, var(--accent));
-    color: rgba(0,0,0,0.92);
-    border-color: var(--team-color, var(--accent));
-    transform: translateY(-1px);
+  .roster-link .avatar,
+  .roster-link .roster-name {
+    transition: transform 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+  }
+  .roster-link:hover .avatar,
+  .roster-link:focus-visible .avatar {
+    transform: translateY(-2px);
+  }
+  .roster-link:hover .roster-name,
+  .roster-link:focus-visible .roster-name {
+    color: var(--team-color, var(--accent));
+  }
+  .roster-link:focus-visible {
+    outline: 2px solid var(--team-color, var(--accent));
+    outline-offset: 4px;
+  }
+  .avatar {
+    position: relative;
+    border-radius: 4px; flex-shrink: 0;
+    background: radial-gradient(circle at 50% 30%, rgba(70,38,24,0.75), rgba(0,0,0,0.72));
+    border: 1.5px solid var(--team-color, var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    box-shadow:
+      0 4px 14px rgba(0,0,0,0.5),
+      0 0 16px color-mix(in srgb, var(--team-color, #ff7c1e) 28%, transparent);
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .avatar.placeholder::after {
+    content: '?';
+    font-family: 'Black Ops One', sans-serif;
+    color: rgba(255,255,255,0.3);
+    animation: none;
+  }
+  /* 形は同じ正方形。リーダーだけ一回り大きく */
+  .avatar-lg { width: 104px; height: 104px; }
+  .avatar-lg.placeholder::after { font-size: 2.5rem; }
+  .avatar-sm { width: 78px; height: 78px; }
+  .avatar-sm.placeholder::after { font-size: 1.7rem; }
+  /* LEADER はアバター角のバッジ (別行を作らず構造を揃える) */
+  .leader-badge {
+    position: absolute; top: 0; left: 0;
+    font-family: 'Bebas Neue', sans-serif; font-weight: 700;
+    font-size: 0.5rem; letter-spacing: 0.16em;
+    background: var(--team-color, var(--accent)); color: #1a0a05;
+    padding: 0.1rem 0.36rem; border-radius: 0 0 4px 0;
+    text-shadow: none;
+  }
+  .roster-name {
+    font-size: 0.76rem; font-weight: 700;
+    color: rgba(255,255,255,0.92);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+    line-height: 1.5; text-align: center;
+    max-width: 92px; min-width: 0;
+    padding: 0 2px 2px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .team-concept {
+    margin-top: 1.1rem;
+    padding: 0.9rem 1.6rem 1.4rem;
+    border-top: 1px solid color-mix(in srgb, var(--team-color, #ff7c1e) 30%, rgba(255,255,255,0.08));
+    background: linear-gradient(180deg, transparent, rgba(0,0,0,0.35));
+  }
+  .team-concept-label {
+    display: block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.62rem; letter-spacing: 0.3em;
+    color: var(--team-color, var(--accent));
+    margin-bottom: 0.35rem;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.85);
   }
   .team-desc {
-    padding: 0.85rem 1.6rem 1.5rem;
-    margin: 0;
+    padding: 0; margin: 0;
     font-size: 0.8rem;
     line-height: 1.65;
-    color: rgba(255,210,170,0.78);
+    color: rgba(255,210,170,0.82);
     text-shadow: 0 1px 2px rgba(0,0,0,0.85);
   }
   .team-link {
@@ -2197,7 +2274,8 @@
   <ul class="nav-links">
     <li><a href="#about">概要</a></li>
     <li><a href="#teams">チーム</a></li>
-    <li><a href="#schedule">スケジュール</a></li>
+    <!-- 段階公開: タイムテーブル非表示に合わせてリンクも非表示。戻すときは hidden を外す -->
+    <li hidden><a href="#schedule">スケジュール</a></li>
     <li><a href="#vote">投票</a></li>
   </ul>
   <button class="nav-hamburger" id="hamburger" onclick="toggleNav()" aria-label="メニュー">
@@ -2207,7 +2285,8 @@
 <div class="nav-drawer" id="navDrawer">
   <a href="#about" onclick="closeNav()">概要</a>
   <a href="#teams" onclick="closeNav()">チーム</a>
-  <a href="#schedule" onclick="closeNav()">スケジュール</a>
+  <!-- 段階公開: タイムテーブル非表示に合わせてリンクも非表示。戻すときは hidden を外す -->
+  <a href="#schedule" onclick="closeNav()" hidden>スケジュール</a>
   <a href="#vote" onclick="closeNav()">投票</a>
 </div>
 
@@ -2227,10 +2306,15 @@
 
   <div class="hero-date">
     <div class="date-chip hot">2026.07.18（土）</div>
-    <div class="date-chip">ONLINE LIVE</div>
+    <div class="date-chip date-chip-live">
+      <span class="dc-time">19:45〜</span>
+      <span class="dc-sep" aria-hidden="true"></span>
+      <span>ONLINE LIVE</span>
+    </div>
   </div>
 
-  <div class="hero-btns">
+  <!-- 段階公開: ヒーローの投票ボタン 非表示中。再表示は hidden を外すだけ -->
+  <div class="hero-btns" hidden>
     <a href="#vote" class="btn btn-primary">投票する</a>
   </div>
 
@@ -2259,7 +2343,7 @@
       <div class="stat-label-jp">出演者</div>
     </div>
     <div class="stat-card">
-      <div class="stat-num">2:55</div>
+      <div class="stat-num">3:00</div>
       <div class="stat-label">DURATION</div>
       <div class="stat-label-jp">配信時間</div>
     </div>
@@ -2270,7 +2354,8 @@
     </div>
   </div>
 
-  <div class="about-rules">
+  <!-- 段階公開: ルールオブエンゲージメント 非表示中。再表示は下の hidden を外すだけ -->
+  <div class="about-rules" hidden>
     <div class="ar-shell">
       <div class="ar-top">
         <div class="ar-headline">
@@ -2309,10 +2394,10 @@
               <text x="6"   y="153" fill="rgba(255,200,140,0.7)">20:45</text>
               <text x="335" y="14"  text-anchor="end" fill="rgba(255,200,140,1)" font-weight="700">5000PT</text>
               <text x="335" y="153" text-anchor="end" fill="rgba(255,200,140,0.7)">22:15</text>
-              <text x="395" y="153" text-anchor="end" fill="rgba(255,200,140,0.7)">22:25</text>
+              <text x="395" y="153" text-anchor="end" fill="rgba(255,200,140,0.7)">22:30</text>
             </g>
           </svg>
-          <p class="ar-graph-caption">受付開始の <strong>100PT</strong> から、本投票直前で <span class="multiplier">×50</span> の <strong>5000PT</strong> へ</p>
+          <p class="ar-graph-caption">受付開始の <strong>100PT</strong> から、本投票開始で <span class="multiplier">×50</span> の <strong>5000PT</strong> へ</p>
         </div>
       </div>
 
@@ -2324,7 +2409,7 @@
           <div class="ar-rbody">
             <ul>
               <li>1人 <strong>1票</strong>のみ</li>
-              <li>受付 <strong>20:45 〜 22:25</strong></li>
+              <li>受付 <strong>20:45 〜 22:30</strong></li>
               <li>期間中いつでも投票可</li>
             </ul>
           </div>
@@ -2335,8 +2420,8 @@
           <p class="ar-rjp">1票の重さ</p>
           <div class="ar-rbody">
             時間が遅いほど1票のポイントが大きくなる。<br>
-            受付開始の <strong>100PT</strong> から本投票直前の <strong>5000PT</strong> へ徐々に上昇。
-            <p class="ar-rhint">▸ 本投票（22:15-22:25）はずっと最大の <strong>5000PT</strong></p>
+            受付開始の <strong>100PT</strong> から本投票開始の <strong>5000PT</strong> へ徐々に上昇。
+            <p class="ar-rhint">▸ 本投票（22:15-22:30）はずっと最大の <strong>5000PT</strong></p>
           </div>
         </div>
         <div class="ar-round">
@@ -2372,7 +2457,8 @@
 <section id="teams">
   <p class="section-label">Teams</p>
   <h2 class="section-title">参加チーム</h2>
-  <div class="entry-reg">
+  <!-- 段階公開: エントリーレギュレーション 非表示中。再表示は hidden を外すだけ -->
+  <div class="entry-reg" hidden>
     <span class="entry-reg-label">// ENTRY REGULATION</span>
     <div class="entry-reg-badges">
       <span class="reg-badge"><span class="reg-badge-num">3</span><span class="reg-badge-label">名構成</span></span>
@@ -2383,64 +2469,104 @@
     <div class="team-card reveal reveal-delay-1" style="--team-color: #ff2d78; --team-bg: url('/assets/teams/crimson.png');">
       <div class="team-num">TEAM 01</div>
       <div class="team-name">CRIMSON</div>
-      <div class="team-genre placeholder">Coming soon</div>
-      <div class="team-members">
-        <a class="member-tag placeholder">Coming soon</a>
-        <a class="member-tag placeholder">Coming soon</a>
-        <a class="member-tag placeholder">Coming soon</a>
+      <div class="team-roster">
+        <a class="roster-leader roster-link" href="https://web.colorsing.com/share/user?user_id=9f416ebb-bc97-4d24-8c38-9550c5040aa5" target="_blank" rel="noopener noreferrer" aria-label="まぐろふぉんのColorSingプロフィールを開く">
+          <div class="avatar avatar-lg"><img src="/assets/members/crimson-leader.png" alt="まぐろふぉん" style="transform: scale(1.4);"><span class="leader-badge">LEADER</span></div>
+          <span class="roster-name">まぐろふぉん</span>
+        </a>
+        <div class="roster-members">
+          <div class="roster-member">
+            <div class="avatar avatar-sm placeholder"></div>
+            <span class="roster-name placeholder">Coming soon</span>
+          </div>
+          <div class="roster-member">
+            <div class="avatar avatar-sm placeholder"></div>
+            <span class="roster-name placeholder">Coming soon</span>
+          </div>
+        </div>
       </div>
-      <p class="team-desc placeholder">コンセプト・出演者は順次公開予定です</p>
+      <div class="team-concept">
+        <span class="team-concept-label">CONCEPT</span>
+        <p class="team-desc placeholder">コンセプト・出演者は順次公開予定です</p>
+      </div>
     </div>
 
     <div class="team-card reveal reveal-delay-2" style="--team-color: #7c3aff; --team-bg: url('/assets/teams/nova.png');">
       <div class="team-num">TEAM 02</div>
       <div class="team-name">NOVA</div>
-      <div class="team-genre placeholder">Coming soon</div>
-      <div class="team-members">
-        <a class="member-tag placeholder">Coming soon</a>
-        <a class="member-tag placeholder">Coming soon</a>
-        <a class="member-tag placeholder">Coming soon</a>
+      <div class="team-roster">
+        <a class="roster-leader roster-link" href="https://web.colorsing.com/share/user?user_id=b685e0ab-d7dc-4077-874d-e9cae3565681" target="_blank" rel="noopener noreferrer" aria-label="りんかのColorSingプロフィールを開く">
+          <div class="avatar avatar-lg"><img src="/assets/members/nova-leader.jpg" alt="りんか"><span class="leader-badge">LEADER</span></div>
+          <span class="roster-name">りんか🔔</span>
+        </a>
+        <div class="roster-members">
+          <div class="roster-member">
+            <div class="avatar avatar-sm placeholder"></div>
+            <span class="roster-name placeholder">Coming soon</span>
+          </div>
+          <div class="roster-member">
+            <div class="avatar avatar-sm placeholder"></div>
+            <span class="roster-name placeholder">Coming soon</span>
+          </div>
+        </div>
       </div>
-      <p class="team-desc placeholder">コンセプト・出演者は順次公開予定です</p>
+      <div class="team-concept">
+        <span class="team-concept-label">CONCEPT</span>
+        <p class="team-desc placeholder">コンセプト・出演者は順次公開予定です</p>
+      </div>
     </div>
 
     <div class="team-card reveal reveal-delay-3" style="--team-color: #ffd700; --team-bg: url('/assets/teams/golden.png');">
       <div class="team-num">TEAM 03</div>
       <div class="team-name">GOLDEN</div>
-      <div class="team-genre placeholder">Coming soon</div>
-      <div class="team-members">
-        <a class="member-tag placeholder">Coming soon</a>
-        <a class="member-tag placeholder">Coming soon</a>
-        <a class="member-tag placeholder">Coming soon</a>
+      <div class="team-roster">
+        <a class="roster-leader roster-link" href="https://web.colorsing.com/share/user?user_id=e8a92a98-ed80-4ee2-9ccd-a0ed46165226" target="_blank" rel="noopener noreferrer" aria-label="iran痔のColorSingプロフィールを開く">
+          <div class="avatar avatar-lg"><img src="/assets/members/golden-leader.jpg" alt="iran痔"><span class="leader-badge">LEADER</span></div>
+          <span class="roster-name">iran痔</span>
+        </a>
+        <div class="roster-members">
+          <div class="roster-member">
+            <div class="avatar avatar-sm placeholder"></div>
+            <span class="roster-name placeholder">Coming soon</span>
+          </div>
+          <div class="roster-member">
+            <div class="avatar avatar-sm placeholder"></div>
+            <span class="roster-name placeholder">Coming soon</span>
+          </div>
+        </div>
       </div>
-      <p class="team-desc placeholder">コンセプト・出演者は順次公開予定です</p>
+      <div class="team-concept">
+        <span class="team-concept-label">CONCEPT</span>
+        <p class="team-desc placeholder">コンセプト・出演者は順次公開予定です</p>
+      </div>
     </div>
 
   </div>
 </section>
 
-<div class="divider"></div>
+<!-- 段階公開: タイムテーブル 非表示中。再表示は divider と section 両方の hidden を外すだけ -->
+<div class="divider" hidden></div>
 
-<section id="schedule">
+<section id="schedule" hidden>
   <p class="section-label">Schedule</p>
   <h2 class="section-title">タイムスケジュール</h2>
   <div class="schedule-list">
     <div class="schedule-item"><div class="sched-time">19:45</div><div class="sched-content"><div class="sched-title">開会式・チーム紹介</div><div class="sched-detail">ルール説明・チームコール（15分）</div></div></div>
     <div class="round-divider"><span class="round-label">ROUND 1</span></div>
-    <div class="schedule-item"><div class="sched-time">20:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">20:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">20:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">20:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="schedule-item"><div class="sched-time">20:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="round-divider"><span class="round-label">ROUND 2<span class="sched-badge badge-vote">投票開始</span></span></div>
     <div class="schedule-item"><div class="sched-time">20:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">21:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">21:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="round-divider"><span class="round-label">ROUND 3</span></div>
-    <div class="schedule-item"><div class="sched-time">21:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
     <div class="schedule-item"><div class="sched-time">21:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">22:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">22:15<div class="sched-badges"><span class="sched-badge badge-vote">VOTE</span></div></div><div class="sched-content"><div class="sched-title">本投票開始</div><div class="sched-detail">10分間</div></div></div>
-    <div class="schedule-item"><div class="sched-time">22:25</div><div class="sched-content"><div class="sched-title">結果発表・閉会式</div><div class="sched-detail">最終集計 ／ MVP・優勝チーム発表</div></div></div>
-    <div class="schedule-item"><div class="sched-time">22:40</div><div class="sched-content"><div class="sched-title">終了</div></div></div>
+    <div class="schedule-item"><div class="sched-time">22:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="schedule-item"><div class="sched-time">22:15<div class="sched-badges"><span class="sched-badge badge-vote">VOTE</span></div></div><div class="sched-content"><div class="sched-title">本投票開始</div><div class="sched-detail">15分間</div></div></div>
+    <div class="schedule-item"><div class="sched-time">22:30</div><div class="sched-content"><div class="sched-title">結果発表・閉会式</div><div class="sched-detail">最終集計 ／ MVP・優勝チーム発表</div></div></div>
+    <div class="schedule-item"><div class="sched-time">22:45</div><div class="sched-content"><div class="sched-title">終了</div></div></div>
   </div>
 </section>
 
@@ -2707,7 +2833,8 @@ function resetTrialVotes() {
 /* ── VOTE STATUS ── */
 // 運営はここで投票期間を設定（ISO文字列）
 const VOTE_OPEN  = '2026-07-18T20:45:00+09:00'; // R1終了 = R2先頭 = 投票受付開始
-const VOTE_CLOSE = '2026-07-18T22:25:00+09:00'; // R3終了 + 本投票10分後
+const VOTE_CLOSE = '2026-07-18T22:30:00+09:00'; // R3終了 + 本投票15分後
+const VOTE_POINT_MAX = '2026-07-18T22:15:00+09:00'; // 本投票開始から最大PT固定
 
 function getVoteStatus() {
   if (!VOTE_OPEN || !VOTE_CLOSE) return 'waiting';
@@ -3043,9 +3170,12 @@ async function submitBulkVote() {
     // BONUS キーワード入力欄の値をそのまま送信。サーバ側で env と再照合して bonusGranted 判定
     const bonusInput = document.getElementById('bonusKeyword');
     const bonusKeyword = (bonusInput && bonusInput.value) ? bonusInput.value.trim() : '';
+    const voteHeaders = { 'Content-Type': 'application/json' };
+    const adminTestToken = getAdminTestVoteToken();
+    if (adminTestToken) voteHeaders.Authorization = `Bearer ${adminTestToken}`;
     const res = await fetch(`${API_BASE}/votes`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: voteHeaders,
       body: JSON.stringify({ voterName: name, picks, eventComment, bonusKeyword }),
     });
     const data = await res.json().catch(() => ({}));
@@ -3266,7 +3396,7 @@ function buildVotePowerBar() {
 
 function getVotePowerProgress() {
   const open = new Date(VOTE_OPEN).getTime();
-  const close = new Date(VOTE_CLOSE).getTime();
+  const close = new Date(VOTE_POINT_MAX).getTime();
   const now = Date.now();
   if (now <= open)  return 0;
   if (now >= close) return 1;
@@ -3355,9 +3485,15 @@ async function initVoteSection() {
 
 /* ── TEST MODE (admin 画面で localStorage に '1' をセット) ── */
 const TEST_MODE_KEY = 'battlefes_test_mode';
+const ADMIN_TOKEN_KEY = 'battlefes_admin_token';
 let lastVoteVisibilityState = null;
 function isTestModeOn() {
   try { return localStorage.getItem(TEST_MODE_KEY) === '1'; } catch (e) { return false; }
+}
+
+function getAdminTestVoteToken() {
+  if (!isTestModeOn()) return '';
+  try { return localStorage.getItem(ADMIN_TOKEN_KEY) || ''; } catch (e) { return ''; }
 }
 
 function isVoteSubmissionAllowedBySchedule() {

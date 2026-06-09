@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>BATTLE FES 2026 — ルールまとめ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0506;
+    --bg-card:#160d0a;
+    --bg-card2:#1e120d;
+    --line:#3a2a1f;
+    --ink:#f8f3ee;
+    --ink-dim:#e3d9cf;
+    --ink-faint:#ad9d8e;
+    --red:#ff5a14;
+    --gold:#ffd700;
+    --pt:#ffb066;
+    --crimson:#ff2d78;
+    --nova:#7c3aff;
+    --golden:#ffd700;
+    /* 日本語は読みやすさ優先。英字ロゴ調の見た目は必要箇所だけ残す */
+    --f-display:"Black Ops One",sans-serif;
+    --f-jp-head:"Noto Sans JP",sans-serif;
+    --f-label:"JetBrains Mono","Noto Sans JP",monospace;
+    --f-mono:"JetBrains Mono",monospace;
+    --f-body:"Noto Sans JP",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(255,90,20,.13), transparent 60%),
+      radial-gradient(1000px 500px at -10% 30%, rgba(124,58,255,.10), transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--f-body);
+    font-size:17px;
+    line-height:1.9;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:60px;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:0 20px}
+  .mono{font-family:var(--f-mono)}
+  .tag{
+    font-family:var(--f-mono);
+    font-size:11px;letter-spacing:.18em;color:var(--ink-faint);
+    text-transform:uppercase;
+  }
+
+  /* ---- HEADER ---- */
+  header{
+    text-align:center;padding:56px 20px 30px;position:relative;
+    border-bottom:1px solid var(--line);
+  }
+  header .kicker{
+    font-family:var(--f-label);font-size:13px;letter-spacing:.08em;
+    color:var(--red);text-transform:uppercase;margin-bottom:14px;
+  }
+  header h1{
+    font-family:var(--f-display);font-weight:400;
+    font-size:clamp(40px,11vw,86px);line-height:1.04;letter-spacing:.01em;
+    background:linear-gradient(160deg,#fff 18%,#ffd6a0 48%,var(--red) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  header h1 span{display:block;font-size:.4em;color:var(--gold);
+    -webkit-text-fill-color:var(--gold);letter-spacing:0;margin-top:8px}
+  header .sub{margin-top:18px;color:var(--ink-dim);font-size:16px;line-height:1.8}
+  header .date{
+    display:inline-flex;gap:10px;align-items:center;margin-top:20px;
+    font-family:var(--f-mono);font-size:14px;letter-spacing:0;
+    padding:8px 18px;border:1px solid var(--line);border-radius:100px;
+    color:var(--ink);background:rgba(255,255,255,.02);
+  }
+  header .date b{color:var(--gold)}
+
+  /* ---- SECTION ---- */
+  section{padding-top:52px}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:22px}
+  .sec-head .no{font-family:var(--f-mono);font-size:24px;color:var(--gold);line-height:1;font-weight:700}
+  .sec-head h2{font-family:var(--f-jp-head);font-weight:800;font-size:clamp(22px,5.2vw,32px);line-height:1.35;letter-spacing:0}
+  .sec-head .en{font-family:var(--f-label);font-size:12px;letter-spacing:.04em;color:var(--ink-faint);margin-left:auto;align-self:center}
+
+  /* ---- OVERVIEW ---- */
+  .overview{
+    background:linear-gradient(150deg,var(--bg-card),#1d1008);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:26px 24px;
+    position:relative;
+    overflow:hidden;
+  }
+  .overview::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:radial-gradient(420px 210px at 50% 0,rgba(255,215,0,.10),transparent 72%);
+    pointer-events:none;
+  }
+  .overview > *{position:relative}
+  .overview .lead{
+    color:var(--ink-dim);
+    font-size:16px;
+    line-height:1.95;
+  }
+  .overview .lead b{color:var(--gold)}
+
+  /* ---- WINNING (hero rule) ---- */
+  .verdict{
+    background:linear-gradient(150deg,var(--bg-card),#1c1208);
+    border:1px solid var(--line);border-radius:14px;padding:30px 26px;
+    text-align:center;position:relative;overflow:hidden;
+  }
+  .verdict::before{content:"";position:absolute;inset:0;
+    background:radial-gradient(400px 200px at 50% 0,rgba(255,140,40,.12),transparent 70%);}
+  .verdict .formula{
+    font-family:var(--f-jp-head);font-size:clamp(20px,4.8vw,30px);
+    font-weight:800;line-height:1.6;letter-spacing:0;position:relative;
+  }
+  .verdict .formula .v{color:var(--pt)}
+  .verdict .formula .s{color:var(--gold)}
+  .verdict .formula .op{color:var(--ink-faint);margin:0 6px}
+  .verdict .formula .eq{display:block;color:var(--red);margin-top:8px;font-size:1.04em}
+  .verdict .ls-note{position:relative;text-align:left;margin-top:16px;
+    background:rgba(255,194,51,.07);border:1px solid rgba(255,194,51,.28);border-left:3px solid var(--gold);
+    border-radius:10px;padding:13px 15px;font-size:15px;color:var(--ink-dim);line-height:1.9;font-weight:500}
+  .verdict .ls-note b{color:var(--gold);font-weight:800;font-size:15px}
+  .verdict p{margin-top:16px;color:var(--ink-dim);font-size:16px;position:relative;line-height:1.9}
+
+  /* ---- VOTE BASICS cards ---- */
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .card{
+    background:var(--bg-card);border:1px solid var(--line);border-radius:12px;
+    padding:22px 20px;
+  }
+  .card .icon{font-family:var(--f-mono);font-size:22px;color:var(--gold);line-height:1;font-weight:700}
+  .card h3{font-size:18px;margin:11px 0 7px;font-weight:800;line-height:1.45}
+  .card p{font-size:15.5px;color:var(--ink-dim);line-height:1.9}
+  .card p b{color:var(--ink);font-family:var(--f-mono)}
+
+  /* ---- TIME WEIGHT (the key mechanic) ---- */
+  .weight-lead{color:var(--ink-dim);font-size:16px;margin-bottom:24px;line-height:1.9}
+  .weight-lead b{color:var(--gold)}
+  .ramp{width:100%;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:10px 8px 4px}
+  .ramp svg{display:block;width:100%;height:auto}
+  .ramp-cap{margin-top:10px;font-size:15px;color:var(--ink-dim);line-height:1.9}
+  .ramp-cap b{color:var(--gold)}
+  .weight-note{
+    margin-top:20px;display:flex;gap:12px;align-items:flex-start;
+    background:var(--bg-card);border:1px solid var(--line);border-left:3px solid var(--gold);
+    border-radius:10px;padding:14px 16px;
+  }
+  .weight-note .b{font-family:var(--f-mono);color:var(--gold);font-size:18px;line-height:1;font-weight:700}
+  .weight-note p{font-size:15.5px;color:var(--ink-dim);line-height:1.9}
+  .weight-note p b{color:var(--ink)}
+
+  /* ---- BONUS ---- */
+  .bonus{
+    background:linear-gradient(135deg,#221107,#160d0a);
+    border:1px solid rgba(255,90,20,.32);border-radius:14px;padding:26px 24px;position:relative;overflow:hidden;
+  }
+  .bonus::after{content:"+5000";position:absolute;right:-10px;bottom:-22px;
+    font-family:var(--f-display);font-size:110px;color:rgba(255,90,20,.07);pointer-events:none}
+  .bonus .blabel{font-family:var(--f-label);font-size:13px;letter-spacing:.08em;color:var(--red)}
+  .bonus h3{font-family:var(--f-jp-head);font-weight:800;font-size:24px;margin:6px 0 12px;letter-spacing:0;line-height:1.45}
+  .bonus h3 em{color:var(--gold);font-style:normal;font-family:var(--f-mono)}
+  .bonus p{font-size:16px;color:var(--ink-dim);position:relative;z-index:1;line-height:1.9}
+  .bonus p b{color:var(--ink)}
+  .bonus .secret{margin-top:14px;font-family:var(--f-body);font-size:14px;
+    color:var(--ink-faint);letter-spacing:0;line-height:1.8}
+
+  /* ---- SCHEDULE ---- */
+  .timeline{border-left:2px solid var(--line);margin-left:8px;padding-left:0}
+  .tl-round{font-family:var(--f-label);font-size:13px;letter-spacing:.08em;
+    color:var(--red);margin:22px 0 8px;padding-left:24px;position:relative}
+  .tl-round:first-child{margin-top:0}
+  .tl-item{display:flex;gap:16px;align-items:center;padding:9px 0 9px 24px;position:relative}
+  .tl-item::before{content:"";position:absolute;left:-7px;top:50%;transform:translateY(-50%);
+    width:10px;height:10px;border-radius:50%;background:var(--bg);border:2px solid var(--line)}
+  .tl-item.key::before{background:var(--gold);border-color:var(--gold);box-shadow:0 0 10px var(--gold)}
+  .tl-item .t{font-family:var(--f-mono);font-size:15px;color:var(--ink);min-width:54px;font-weight:700}
+  .tl-item .d{font-size:15.5px;color:var(--ink-dim);line-height:1.75}
+  .tl-item.key .d{color:var(--gold);font-weight:700}
+  .tag-c{color:var(--crimson);font-weight:700}.tag-n{color:var(--nova);font-weight:700}.tag-g{color:var(--golden);font-weight:700}
+
+  /* ---- TEAMS ---- */
+  .teams{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .team{border:1px solid var(--line);border-radius:12px;padding:18px 14px;text-align:center;background:var(--bg-card)}
+  .team .tn{font-family:var(--f-mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint)}
+  .team .nm{font-family:var(--f-display);font-size:22px;margin-top:8px;letter-spacing:.01em;line-height:1.25}
+  .team.c .nm{color:var(--crimson)}.team.n .nm{color:var(--nova)}.team.g .nm{color:var(--golden)}
+  .team .mem{font-size:12px;color:var(--ink-faint);margin-top:6px}
+
+  /* ---- FOOTER ---- */
+  footer{margin-top:56px;padding-top:28px;border-top:1px solid var(--line);text-align:center}
+  footer .lnk{font-family:var(--f-mono);font-size:13px;color:var(--gold);text-decoration:none;letter-spacing:.04em}
+  footer .lnk:hover{text-decoration:underline}
+  footer .leak-note{
+    max-width:560px;
+    margin:14px auto 0;
+    padding:12px 14px;
+    border:1px solid rgba(255,90,20,.32);
+    border-left:3px solid var(--red);
+    border-radius:8px;
+    background:rgba(255,90,20,.07);
+    color:var(--ink-dim);
+    font-size:14px;
+    line-height:1.8;
+    text-align:left;
+  }
+  footer .leak-note b{color:var(--ink)}
+  footer small{display:block;margin-top:12px;color:var(--ink-faint);font-family:var(--f-mono);font-size:11px;letter-spacing:.04em}
+
+  /* ---- スマホ最適化 (PCレイアウトは維持) ---- */
+  @media(max-width:560px){
+    body{line-height:1.85;padding-bottom:48px}
+    .wrap{padding:0 18px}
+    header{padding:44px 16px 26px}
+    header h1{font-size:clamp(38px,14vw,64px)}
+    header .sub{font-size:15px;margin-top:14px}
+    header .date{font-size:13px;padding:7px 14px;flex-wrap:wrap;justify-content:center}
+    section{padding-top:40px}
+    .sec-head{gap:10px;margin-bottom:18px}
+    .sec-head .en{display:none}
+    .verdict{padding:24px 18px;border-radius:12px}
+    .grid3{grid-template-columns:1fr;gap:12px}
+    .card{padding:16px 16px}
+    .card .icon{font-size:20px}
+    .ramp{padding:8px 6px 4px}
+    .ramp-cap{font-size:14.5px}
+    .weight-note{padding:14px 15px}
+    .weight-note p{font-size:15px}
+    .bonus{padding:22px 18px}
+    .bonus::after{font-size:84px;bottom:-16px}
+    .teams{grid-template-columns:1fr;gap:10px}
+    .team{display:flex;align-items:center;justify-content:center;gap:12px;text-align:left;padding:14px 16px}
+    .team .tn{margin:0}
+    .team .nm{margin:0;font-size:20px}
+    .team .mem{margin:0}
+    .tl-item .d{font-size:14.5px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">ColorSing × Summer Event 2026</div>
+  <h1>BATTLE FES<span>2026 RULES</span></h1>
+  <div class="sub">チーム対抗 歌唱バトルフェスティバル — ルールまとめ</div>
+  <div class="date"><b>2026.07.18</b>（土）&nbsp;·&nbsp;ONLINE LIVE</div>
+</header>
+
+<div class="wrap">
+
+  <!-- イベント概要 -->
+  <section id="overview">
+    <div class="sec-head">
+      <span class="no">00</span><h2>イベント概要</h2><span class="en">OVERVIEW</span>
+    </div>
+    <div class="overview">
+      <p class="lead">BATTLE FES 2026は、ColorSingの歌い手9名が3チームに分かれて競う<b>チーム対抗イベント</b>です。各メンバーが15分ずつパフォーマンスし、リスナー投票とライブスコアの合計で優勝チームを決めます。</p>
+    </div>
+    <div class="grid3" style="margin-top:14px">
+      <div class="card">
+        <div class="icon">3</div>
+        <h3>3チーム対抗</h3>
+        <p>CRIMSON、NOVA、GOLDENの3チームで競います。</p>
+      </div>
+      <div class="card">
+        <div class="icon">15</div>
+        <h3>1人15分</h3>
+        <p>各メンバーが持ち時間内にパフォーマンスします。</p>
+      </div>
+      <div class="card">
+        <div class="icon">PT</div>
+        <h3>投票 + ライブスコア</h3>
+        <p>リスナー投票とライブスコアの合計で優勝チームを決めます。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 勝敗 -->
+  <section id="win">
+    <div class="sec-head">
+      <span class="no">01</span><h2>勝敗の決め方</h2><span class="en">HOW TO WIN</span>
+    </div>
+    <div class="verdict">
+      <div class="formula">
+        <span class="v">投票ポイント合計</span><span class="op">+</span><span class="s">ライブスコア</span>
+        <span class="eq">＝ 総合スコア 最多のチームが優勝</span>
+      </div>
+      <div class="ls-note"><b>ライブスコアとは</b><br>ギフト ＋ コメント ＋ スーパーいいね で構成されるスコア</div>
+    </div>
+  </section>
+
+  <!-- チーム投票の基本 -->
+  <section id="basics">
+    <div class="sec-head">
+      <span class="no">02</span><h2>チーム投票の基本</h2><span class="en">TEAM VOTE</span>
+    </div>
+    <div class="grid3">
+      <div class="card">
+        <div class="icon">1</div>
+        <h3>チームへ1票</h3>
+        <p>優勝チームを決める投票は<b>1回のみ</b>有効。重複投票はブロックされます。</p>
+      </div>
+      <div class="card">
+        <div class="icon">2</div>
+        <h3>受付時間</h3>
+        <p><b>20:45 〜 22:30</b><br>この時間内ならいつでも投票できます。</p>
+      </div>
+      <div class="card">
+        <div class="icon">3</div>
+        <h3>投票場所</h3>
+        <p>イベント当日、<b>公式ページ</b>の投票欄から受付します。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 時間加重（最重要） -->
+  <section id="weight">
+    <div class="sec-head">
+      <span class="no">03</span><h2>チーム投票の1票の重さ</h2><span class="en">TEAM VOTE POWER</span>
+    </div>
+    <p class="weight-lead">ここが最大のポイント。チームへの投票は、<b>遅く投票するほど1票のポイントが大きくなります。</b></p>
+
+    <div class="ramp">
+      <svg viewBox="0 0 700 215" preserveAspectRatio="xMidYMid meet" role="img" aria-label="時間ごとの1票のポイント推移">
+        <defs>
+          <linearGradient id="rampg" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#ffd980"/>
+            <stop offset="0.8" stop-color="#ff8c34"/>
+            <stop offset="1" stop-color="#ff3014"/>
+          </linearGradient>
+        </defs>
+        <!-- baseline -->
+        <line x1="44" y1="170" x2="668" y2="170" stroke="#3a2a1f" stroke-width="1"/>
+        <!-- final-vote zone -->
+        <rect x="556" y="40" width="112" height="130" fill="rgba(255,48,20,.15)"/>
+        <line x1="556" y1="30" x2="556" y2="170" stroke="#ff3014" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.85"/>
+        <!-- area under the rising line -->
+        <path d="M44,170 L44,156 L556,46 L668,46 L668,170 Z" fill="url(#rampg)" opacity="0.3"/>
+        <!-- rising + plateau line -->
+        <path d="M44,156 L556,46 L668,46" fill="none" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>
+        <!-- markers -->
+        <circle cx="44" cy="156" r="5" fill="#ffd980"/>
+        <circle cx="300" cy="101" r="4" fill="#ff8c34"/>
+        <circle cx="556" cy="46" r="6" fill="#ff3014"/>
+        <!-- PT callouts -->
+        <text x="40" y="148" fill="#ffe2b0" font-size="16" font-family="JetBrains Mono, monospace" font-weight="700" text-anchor="start">100PT</text>
+        <text x="556" y="30" fill="#ffd700" font-size="18" font-family="JetBrains Mono, monospace" font-weight="700" text-anchor="middle">5000PT</text>
+        <text x="300" y="92" fill="#cbb9a9" font-size="12" font-family="Noto Sans JP, sans-serif" font-weight="700" text-anchor="middle">上昇中</text>
+        <text x="612" y="116" fill="#ff5a14" font-size="13" font-family="Noto Sans JP, sans-serif" font-weight="700" text-anchor="middle">本投票</text>
+        <text x="612" y="134" fill="#ff5a14" font-size="11" font-family="Noto Sans JP, sans-serif" font-weight="700" text-anchor="middle">MAX固定</text>
+        <!-- time axis -->
+        <text x="44" y="195" fill="#8c7a69" font-size="13" font-family="JetBrains Mono, monospace" text-anchor="start">20:45</text>
+        <text x="300" y="195" fill="#8c7a69" font-size="13" font-family="JetBrains Mono, monospace" text-anchor="middle">21:30</text>
+        <text x="556" y="195" fill="#8c7a69" font-size="13" font-family="JetBrains Mono, monospace" text-anchor="middle">22:15</text>
+        <text x="668" y="195" fill="#8c7a69" font-size="13" font-family="JetBrains Mono, monospace" text-anchor="end">22:30</text>
+      </svg>
+    </div>
+    <p class="ramp-cap">時間が進むほど1票のポイントが連続的に上がり、<b>本投票（22:15〜22:30）でMAXの5000PTに到達して固定</b>。</p>
+
+    <div class="weight-note">
+      <span class="b">↑</span>
+      <p>受付開始の <b>100PT</b> から、時間とともにポイントが上昇。<br>
+      <b>本投票（22:15〜22:30）</b>の15分間は、ずっと最大の <b style="color:var(--gold)">5000PT</b> 固定。<br>
+      → <b>急がず、できれば最後の本投票で入れるのが最強。</b></p>
+    </div>
+  </section>
+
+  <!-- ボーナス -->
+  <section id="bonus">
+    <div class="sec-head">
+      <span class="no">04</span><h2>チーム投票のボーナス</h2><span class="en">BONUS</span>
+    </div>
+    <div class="bonus">
+      <div class="blabel">SECRET BONUS</div>
+      <h3>貫通BONUS <em>+5000PT</em></h3>
+      <p>配信中に出現する<b>文字を集めて</b>チーム投票時に入力 → 正解判定で <b style="color:var(--gold)">+5000PT</b> 追加！</p>
+      <div class="secret">※ 貫通BONUSの詳細は当日配信で案内します。</div>
+    </div>
+  </section>
+
+  <!-- 個人賞投票 -->
+  <section id="awards">
+    <div class="sec-head">
+      <span class="no">05</span><h2>個人賞投票</h2><span class="en">AWARDS</span>
+    </div>
+    <p class="weight-lead">リスナーは、優勝チームを決めるチーム投票とは<b>別枠で</b>、MVPなど3つの個人賞にも投票します。</p>
+    <div class="grid3">
+      <div class="card">
+        <div class="icon">1</div>
+        <h3>MVP</h3>
+        <p>最優秀歌唱賞</p>
+      </div>
+      <div class="card">
+        <div class="icon">2</div>
+        <h3>最優秀エンタメ賞</h3>
+        <p>盛り上げ・魅せ方が光ったメンバーへ</p>
+      </div>
+      <div class="card">
+        <div class="icon">3</div>
+        <h3>ベストモーメント賞</h3>
+        <p>心に残った瞬間をつくったメンバーへ</p>
+      </div>
+    </div>
+    <div class="weight-note">
+      <span class="b">!</span>
+      <p>各賞に <b>1名ずつ</b> 選択。<b>3賞とも別のメンバー</b>を選ぶ必要があり、<b>同じ人を複数の賞に選ぶことはできません。</b></p>
+    </div>
+  </section>
+
+  <!-- スケジュール -->
+  <section id="schedule">
+    <div class="sec-head">
+      <span class="no">06</span><h2>タイムスケジュール</h2><span class="en">SCHEDULE</span>
+    </div>
+    <div class="timeline">
+      <div class="tl-item"><span class="t">19:45</span><span class="d">開会式・チーム紹介（ルール説明 / チームコール）</span></div>
+
+      <div class="tl-round">ROUND 1</div>
+      <div class="tl-item"><span class="t">20:00</span><span class="d"><b class="tag-n">NOVA</b> — 15分</span></div>
+      <div class="tl-item"><span class="t">20:15</span><span class="d"><b class="tag-c">CRIMSON</b> — 15分</span></div>
+      <div class="tl-item"><span class="t">20:30</span><span class="d"><b class="tag-g">GOLDEN</b> — 15分</span></div>
+
+      <div class="tl-round">ROUND 2</div>
+      <div class="tl-item key"><span class="t">20:45</span><span class="d">投票受付スタート（ここから投票できます）</span></div>
+      <div class="tl-item"><span class="t">20:45</span><span class="d"><b class="tag-c">CRIMSON</b> — 15分</span></div>
+      <div class="tl-item"><span class="t">21:00</span><span class="d"><b class="tag-g">GOLDEN</b> — 15分</span></div>
+      <div class="tl-item"><span class="t">21:15</span><span class="d"><b class="tag-n">NOVA</b> — 15分</span></div>
+
+      <div class="tl-round">ROUND 3</div>
+      <div class="tl-item"><span class="t">21:30</span><span class="d"><b class="tag-g">GOLDEN</b> — 15分</span></div>
+      <div class="tl-item"><span class="t">21:45</span><span class="d"><b class="tag-n">NOVA</b> — 15分</span></div>
+      <div class="tl-item"><span class="t">22:00</span><span class="d"><b class="tag-c">CRIMSON</b> — 15分</span></div>
+
+      <div class="tl-round">FINAL</div>
+      <div class="tl-item key"><span class="t">22:15</span><span class="d">本投票開始（15分間・1票=5000PT）</span></div>
+      <div class="tl-item key"><span class="t">22:30</span><span class="d">結果発表・閉会式（MVP / 優勝チーム）</span></div>
+      <div class="tl-item"><span class="t">22:45</span><span class="d">終了</span></div>
+    </div>
+  </section>
+
+  <!-- チーム -->
+  <section id="teams">
+    <div class="sec-head">
+      <span class="no">07</span><h2>参加チーム</h2><span class="en">TEAMS</span>
+    </div>
+    <div class="teams">
+      <div class="team c"><div class="tn">TEAM 01</div><div class="nm">CRIMSON</div><div class="mem">3名構成</div></div>
+      <div class="team n"><div class="tn">TEAM 02</div><div class="nm">NOVA</div><div class="mem">3名構成</div></div>
+      <div class="team g"><div class="tn">TEAM 03</div><div class="nm">GOLDEN</div><div class="mem">3名構成</div></div>
+    </div>
+  </section>
+
+  <footer>
+    <a class="lnk" href="https://battle-fes.pages.dev/" target="_blank" rel="noopener">battle-fes.pages.dev</a>
+    <div class="leak-note"><b>注意:</b> この資料は関係者限りです。URLやスクリーンショットをリスナー向けの案内、SNS、外部チャットへ共有しないでください。</div>
+    <small>© 2026 magurophone — BATTLE FES 2026</small>
+  </footer>
+
+</div>
+</body>
+</html>

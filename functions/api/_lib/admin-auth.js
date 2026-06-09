@@ -7,12 +7,7 @@ export function isAdminAuthorized(request, env) {
   if (!expected) return false;
 
   const authHeader = request.headers.get("authorization") || "";
-  if (authHeader.startsWith("Bearer ")) {
-    return authHeader.slice(7) === expected;
-  }
-
-  const url = new URL(request.url);
-  return url.searchParams.get("token") === expected;
+  return authHeader.startsWith("Bearer ") && authHeader.slice(7) === expected;
 }
 
 export function requireAdmin(request, env) {

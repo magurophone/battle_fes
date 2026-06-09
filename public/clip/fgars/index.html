@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>TEAM CRIMSON | Clip Link</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Ops+One&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/clip/team-clip.css">
+</head>
+<body style="--team-color:#ff2d78; --team-bg:url('/assets/teams/crimson.png');">
+  <main class="team-shell">
+    <section class="clip-panel" aria-labelledby="team-title">
+      <header class="team-head">
+        <p class="team-num">TEAM 01</p>
+        <h1 class="team-name" id="team-title">CRIMSON</h1>
+        <span class="clip-label">TEAM CLIP</span>
+      </header>
+
+      <div class="member-grid">
+        <a class="member-link" href="https://web.colorsing.com/share/user?user_id=9f416ebb-bc97-4d24-8c38-9550c5040aa5" target="_blank" rel="noopener noreferrer" aria-label="まぐろふぉんのColorSingプロフィールを開く">
+          <span class="avatar">
+            <img class="is-zoomed" src="/assets/members/crimson-leader.png" alt="まぐろふぉん">
+            <span class="leader-badge">LEADER</span>
+          </span>
+          <span class="member-role">PROFILE</span>
+          <span class="member-name">まぐろふぉん</span>
+          <span class="member-action">OPEN</span>
+        </a>
+
+        <a class="member-link is-pending" href="#" aria-label="CRIMSON メンバー2は後日設定">
+          <span class="avatar placeholder"><span class="slot-num">02</span></span>
+          <span class="member-role">MEMBER</span>
+          <span class="member-name">COMING SOON</span>
+          <span class="member-action">URL LATER</span>
+        </a>
+
+        <a class="member-link is-pending" href="#" aria-label="CRIMSON メンバー3は後日設定">
+          <span class="avatar placeholder"><span class="slot-num">03</span></span>
+          <span class="member-role">MEMBER</span>
+          <span class="member-name">COMING SOON</span>
+          <span class="member-action">URL LATER</span>
+        </a>
+      </div>
+    </section>
+  </main>
+  <script>
+    document.querySelectorAll('.member-link.is-pending').forEach((link) => {
+      link.addEventListener('click', (event) => event.preventDefault());
+    });
+  </script>
+</body>
+</html>

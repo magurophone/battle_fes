@@ -8,11 +8,13 @@
  * セキュリティ:
  * - 正解キーワードは Cloudflare 環境変数 BONUS_KEYWORD (secret) のみが知る。
  * - 本エンドポイントは正解そのものを返さず、true/false のみを返す。
+ * - 本投票期間外は正解判定を返さず、常に valid: false を返す。
  * - 投票送信時 (POST /api/votes) でも payload.bonusKeyword を再検証してから
  *   bonusPoint を加算する (信頼境界)。本エンドポイントの結果は演出専用。
  */
 
 import { isMainVotingPeriod } from "./_lib/vote-store.js";
+import { isBonusKeywordMatch } from "./_lib/bonus-keyword.js";
 
 const MAX_BONUS_KEYWORD_LEN = 100;
 
@@ -39,12 +41,13 @@ export async function onRequestPost(context) {
     return json({ ok: false, error: "Keyword too long." }, { status: 400 });
   }
 
-  const expected = String(context.env.BONUS_KEYWORD || "").trim();
-  const valid = Boolean(expected) && submitted === expected;
-
-  // 本投票期間外でも valid 判定自体は返す (UI 側の演出で使う)。
-  // ただしクライアントには現在期間内かどうかも返して、UI 表示制御に活用できるようにする。
   const inMainPeriod = isMainVotingPeriod(new Date().toISOString());
+  if (!inMainPeriod) {
+    return json({ ok: true, valid: false, inMainPeriod });
+  }
+
+  const expected = String(context.env.BONUS_KEYWORD || "").trim();
+  const valid = isBonusKeywordMatch(submitted, expected);
 
   return json({ ok: true, valid, inMainPeriod });
 }

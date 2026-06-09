@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>BATTLE FES 2026 - 告知文作成ガイドライン</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0909;
+    --panel: rgba(24, 19, 17, 0.92);
+    --line: rgba(255, 184, 90, 0.22);
+    --ink: #fff8ee;
+    --muted: #d5c6b8;
+    --faint: #a59484;
+    --gold: #ffd700;
+    --teal: #38d4ff;
+    --red: #ff5a14;
+    --body: "Noto Sans JP", system-ui, sans-serif;
+    --mono: "JetBrains Mono", monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--ink);
+    font-family: var(--body);
+    line-height: 1.8;
+    background:
+      linear-gradient(180deg, rgba(10, 5, 6, 0.72), rgba(10, 5, 6, 0.96)),
+      url("../../hero-bg.webp") center top / cover fixed,
+      var(--bg);
+  }
+
+  .wrap {
+    width: min(980px, calc(100% - 36px));
+    margin: 0 auto;
+  }
+
+  header {
+    padding: 56px 0 26px;
+  }
+
+  .kicker {
+    color: var(--red);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 10px 0 12px;
+    font-size: clamp(34px, 7vw, 64px);
+    line-height: 1.08;
+    letter-spacing: 0;
+  }
+
+  .lead {
+    max-width: 720px;
+    margin: 0;
+    color: var(--muted);
+    font-size: clamp(15px, 2vw, 18px);
+  }
+
+  main {
+    padding: 24px 0 72px;
+    background: linear-gradient(180deg, rgba(11, 9, 9, 0.1), rgba(11, 9, 9, 1) 90px);
+  }
+
+  .panel {
+    margin-top: 14px;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background:
+      linear-gradient(150deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.014)),
+      var(--panel);
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.34);
+  }
+
+  .panel h2 {
+    margin: 0 0 10px;
+    color: var(--gold);
+    font-size: 22px;
+    letter-spacing: 0;
+  }
+
+  .panel p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 14px;
+  }
+
+  .box {
+    min-width: 0;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.24);
+  }
+
+  .box h3 {
+    margin: 0 0 8px;
+    color: var(--ink);
+    font-size: 16px;
+    letter-spacing: 0;
+  }
+
+  .box ul {
+    margin: 0;
+    padding-left: 1.15em;
+    color: var(--muted);
+    font-size: 14.5px;
+  }
+
+  .box li + li { margin-top: 5px; }
+
+  .note {
+    margin-top: 14px;
+    padding: 14px 15px;
+    border: 1px solid rgba(56, 212, 255, 0.22);
+    border-left: 4px solid var(--teal);
+    border-radius: 8px;
+    background: rgba(56, 212, 255, 0.07);
+    color: var(--muted);
+    font-size: 14.5px;
+  }
+
+  @media (max-width: 760px) {
+    .wrap { width: min(100% - 32px, 980px); }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="kicker">BATTLE FES 2026 / Operations Only</div>
+      <h1>告知文作成<br>ガイドライン</h1>
+      <p class="lead">運営側がSNS文言を作成する際の基準です。メンバー向け説明資料には掲載しません。</p>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <section class="panel">
+        <h2>運営向け 告知文作成ガイドライン</h2>
+        <p>配布文言を作る側のメモとして管理します。各ライバーへの依頼事項とは分けて扱います。</p>
+        <div class="grid">
+          <div class="box">
+            <h3>共通ルール</h3>
+            <ul>
+              <li>告知文の基本トーンは統一する。</li>
+              <li>各投稿の末尾に、各ライバー自身の一言を足せる余白を残す。</li>
+              <li>特設サイトURLは、必要な投稿に必ず入れる。</li>
+              <li>公開済み情報だけを書く。未解禁情報、BONUSの詳細、管理画面情報は書かない。</li>
+              <li>クリップは、アプリ内で「クリップする」行動として書く。</li>
+            </ul>
+          </div>
+
+          <div class="box">
+            <h3>公開タイミング別の方針</h3>
+            <ul>
+              <li>6/13: 特設サイト公開とイベント告知開始を伝える。特設サイトURLと自チーム専用URLの用途を混同させない。</li>
+              <li>6/20: チームコンセプト解禁。チームごとの見どころが伝わる言葉にする。</li>
+              <li>6/27: 投票ルール解禁。「どう応援するとチームに効くか」が伝わる文言にする。貫通BONUSの詳細には触れない。</li>
+              <li>7/1: 全メンバーとスケジュール解禁。アプリ内のクリップ機能で全メンバーをクリップしてもらう流れを入れる。</li>
+              <li>7/11: 貫通BONUS事前予告。詳細は出さず、開会式から参加する価値だけを伝える。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="note">このページは運営用です。メンバー向けの資料トップからはリンクしません。</div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

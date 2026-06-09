@@ -27,7 +27,7 @@ export async function onRequestGet(context) {
   const unauthorized = requireAdmin(context.request, context.env);
   if (unauthorized) return unauthorized;
 
-  const snapshot = await buildAdminSnapshot(context.env.BATTLE_FES_VOTE_STORE);
+  const snapshot = await buildAdminSnapshot(context.env);
   return json({
     ok: true,
     status: getVoteWindowStatus(),

@@ -1,41 +1,60 @@
 import {
   CATEGORIES,
   CATEGORY_IDS,
+  MEMBERS,
+  TEAMS,
   getCategory,
+  isValidCandidateForCategory,
 } from "./vote-categories.js";
 
-const RESULTS_PREFIX = "vote-results:";
-const META_PREFIX = "vote-meta:";
-const LOG_PREFIX = "vote-log:";
-const FINGERPRINT_PREFIX = "vote-fingerprint:";
-const EVENT_IMPRESSIONS_KEY = "event-impressions-log";
 const MAX_LOG_ENTRIES = 500;
 const MAX_EVENT_IMPRESSIONS = 1000;
+const D1_BINDING_NAMES = ["BATTLE_FES_DB", "BATTLE_FES_VOTE_DB", "DB"];
 
 // 投票時間ウィンドウとポイント計算 (public 側 VOTE POWER と同一仕様)
-// 受付開始 100PT → 本投票直前 5000PT への線形上昇
+// 受付開始 100PT → 本投票開始 5000PT、以後は終了まで 5000PT 固定
 const VOTE_OPEN_ISO = "2026-07-18T20:45:00+09:00";
-const VOTE_CLOSE_ISO = "2026-07-18T22:25:00+09:00";
-// 本投票時間: 22:15-22:25 の 10 分間 (この時間のみ貫通 BONUS のキーワード入力可能)
+const VOTE_CLOSE_ISO = "2026-07-18T22:30:00+09:00";
+// 本投票時間: 22:15-22:30 の 15 分間 (この時間のみ貫通 BONUS のキーワード入力可能)
 const MAIN_VOTE_OPEN_ISO = "2026-07-18T22:15:00+09:00";
+const VOTE_POINT_MAX_ISO = MAIN_VOTE_OPEN_ISO;
 const VP_MIN = 100;
 const VP_MAX = 5000;
 // 貫通 BONUS: 本投票時間中に正解キーワードを入力した投票に付与される追加ポイント
 const BONUS_POINT = 5000;
+
+function getDb(source) {
+  if (!source || typeof source !== "object") {
+    throw new Error("D1 database binding is not configured.");
+  }
+  for (const name of D1_BINDING_NAMES) {
+    const db = source[name];
+    if (db && typeof db.prepare === "function") return db;
+  }
+  throw new Error("D1 database binding is not configured.");
+}
+
+function rows(result) {
+  return result && Array.isArray(result.results) ? result.results : [];
+}
+
+function isUniqueConstraintError(error) {
+  const message = String((error && error.message) || error || "");
+  return message.includes("UNIQUE constraint failed") || message.includes("SQLITE_CONSTRAINT");
+}
 
 function calcVotePoint(iso) {
   if (!iso) return VP_MIN;
   const t = new Date(iso).getTime();
   if (Number.isNaN(t)) return VP_MIN;
   const open = new Date(VOTE_OPEN_ISO).getTime();
-  const close = new Date(VOTE_CLOSE_ISO).getTime();
+  const close = new Date(VOTE_POINT_MAX_ISO).getTime();
   if (t <= open) return VP_MIN;
   if (t >= close) return VP_MAX;
   const progress = (t - open) / (close - open);
   return Math.round(VP_MIN + (VP_MAX - VP_MIN) * progress);
 }
 
-// 本投票時間内かどうか (キーワード入力受付期間)
 function isMainVotingPeriod(iso) {
   if (!iso) return false;
   const t = new Date(iso).getTime();
@@ -49,6 +68,115 @@ function normalizeStoredPoint(value, fallback = 0) {
   const n = Number(value);
   if (Number.isFinite(n) && n >= 0) return Math.floor(n);
   return fallback;
+}
+
+function normalizeStoredBoolean(value) {
+  if (typeof value === "boolean") return value;
+  if (String(value).toLowerCase() === "true") return true;
+  return Number(value) === 1;
+}
+
+function normalizeBonusKeywordAudit(submitted, matched) {
+  return {
+    bonusKeywordSubmitted: String(submitted || "").trim(),
+    bonusKeywordMatched: normalizeStoredBoolean(matched),
+  };
+}
+
+function roundToHundred(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n <= 0) return 0;
+  return Math.round(n / 100) * 100;
+}
+
+function normalizeScoreInput(value, fallback = 0) {
+  if (value == null || value === "") return fallback;
+  const normalized = String(value)
+    .trim()
+    .replace(/[０-９]/g, (ch) => String(ch.charCodeAt(0) - 0xff10))
+    .replace(/[．]/g, ".")
+    .replace(/[，、]/g, ",")
+    .replace(/[,%％\s]/g, "");
+  const n = Number(normalized);
+  if (Number.isFinite(n) && n >= 0) return n;
+  return fallback;
+}
+
+function calcLiveScore(oshiBonusPercent, monthlyOshiPointInFrame) {
+  const addPercent = normalizeScoreInput(oshiBonusPercent, 0);
+  const monthlyPoint = roundToHundred(normalizeScoreInput(monthlyOshiPointInFrame, 0));
+  if (monthlyPoint <= 0) return 0;
+  return roundToHundred(monthlyPoint / (1 + addPercent / 100));
+}
+
+function createLiveScoreSourceMap(raw) {
+  const source =
+    raw && raw.memberScores !== undefined
+      ? raw.memberScores
+      : raw && raw.scores !== undefined
+        ? raw.scores
+        : raw;
+  const map = new Map();
+
+  if (Array.isArray(source)) {
+    for (const entry of source) {
+      if (!entry || typeof entry !== "object") continue;
+      const id = Number(entry.memberId ?? entry.id);
+      if (Number.isFinite(id)) map.set(id, entry);
+    }
+    return map;
+  }
+
+  if (source && typeof source === "object") {
+    for (const [key, entry] of Object.entries(source)) {
+      const id = Number((entry && (entry.memberId ?? entry.id)) ?? key);
+      if (Number.isFinite(id)) map.set(id, entry || {});
+    }
+  }
+
+  return map;
+}
+
+function normalizeLiveScores(raw = {}) {
+  const sourceMap = createLiveScoreSourceMap(raw);
+  const memberScores = {};
+  const teamScores = Object.fromEntries(TEAMS.map((team) => [team.id, 0]));
+  let totalLiveScore = 0;
+
+  for (const member of MEMBERS) {
+    const source = sourceMap.get(Number(member.id)) || {};
+    const oshiBonusPercent = normalizeScoreInput(
+      source.oshiBonusPercent ??
+        source.bonusPercent ??
+        source.oshiBonusRatePercent,
+      0
+    );
+    const monthlyOshiPointInFrame = roundToHundred(normalizeScoreInput(
+      source.monthlyOshiPointInFrame ??
+        source.monthlyOshiPoint ??
+        source.monthlyPoint,
+      0
+    ));
+    const liveScore = calcLiveScore(oshiBonusPercent, monthlyOshiPointInFrame);
+
+    memberScores[member.id] = {
+      memberId: member.id,
+      teamId: member.teamId,
+      oshiBonusPercent,
+      monthlyOshiPointInFrame,
+      liveScore,
+    };
+    teamScores[member.teamId] = (teamScores[member.teamId] || 0) + liveScore;
+    totalLiveScore += liveScore;
+  }
+
+  return {
+    schemaVersion: 1,
+    memberScores,
+    teamScores,
+    totalLiveScore,
+    updatedAt: raw && raw.updatedAt ? raw.updatedAt : null,
+  };
 }
 
 function createEmptyResultsForCategory(category) {
@@ -68,218 +196,226 @@ function createEmptyResultsForCategory(category) {
   };
 }
 
-function normalizeResults(category, raw) {
-  const fresh = createEmptyResultsForCategory(category);
-  const sourceCounts = raw && typeof raw === "object" ? raw.counts || {} : {};
-  const sourcePoints = raw && typeof raw === "object" ? raw.points || {} : {};
-  for (const id of category.candidateIds) {
-    const v = Number(sourceCounts[id] ?? sourceCounts[String(id)] ?? 0);
-    fresh.counts[id] = Number.isFinite(v) && v > 0 ? Math.floor(v) : 0;
-    fresh.points[id] = normalizeStoredPoint(
-      sourcePoints[id] ?? sourcePoints[String(id)] ?? 0
-    );
-  }
-  fresh.totalVotes = Object.values(fresh.counts).reduce((s, v) => s + v, 0);
-  const summedPoints = Object.values(fresh.points).reduce((s, v) => s + v, 0);
-  fresh.totalPoints = normalizeStoredPoint(raw && raw.totalPoints, summedPoints);
-  fresh.bonusCount = normalizeStoredPoint(raw && raw.bonusCount, 0);
-  fresh.updatedAt = raw && raw.updatedAt ? raw.updatedAt : null;
-  return raw && typeof raw === "object" ? { ...raw, ...fresh } : fresh;
+function latestTimestamp(left, right) {
+  const lt = new Date(left || 0).getTime();
+  const rt = new Date(right || 0).getTime();
+  if (!Number.isFinite(lt)) return right || null;
+  if (!Number.isFinite(rt)) return left || null;
+  return rt >= lt ? right : left;
 }
 
-async function readResults(store, categoryId) {
-  const cat = getCategory(categoryId);
-  if (!cat) return null;
-  if (!store) return createEmptyResultsForCategory(cat);
-  const raw = await store.get(`${RESULTS_PREFIX}${categoryId}`);
-  if (!raw) return createEmptyResultsForCategory(cat);
-  try {
-    return normalizeResults(cat, JSON.parse(raw));
-  } catch {
-    return createEmptyResultsForCategory(cat);
+function createEmptySnapshot() {
+  const categories = {};
+  for (const c of CATEGORIES) {
+    categories[c.id] = {
+      results: createEmptyResultsForCategory(c),
+      meta: { totalSubmissions: 0, lastVoteAt: null },
+      voteLog: [],
+      uniqueFingerprints: 0,
+    };
   }
+  return {
+    categories,
+    eventImpressions: [],
+    results: Object.fromEntries(
+      CATEGORIES.map((c) => [c.id, categories[c.id].results])
+    ),
+  };
+}
+
+function applyResultRow(snapshot, row) {
+  const categoryId = String(row.categoryId || row.category_id || "");
+  const category = getCategory(categoryId);
+  if (!category) return;
+  const candidateId = Number(row.candidateId ?? row.candidate_id);
+  if (!isValidCandidateForCategory(categoryId, candidateId)) return;
+
+  const result = snapshot.results[categoryId] || createEmptyResultsForCategory(category);
+  result.counts[candidateId] = normalizeStoredPoint(row.votes, 0);
+  result.points[candidateId] = normalizeStoredPoint(row.points, 0);
+  result.bonusCount += normalizeStoredPoint(row.bonusCount ?? row.bonus_count, 0);
+  result.updatedAt = latestTimestamp(result.updatedAt, row.updatedAt ?? row.updated_at);
+  snapshot.results[categoryId] = result;
+  snapshot.categories[categoryId].results = result;
+}
+
+function finalizeResults(snapshot) {
+  for (const category of CATEGORIES) {
+    const result = snapshot.results[category.id];
+    result.totalVotes = Object.values(result.counts).reduce((sum, value) => sum + value, 0);
+    result.totalPoints = Object.values(result.points).reduce((sum, value) => sum + value, 0);
+  }
+  return snapshot.results;
 }
 
 async function readAllResults(store) {
-  const out = {};
-  await Promise.all(
-    CATEGORIES.map(async (c) => {
-      out[c.id] = await readResults(store, c.id);
-    })
-  );
-  return out;
+  const db = getDb(store);
+  const snapshot = createEmptySnapshot();
+  const resultRows = rows(await db.prepare(`
+    SELECT
+      p.category_id AS categoryId,
+      p.candidate_id AS candidateId,
+      COUNT(*) AS votes,
+      COALESCE(SUM(s.vote_point + s.bonus_point), 0) AS points,
+      COALESCE(SUM(CASE WHEN s.bonus_point > 0 THEN 1 ELSE 0 END), 0) AS bonusCount,
+      MAX(s.created_at) AS updatedAt
+    FROM vote_picks p
+    JOIN vote_submissions s ON s.id = p.submission_id
+    GROUP BY p.category_id, p.candidate_id
+  `).all());
+
+  for (const row of resultRows) applyResultRow(snapshot, row);
+  return finalizeResults(snapshot);
 }
 
-async function readMeta(store, categoryId) {
-  if (!store) return { totalSubmissions: 0, lastVoteAt: null };
-  const raw = await store.get(`${META_PREFIX}${categoryId}`);
-  if (!raw) return { totalSubmissions: 0, lastVoteAt: null };
-  try {
-    const p = JSON.parse(raw);
-    return {
-      totalSubmissions: Number(p.totalSubmissions) || 0,
-      lastVoteAt: p.lastVoteAt || null,
-    };
-  } catch {
-    return { totalSubmissions: 0, lastVoteAt: null };
-  }
-}
-
-async function readVoteLog(store, categoryId) {
+async function readResults(store, categoryId) {
   const category = getCategory(categoryId);
-  if (!store) return [];
-  const raw = await store.get(`${LOG_PREFIX}${categoryId}`);
-  if (!raw) return [];
-  try {
-    const p = JSON.parse(raw);
-    if (!Array.isArray(p)) return [];
-    return p.map((entry) => ({
-      ...entry,
-      votePoint: normalizeStoredPoint(
-        entry && entry.votePoint,
-        category ? calcVotePoint(entry && entry.timestamp) : 0
-      ),
-      bonusPoint: normalizeStoredPoint(entry && entry.bonusPoint, 0),
-      bonusGranted:
-        typeof (entry && entry.bonusGranted) === "boolean"
-          ? entry.bonusGranted
-          : normalizeStoredPoint(entry && entry.bonusPoint, 0) > 0,
-    }));
-  } catch {
-    return [];
-  }
+  if (!category) return null;
+  const results = await readAllResults(store);
+  return results[categoryId] || createEmptyResultsForCategory(category);
 }
 
-async function readEventImpressions(store) {
-  if (!store) return [];
-  const raw = await store.get(EVENT_IMPRESSIONS_KEY);
-  if (!raw) return [];
-  try {
-    const p = JSON.parse(raw);
-    return Array.isArray(p) ? p : [];
-  } catch {
-    return [];
-  }
+async function readExistingSubmission(db, fingerprint) {
+  const row = await db.prepare(`
+    SELECT
+      id,
+      fingerprint,
+      voter_name AS voterName,
+      event_comment AS eventComment,
+      vote_point AS votePoint,
+      bonus_point AS bonusPoint,
+      bonus_granted AS bonusGranted,
+      bonus_keyword_submitted AS bonusKeywordSubmitted,
+      bonus_keyword_matched AS bonusKeywordMatched,
+      created_at AS timestamp
+    FROM vote_submissions
+    WHERE fingerprint = ?
+  `).bind(fingerprint).first();
+  if (!row) return null;
+
+  const picks = rows(await db.prepare(`
+    SELECT
+      category_id AS categoryId,
+      candidate_id AS candidateId,
+      comment
+    FROM vote_picks
+    WHERE submission_id = ?
+    ORDER BY id ASC
+  `).bind(row.id).all());
+
+  return {
+    fingerprint: String(row.fingerprint || fingerprint),
+    voterName: String(row.voterName || ""),
+    picks: picks.map((pick) => ({
+      categoryId: String(pick.categoryId || ""),
+      candidateId: Number(pick.candidateId),
+      comment: String(pick.comment || ""),
+    })),
+    eventComment: String(row.eventComment || ""),
+    timestamp: row.timestamp || null,
+    votePoint: normalizeStoredPoint(row.votePoint, 0),
+    bonusPoint: normalizeStoredPoint(row.bonusPoint, 0),
+    bonusGranted: Boolean(Number(row.bonusGranted)),
+    ...normalizeBonusKeywordAudit(row.bonusKeywordSubmitted, row.bonusKeywordMatched),
+  };
 }
 
-async function findExistingFingerprints(store, fingerprint, categoryIds) {
-  if (!store) {
-    return Object.fromEntries(categoryIds.map((id) => [id, null]));
-  }
-  const out = {};
-  await Promise.all(
-    categoryIds.map(async (cid) => {
-      const raw = await store.get(`${FINGERPRINT_PREFIX}${cid}:${fingerprint}`);
-      if (!raw) {
-        out[cid] = null;
-        return;
-      }
-      try {
-        out[cid] = JSON.parse(raw);
-      } catch {
-        out[cid] = { existed: true };
-      }
-    })
-  );
-  return out;
-}
-
-// payload: { voterName, picks: [{categoryId, candidateId, comment?}], eventComment?, timestamp }
-// opts: { bonusGranted?: boolean }  貫通 BONUS 判定済みフラグ (votes.js で env と照合済み)
 async function recordBulkVotes(store, fingerprint, payload, opts = {}) {
-  if (!store) throw new Error("Vote storage binding is not configured.");
-
+  const db = getDb(store);
   const picks = payload.picks;
-  const categoryIds = picks.map((p) => p.categoryId);
-
-  const existing = await findExistingFingerprints(store, fingerprint, categoryIds);
-  const conflicts = categoryIds.filter((cid) => existing[cid] !== null);
-  if (conflicts.length > 0) {
-    return { ok: false, duplicate: true, conflicts, existing };
-  }
-
-  const [results, metas, logs, impressions] = await Promise.all([
-    Promise.all(categoryIds.map((cid) => readResults(store, cid))),
-    Promise.all(categoryIds.map((cid) => readMeta(store, cid))),
-    Promise.all(categoryIds.map((cid) => readVoteLog(store, cid))),
-    readEventImpressions(store),
-  ]);
-
-  // votes.js が必ずサーバ時刻で上書きする想定だが、別経路から呼ばれた場合の防御。
-  // 文字列以外（オブジェクト等）が入ってきた場合もサーバ時刻にフォールバック。
   const now =
     typeof payload.timestamp === "string" && payload.timestamp.trim()
       ? payload.timestamp.trim()
       : new Date().toISOString();
-  const writes = [];
-
-  // 投票成立時のポイントを 1 度だけ算出して全カテゴリで共有
   const votePoint = calcVotePoint(now);
-  // 貫通 BONUS: votes.js で env キーワードと照合済み + 本投票期間内なら 5000pt 加算
-  const bonusPoint = opts.bonusGranted && isMainVotingPeriod(now) ? BONUS_POINT : 0;
-  const totalPointPerVote = votePoint + bonusPoint;
+  const submittedBonusKeyword = String(payload.bonusKeyword || "").trim();
+  const bonusKeywordMatched = Boolean(opts.bonusKeywordMatched ?? opts.bonusGranted);
+  const bonusPoint = bonusKeywordMatched && isMainVotingPeriod(now) ? BONUS_POINT : 0;
+  const eventComment = String(payload.eventComment || "").trim();
 
-  for (let i = 0; i < picks.length; i++) {
-    const pick = picks[i];
-    const cid = pick.categoryId;
-    const candId = Number(pick.candidateId);
-    const result = results[i];
-    const meta = metas[i];
-    const log = logs[i];
-
-    result.counts[candId] = (result.counts[candId] || 0) + 1;
-    result.points = result.points || {};
-    result.points[candId] = (result.points[candId] || 0) + totalPointPerVote;
-    result.totalVotes += 1;
-    result.totalPoints = (result.totalPoints || 0) + totalPointPerVote;
-    if (bonusPoint > 0) {
-      result.bonusCount = (result.bonusCount || 0) + 1;
-    }
-    result.updatedAt = now;
-
-    meta.totalSubmissions += 1;
-    meta.lastVoteAt = now;
-
-    log.unshift({
-      categoryId: cid,
-      candidateId: candId,
-      voterName: payload.voterName,
-      comment: pick.comment || "",
-      timestamp: now,
+  const statements = [
+    db.prepare(`
+      INSERT INTO vote_submissions (
+        fingerprint,
+        voter_name,
+        event_comment,
+        vote_point,
+        bonus_point,
+        bonus_granted,
+        bonus_keyword_submitted,
+        bonus_keyword_matched,
+        created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      fingerprint,
+      payload.voterName,
+      eventComment,
       votePoint,
       bonusPoint,
-      bonusGranted: bonusPoint > 0,
-    });
+      bonusPoint > 0 ? 1 : 0,
+      submittedBonusKeyword,
+      bonusKeywordMatched ? 1 : 0,
+      now
+    ),
+  ];
 
-    writes.push(store.put(`${RESULTS_PREFIX}${cid}`, JSON.stringify(result)));
-    writes.push(store.put(`${META_PREFIX}${cid}`, JSON.stringify(meta)));
-    writes.push(
-      store.put(`${LOG_PREFIX}${cid}`, JSON.stringify(log.slice(0, MAX_LOG_ENTRIES)))
-    );
-    writes.push(
-      store.put(
-        `${FINGERPRINT_PREFIX}${cid}:${fingerprint}`,
-        JSON.stringify({ candidateId: candId, votedAt: now })
+  for (const pick of picks) {
+    statements.push(
+      db.prepare(`
+        INSERT INTO vote_picks (
+          submission_id,
+          category_id,
+          candidate_id,
+          comment,
+          created_at
+        ) VALUES (
+          (SELECT id FROM vote_submissions WHERE fingerprint = ?),
+          ?,
+          ?,
+          ?,
+          ?
+        )
+      `).bind(
+        fingerprint,
+        pick.categoryId,
+        Number(pick.candidateId),
+        String(pick.comment || ""),
+        now
       )
     );
   }
 
-  const eventComment = String(payload.eventComment || "").trim();
   if (eventComment) {
-    impressions.unshift({
-      voterName: payload.voterName,
-      comment: eventComment,
-      timestamp: now,
-    });
-    writes.push(
-      store.put(
-        EVENT_IMPRESSIONS_KEY,
-        JSON.stringify(impressions.slice(0, MAX_EVENT_IMPRESSIONS))
-      )
+    statements.push(
+      db.prepare(`
+        INSERT INTO event_impressions (
+          submission_id,
+          voter_name,
+          comment,
+          created_at
+        ) VALUES (
+          (SELECT id FROM vote_submissions WHERE fingerprint = ?),
+          ?,
+          ?,
+          ?
+        )
+      `).bind(fingerprint, payload.voterName, eventComment, now)
     );
   }
 
-  await Promise.all(writes);
+  try {
+    await db.batch(statements);
+  } catch (error) {
+    if (isUniqueConstraintError(error)) {
+      return {
+        ok: false,
+        duplicate: true,
+        conflicts: picks.map((pick) => pick.categoryId),
+        existing: await readExistingSubmission(db, fingerprint),
+      };
+    }
+    throw error;
+  }
 
   return {
     ok: true,
@@ -287,62 +423,181 @@ async function recordBulkVotes(store, fingerprint, payload, opts = {}) {
     votePoint,
     bonusPoint,
     bonusGranted: bonusPoint > 0,
-    results: Object.fromEntries(categoryIds.map((cid, i) => [cid, results[i]])),
+    results: await readAllResults(store),
   };
 }
 
-async function listKeysWithPrefix(store, prefix) {
-  const keys = [];
-  let cursor;
-  do {
-    const page = await store.list({ prefix, cursor });
-    keys.push(...page.keys.map((e) => e.name));
-    cursor = page.list_complete ? undefined : page.cursor;
-  } while (cursor);
-  return keys;
+async function readLiveScores(store) {
+  const db = getDb(store);
+  const scoreRows = rows(await db.prepare(`
+    SELECT
+      member_id AS memberId,
+      team_id AS teamId,
+      oshi_bonus_percent AS oshiBonusPercent,
+      monthly_oshi_point_in_frame AS monthlyOshiPointInFrame,
+      live_score AS liveScore,
+      updated_at AS updatedAt
+    FROM live_scores
+    ORDER BY member_id ASC
+  `).all());
+  const updatedAt = scoreRows.reduce((latest, row) => latestTimestamp(latest, row.updatedAt), null);
+  return normalizeLiveScores({ memberScores: scoreRows, updatedAt });
+}
+
+async function saveLiveScores(store, payload) {
+  const db = getDb(store);
+  const now = new Date().toISOString();
+  const liveScores = normalizeLiveScores({
+    memberScores: payload && payload.memberScores,
+    updatedAt: now,
+  });
+  const statements = Object.values(liveScores.memberScores).map((entry) =>
+    db.prepare(`
+      INSERT INTO live_scores (
+        member_id,
+        team_id,
+        oshi_bonus_percent,
+        monthly_oshi_point_in_frame,
+        live_score,
+        updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?)
+      ON CONFLICT(member_id) DO UPDATE SET
+        team_id = excluded.team_id,
+        oshi_bonus_percent = excluded.oshi_bonus_percent,
+        monthly_oshi_point_in_frame = excluded.monthly_oshi_point_in_frame,
+        live_score = excluded.live_score,
+        updated_at = excluded.updated_at
+    `).bind(
+      Number(entry.memberId),
+      Number(entry.teamId),
+      Number(entry.oshiBonusPercent),
+      Number(entry.monthlyOshiPointInFrame),
+      Number(entry.liveScore),
+      now
+    )
+  );
+
+  statements.push(
+    db.prepare(`
+      INSERT INTO admin_audit_logs (action, detail_json, created_at)
+      VALUES (?, ?, ?)
+    `).bind(
+      "live_scores.save",
+      JSON.stringify({ totalLiveScore: liveScores.totalLiveScore }),
+      now
+    )
+  );
+
+  await db.batch(statements);
+  return liveScores;
 }
 
 async function buildAdminSnapshot(store) {
-  const categories = {};
+  const db = getDb(store);
+  const snapshot = createEmptySnapshot();
+  snapshot.results = await readAllResults(store);
+  for (const category of CATEGORIES) {
+    snapshot.categories[category.id].results = snapshot.results[category.id];
+  }
+
+  const metaRows = rows(await db.prepare(`
+    SELECT
+      p.category_id AS categoryId,
+      COUNT(*) AS totalSubmissions,
+      MAX(s.created_at) AS lastVoteAt,
+      COUNT(DISTINCT s.fingerprint) AS uniqueFingerprints
+    FROM vote_picks p
+    JOIN vote_submissions s ON s.id = p.submission_id
+    GROUP BY p.category_id
+  `).all());
+
+  for (const row of metaRows) {
+    const categoryId = String(row.categoryId || "");
+    if (!snapshot.categories[categoryId]) continue;
+    snapshot.categories[categoryId].meta = {
+      totalSubmissions: normalizeStoredPoint(row.totalSubmissions, 0),
+      lastVoteAt: row.lastVoteAt || null,
+    };
+    snapshot.categories[categoryId].uniqueFingerprints = normalizeStoredPoint(row.uniqueFingerprints, 0);
+  }
+
   await Promise.all(
-    CATEGORIES.map(async (c) => {
-      const [results, meta, voteLog, fingerprintKeys] = await Promise.all([
-        readResults(store, c.id),
-        readMeta(store, c.id),
-        readVoteLog(store, c.id),
-        listKeysWithPrefix(store, `${FINGERPRINT_PREFIX}${c.id}:`),
-      ]);
-      categories[c.id] = {
-        results,
-        meta,
-        voteLog,
-        uniqueFingerprints: fingerprintKeys.length,
-      };
+    CATEGORIES.map(async (category) => {
+      const logRows = rows(await db.prepare(`
+        SELECT
+          p.category_id AS categoryId,
+          p.candidate_id AS candidateId,
+          s.voter_name AS voterName,
+          p.comment AS comment,
+          s.created_at AS timestamp,
+          s.vote_point AS votePoint,
+          s.bonus_point AS bonusPoint,
+          s.bonus_granted AS bonusGranted,
+          s.bonus_keyword_submitted AS bonusKeywordSubmitted,
+          s.bonus_keyword_matched AS bonusKeywordMatched
+        FROM vote_picks p
+        JOIN vote_submissions s ON s.id = p.submission_id
+        WHERE p.category_id = ?
+        ORDER BY s.created_at DESC, p.id DESC
+        LIMIT ?
+      `).bind(category.id, MAX_LOG_ENTRIES).all());
+      snapshot.categories[category.id].voteLog = logRows.map((row) => ({
+        categoryId: String(row.categoryId || category.id),
+        candidateId: Number(row.candidateId),
+        voterName: String(row.voterName || ""),
+        comment: String(row.comment || ""),
+        timestamp: row.timestamp || null,
+        votePoint: normalizeStoredPoint(row.votePoint, 0),
+        bonusPoint: normalizeStoredPoint(row.bonusPoint, 0),
+        bonusGranted: Boolean(Number(row.bonusGranted)),
+        ...normalizeBonusKeywordAudit(row.bonusKeywordSubmitted, row.bonusKeywordMatched),
+      }));
     })
   );
-  const eventImpressions = await readEventImpressions(store);
-  return { categories, eventImpressions };
+
+  snapshot.eventImpressions = rows(await db.prepare(`
+    SELECT
+      voter_name AS voterName,
+      comment,
+      created_at AS timestamp
+    FROM event_impressions
+    ORDER BY created_at DESC, id DESC
+    LIMIT ?
+  `).bind(MAX_EVENT_IMPRESSIONS).all()).map((row) => ({
+    voterName: String(row.voterName || ""),
+    comment: String(row.comment || ""),
+    timestamp: row.timestamp || null,
+  }));
+
+  return {
+    categories: snapshot.categories,
+    eventImpressions: snapshot.eventImpressions,
+    liveScores: await readLiveScores(store),
+  };
 }
 
-// 旧スキーマで残ったキー（接尾辞なしの単票時代）も含めてゴミ掃除する
-const LEGACY_KEYS = ["vote-results", "vote-meta", "vote-log"];
+async function readVoteLog(store, categoryId) {
+  const snapshot = await buildAdminSnapshot(store);
+  return (snapshot.categories[categoryId] && snapshot.categories[categoryId].voteLog) || [];
+}
+
+async function readEventImpressions(store) {
+  const snapshot = await buildAdminSnapshot(store);
+  return snapshot.eventImpressions;
+}
 
 async function resetAllVotes(store) {
-  if (!store) throw new Error("Vote storage binding is not configured.");
-  const keysToDelete = new Set();
-  for (const cid of CATEGORY_IDS) {
-    keysToDelete.add(`${RESULTS_PREFIX}${cid}`);
-    keysToDelete.add(`${META_PREFIX}${cid}`);
-    keysToDelete.add(`${LOG_PREFIX}${cid}`);
-  }
-  keysToDelete.add(EVENT_IMPRESSIONS_KEY);
-  for (const k of LEGACY_KEYS) keysToDelete.add(k);
-
-  // すべての vote-fingerprint:* キー（カテゴリ別の新スキーマ + 旧スキーマ両方）を一括削除
-  const allFingerprintKeys = await listKeysWithPrefix(store, FINGERPRINT_PREFIX);
-  for (const k of allFingerprintKeys) keysToDelete.add(k);
-
-  await Promise.all([...keysToDelete].map((k) => store.delete(k)));
+  const db = getDb(store);
+  const now = new Date().toISOString();
+  await db.batch([
+    db.prepare("DELETE FROM vote_picks"),
+    db.prepare("DELETE FROM event_impressions"),
+    db.prepare("DELETE FROM vote_submissions"),
+    db.prepare(`
+      INSERT INTO admin_audit_logs (action, detail_json, created_at)
+      VALUES (?, ?, ?)
+    `).bind("votes.reset", JSON.stringify({ source: "admin" }), now),
+  ]);
   return Object.fromEntries(
     CATEGORIES.map((c) => [c.id, createEmptyResultsForCategory(c)])
   );
@@ -358,13 +613,8 @@ function getVoteWindowStatus() {
   return "open";
 }
 
-// テストモード（admin 画面で localStorage トグル）から本番前に投票送信できるよう、
-// VOTE_OPEN 前の "waiting" もサーバ側では許可している。"closed"（VOTE_CLOSE 後）は弾く。
-// 一般ユーザーへの遮断は public ページのカウントダウン UI 側で行う前提。
-// テストモード ON のときだけブラウザ側で UI ゲートが解除される。
 function isVoteSubmissionAllowed() {
-  const status = getVoteWindowStatus();
-  return status === "open" || status === "waiting";
+  return getVoteWindowStatus() === "open";
 }
 
 export {
@@ -373,19 +623,23 @@ export {
   VOTE_OPEN_ISO,
   VOTE_CLOSE_ISO,
   MAIN_VOTE_OPEN_ISO,
+  VOTE_POINT_MAX_ISO,
   VP_MIN,
   VP_MAX,
   BONUS_POINT,
   buildAdminSnapshot,
   calcVotePoint,
+  calcLiveScore,
   createEmptyResultsForCategory,
   getVoteWindowStatus,
   isMainVotingPeriod,
   isVoteSubmissionAllowed,
   readAllResults,
   readEventImpressions,
+  readLiveScores,
   readResults,
   readVoteLog,
   recordBulkVotes,
   resetAllVotes,
+  saveLiveScores,
 };

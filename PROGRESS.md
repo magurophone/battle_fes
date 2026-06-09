@@ -1,5 +1,17 @@
 # BATTLE FES 2026 実装進捗
 
+## 段階公開（情報を順次出していく運用）
+
+サイトは情報を段階的に増やしていく方針。現在 **一時的に非表示** にしているブロックと、再表示の手順は以下。`battlefes.html` / `public/index.html` の両方に同じ印（`<!-- 段階公開: ... -->` コメント）を入れてあるので、`hidden` 属性を外すだけで戻せる。
+
+| 非表示中のブロック | 場所 | 再表示の手順 |
+|---|---|---|
+| ルールオブエンゲージメント | `#about` 内 `<div class="about-rules" hidden>` | `hidden` を外す |
+| タイムテーブル | `<section id="schedule" hidden>` ＋ 直前の `<div class="divider" hidden>` | 両方の `hidden` を外す |
+| ナビ「スケジュール」リンク | `.nav-drawer` の `<a href="#schedule" ... hidden>` | タイムテーブル再表示に合わせて `hidden` を外す |
+
+※ 検証用スクリプト: `node scripts/shot-stage-hide.mjs`（表示状態の確認＋全画面スクショ）
+
 ## プレースホルダ・差し替えガイド
 
 「Coming soon」「未定」「???」が表示されている全箇所と、確定後に何を入れるかの一覧。
@@ -31,7 +43,8 @@
 | 開催日 | 2026/7/18（土） | 確定 |
 | 開始時刻 | 19:45 | 仮確定。変更時はスケジュール14箇所＋VOTE_OPEN/CLOSE 3ファイルを再計算 |
 | `VOTE_OPEN` | `2026-07-18T20:45:00+09:00` | R1終了 = R2先頭。3ファイル同期: `public/index.html`, `battlefes.html`, `functions/api/_lib/vote-store.js` |
-| `VOTE_CLOSE` | `2026-07-18T22:25:00+09:00` | 本投票10分終了 |
+| `VOTE_CLOSE` | `2026-07-18T22:30:00+09:00` | 本投票15分終了 |
+| `VOTE_POINT_MAX` | `2026-07-18T22:15:00+09:00` | 本投票開始。以後は最大5000PT固定 |
 
 ### 旧チーム説明文（控え）
 
@@ -96,6 +109,7 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
 - `✓` 投票フロー
   - 名前入力 → チーム選択 → モーダルで個人賞3つ + 任意コメント + イベント感想 → 送信 → サンクスオーバーレイ → ロック
   - 同じ人を複数賞に選べないUI制御 (disabled-by-other)
+  - テストモード中は管理者ログイン済みブラウザだけ開始前送信を許可
 - `🔧` ランキング表示
 - `⬜` 顧客向けの見せ方調整
   - 順位だけ表示するか
@@ -115,11 +129,13 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
 - `✓` `GET /api/results`
   - `config: { categories, teams, members }` を返す（フロントの動的描画に使用）
 - `✓` 投票データ保存
-  - Cloudflare KV、カテゴリ別キー prefix（`vote-results:<catId>` / `vote-meta:<catId>` / `vote-log:<catId>` / `vote-fingerprint:<catId>:<hash>`）
+  - Cloudflare D1、投票ごとの正本レコード（`vote_submissions` / `vote_picks`）
+  - 100〜200人規模想定のため、読み出し時に D1 レコードを集計して結果を生成
 - `✓` イベント感想ログ
-  - `event-impressions-log` キーで全感想を集約
+  - submission 内の `eventComment` を読み出し時に一覧化
 - `✓` 重複投票防止
   - サーバーサイド判定（カテゴリ別 fingerprint）
+  - 同時投票で集計キーが上書きされないよう、集計値ではなく投票レコードを正本化
 - `✓` 名前、コメント、投票時刻のログ保存
 
 ### 投票カテゴリ設定
@@ -137,6 +153,7 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
   - 401/403 のメッセージ明示、空状態フォールバック、user input は escapeHtml で XSS 安全化
 - `✓` 管理API
   - `/api/admin/results`
+  - `/api/admin/live-scores`
   - `/api/admin/reset`（旧スキーマの legacy キーも一括削除）
 - `✓` 管理画面パスワード保護
 - `✓` パスワードの Cloudflare secret 化
@@ -144,9 +161,12 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
 
 ### スコア計算
 
-- `⬜` ライブスコア登録
-- `⬜` 最終スコア計算
-  - `投票数 × 2000pt + ライブスコア`
+- `✓` ライブスコア登録
+  - 管理画面 `/admin/` で各メンバーの「推しボーナス実％」と「枠内月間推しPt（）内」を入力
+  - `枠内月間推しPt ÷ (1 + 推しボーナス実％ / 100)` で実ライブスコアを算出し、D1 に保存
+  - 枠内月間推しPtとライブスコアは100単位に丸める
+- `✓` 管理画面での総合スコア計算
+  - `投票ポイント合計 + ライブスコア`
 - `⬜` スコア表示用エンドポイント
 
 ---
@@ -163,14 +183,15 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
 - `✓` スケジュール 21:40「審査発表」削除済み
 - `⬜` チーム名、メンバー名を実データへ差し替え
   - 新デザイン統合で 4 → 3チーム（CRIMSON / NOVA / GOLDEN、AZURE削除）
-  - About `stat-num` の参加チーム数 `4` ／ 出演者数 `12` はデザイン値のまま
+  - About `stat-num` は参加チーム数 `3` ／ 出演者数 `9` に反映済み
 - `🔧` スケジュール日程（7/18 土、開始19:45）
-  - 構成: 開会式15分 → R1 45分 → R2 45分 → R3 45分 → 本投票10分 → 結果発表・閉会式15分
+  - 構成: 開会式15分 → R1 45分 → R2 45分 → R3 45分 → 本投票15分 → 結果発表・閉会式15分
   - 9公演（A1→B1→C1→A2→B2→C2→A3→B3→C3）、各15分・連続
-  - 19:45開始 → 22:40 終了（2h55min）
+  - 19:45開始 → 22:45 終了（3h00min）
 - `🔧` 投票タイマー `VOTE_OPEN` / `VOTE_CLOSE`
   - VOTE_OPEN: 2026-07-18T20:45:00+09:00（R1終了 = R2先頭）
-  - VOTE_CLOSE: 2026-07-18T22:25:00+09:00（本投票10分終了）
+  - VOTE_POINT_MAX: 2026-07-18T22:15:00+09:00（本投票開始、最大5000PT固定）
+  - VOTE_CLOSE: 2026-07-18T22:30:00+09:00（本投票15分終了）
   - 同期箇所: public/index.html, battlefes.html, functions/api/_lib/vote-store.js
 
 ### バックエンド
@@ -185,23 +206,28 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
 
 > ✅ **E2E API 検証完了** (2026-05-09 実施)
 >
-> 本番経路（`battle-fes.pages.dev`）+ 実 KV で 6 ステップ全 PASS:
+> 本番経路（`battle-fes.pages.dev`）+ 実 D1 で 6 ステップ全 PASS:
 >
 > - [x] 1 票送信 → 200
 > - [x] 同一 fingerprint で再送信 → 409
 > - [x] `/api/admin/results` で送信内容（候補ID・コメント・eventImpression）反映確認
 > - [x] `/api/admin/reset` で全カテゴリ + legacy + fingerprint キー削除（後続 GET でクリーン確認済み）
 >
-> Preview と Production が同一 KV（namespace `6a7f993b...`）共有のため Preview 検証＝本番直叩き相当。
+> Preview と Production は同一 D1 database `battle-fes-vote-db` を参照するため Preview 検証＝本番直叩き相当。
 > テストスクリプト: `.tooling/e2e-vote-test.js`（ADMIN_TOKEN env で実行）
+> ローカル安全確認: `node scripts/local-api-regression.mjs` / `node scripts/local-frontend-smoke.mjs`
 
 - [ ] イベント開始時刻を最終確定（現在 7/18 土 19:45 仮）
 - [ ] 変更時はスケジュール14箇所の時刻を再計算して反映
-- [ ] `VOTE_OPEN` / `VOTE_CLOSE` を確定時刻に同期（3ファイル: public/index.html, battlefes.html, functions/api/_lib/vote-store.js）
+- [x] `VOTE_OPEN` / `VOTE_POINT_MAX` / `VOTE_CLOSE` を現行時刻に同期（4ファイル: public/index.html, battlefes.html, public/admin/index.html, functions/api/_lib/vote-store.js）
 - [ ] チーム名、メンバー名を確定データへ差し替え
+- [x] 判明済みリーダー名を各チームの3番手候補へ反映
+  - CRIMSON #3: まぐろふぉん
+  - NOVA #3: りんか🔔
+  - GOLDEN #3: iran痔
 - [ ] 顧客向け結果表示の見せ方を最終決定
 - [ ] 試験用リセットボタンを残すか削除するか決定
-- [ ] 時間加重投票のバックエンド実装（早い投票ほど価値が低い）
+- [x] 時間加重投票のバックエンド実装（早い投票ほど価値が低い）
 - [ ] 個人賞 (MVP / エンタメ / モーメント) の最終ラベル・候補メンバー確定（現状 `functions/api/_lib/vote-categories.js` に 3 賞 + プレースホルダ名）
 - [ ] 「最多ライブスコアpt獲得賞」の自動算出ロジック実装（投票ベースではなく ColorSing スコア由来）
 
@@ -210,7 +236,7 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
 ## スコア仕様メモ
 
 ```text
-最終ポイント = 投票数 × 2000pt + ColorSingライブスコア
+最終ポイント = 投票数 × 2000pt + ライブスコア
 ```
 
 - 投票はリスナー1人1票

@@ -9,7 +9,7 @@ function json(data, init = {}) {
 }
 
 export async function onRequestGet(context) {
-  const results = await readAllResults(context.env.BATTLE_FES_VOTE_STORE);
+  const results = await readAllResults(context.env);
 
   return json({
     ok: true,

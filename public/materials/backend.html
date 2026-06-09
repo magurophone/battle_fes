@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>BATTLE FES 2026 — 演者向け バックエンド説明資料</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0b0a;
+    --bg-card:#171412;
+    --bg-card2:#211c18;
+    --line:#40352d;
+    --ink:#f8f3ee;
+    --ink-dim:#e3d9cf;
+    --ink-faint:#ad9d8e;
+    --red:#ff5a14;
+    --gold:#ffd700;
+    --pt:#ffb066;
+    --teal:#38d4ff;
+    --green:#7ff2b1;
+    --crimson:#ff2d78;
+    --nova:#7c3aff;
+    --golden:#ffd700;
+    --f-display:"Noto Sans JP",sans-serif;
+    --f-jp-head:"Noto Sans JP",sans-serif;
+    --f-label:"Noto Sans JP",sans-serif;
+    --f-mono:"JetBrains Mono",monospace;
+    --f-body:"Noto Sans JP",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(255,90,20,.14), transparent 60%),
+      radial-gradient(1000px 500px at -10% 30%, rgba(124,58,255,.12), transparent 55%),
+      radial-gradient(700px 380px at 50% 105%, rgba(56,212,255,.07), transparent 62%),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--f-body);
+    font-size:17px;
+    line-height:1.9;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:60px;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:0 20px}
+  .mono{font-family:var(--f-mono)}
+
+  header{
+    text-align:center;
+    padding:56px 20px 32px;
+    border-bottom:1px solid var(--line);
+  }
+  header .kicker{
+    font-family:var(--f-label);
+    font-size:13px;
+    letter-spacing:.08em;
+    color:var(--red);
+    text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  header h1{
+    font-family:var(--f-display);
+    font-weight:900;
+    font-size:clamp(30px,7vw,54px);
+    line-height:1.25;
+    letter-spacing:0;
+    color:var(--ink);
+  }
+  header h1 span{
+    display:block;
+    margin-top:8px;
+    color:var(--gold);
+    -webkit-text-fill-color:var(--gold);
+    font-size:.58em;
+    letter-spacing:0;
+  }
+  header .sub{margin-top:18px;color:var(--ink-dim);font-size:16px}
+  header .date{
+    display:inline-flex;
+    gap:10px;
+    align-items:center;
+    margin-top:20px;
+    padding:8px 18px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:rgba(255,255,255,.02);
+    color:var(--ink);
+    font-family:var(--f-mono);
+    font-size:14px;
+    letter-spacing:0;
+  }
+  header .date b{color:var(--gold)}
+
+  section{padding-top:52px}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:22px}
+  .sec-head .no{font-family:var(--f-mono);font-size:22px;color:var(--gold);line-height:1;font-weight:700}
+  .sec-head h2{font-family:var(--f-jp-head);font-weight:800;font-size:clamp(22px,4.6vw,32px);line-height:1.35;letter-spacing:0}
+  .sec-head .en{font-family:var(--f-mono);font-size:12px;letter-spacing:.04em;color:var(--ink-faint);margin-left:auto;align-self:center}
+
+  .lead-card{
+    background:linear-gradient(150deg,var(--bg-card),#1d1108);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:28px 26px;
+    position:relative;
+    overflow:hidden;
+  }
+  .lead-card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:radial-gradient(480px 220px at 50% 0,rgba(255,140,40,.13),transparent 70%);
+    pointer-events:none;
+  }
+  .lead-card > *{position:relative}
+  .lead-card .big{
+    font-family:var(--f-body);
+    font-weight:800;
+    font-size:clamp(20px,4.2vw,28px);
+    line-height:1.7;
+  }
+  .lead-card .big b{color:var(--gold)}
+  .lead-card p{margin-top:14px;color:var(--ink-dim);font-size:16px;line-height:1.9}
+
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+  .card{
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:22px 20px;
+  }
+  .card .icon{font-family:var(--f-mono);font-size:22px;color:var(--gold);line-height:1;font-weight:700}
+  .card h3{font-size:18px;margin:11px 0 7px;font-weight:800;line-height:1.45}
+  .card p{font-size:15.5px;color:var(--ink-dim);line-height:1.9}
+  .card p b{color:var(--ink)}
+
+  .flow{
+    display:grid;
+    grid-template-columns:1fr auto 1fr auto 1fr;
+    gap:10px;
+    align-items:stretch;
+  }
+  .node{
+    min-height:118px;
+    padding:18px 16px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--bg-card);
+  }
+  .node .label{
+    font-family:var(--f-label);
+    letter-spacing:.04em;
+    color:var(--ink-faint);
+    font-size:13px;
+  }
+  .node h3{font-size:18px;margin:7px 0 6px;line-height:1.45}
+  .node p{color:var(--ink-dim);font-size:15.5px;line-height:1.85}
+  .arrow{
+    display:grid;
+    place-items:center;
+    color:var(--gold);
+    font-family:var(--f-mono);
+    font-size:22px;
+  }
+
+  .table{
+    overflow-x:auto;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--bg-card);
+  }
+  table{width:100%;border-collapse:collapse;min-width:640px}
+  th,td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+  th{font-family:var(--f-body);font-size:15px;letter-spacing:0;color:var(--gold);background:rgba(255,215,0,.06);font-weight:800}
+  td{font-size:15.5px;color:var(--ink-dim);line-height:1.85}
+  td b{color:var(--ink)}
+  tr:last-child td{border-bottom:none}
+
+  .pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    min-height:30px;
+    padding:4px 10px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:rgba(255,255,255,.03);
+    color:var(--ink-dim);
+    font-family:var(--f-mono);
+    font-size:13px;
+  }
+  .pill.gold{border-color:rgba(255,215,0,.35);color:var(--gold);background:rgba(255,215,0,.07)}
+  .pill.teal{border-color:rgba(56,212,255,.35);color:var(--teal);background:rgba(56,212,255,.07)}
+  .pill.green{border-color:rgba(127,242,177,.35);color:var(--green);background:rgba(127,242,177,.07)}
+
+  .note{
+    margin-top:18px;
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-left:3px solid var(--gold);
+    border-radius:8px;
+    padding:14px 16px;
+  }
+  .note .b{font-family:var(--f-mono);color:var(--gold);font-size:18px;line-height:1;font-weight:700}
+  .note p{font-size:15.5px;color:var(--ink-dim);line-height:1.9}
+  .note p b{color:var(--ink)}
+
+  .danger{
+    background:rgba(255,90,20,.07);
+    border:1px solid rgba(255,90,20,.28);
+    border-left:3px solid var(--red);
+    border-radius:8px;
+    padding:14px 16px;
+    color:var(--ink-dim);
+    font-size:15.5px;
+    line-height:1.9;
+  }
+  .danger b{color:var(--ink)}
+
+  .admin-proof{
+    display:grid;
+    gap:14px;
+    margin-top:14px;
+  }
+  .admin-proof-main{
+    display:grid;
+    grid-template-columns:minmax(260px,.86fr) minmax(0,1fr);
+    gap:18px;
+    align-items:center;
+    padding:18px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:linear-gradient(150deg,var(--bg-card),#14100f);
+  }
+  .phone-frame{
+    max-width:310px;
+    margin:0 auto;
+    padding:8px;
+    border:1px solid rgba(255,215,0,.22);
+    border-radius:20px;
+    background:#080b13;
+    box-shadow:0 18px 42px rgba(0,0,0,.34);
+  }
+  .phone-frame img{
+    display:block;
+    width:100%;
+    aspect-ratio:9/16;
+    object-fit:cover;
+    object-position:top;
+    border-radius:14px;
+    background:#090b12;
+  }
+  .proof-copy .label{
+    display:inline-flex;
+    margin-bottom:10px;
+    color:var(--gold);
+    font-family:var(--f-mono);
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.06em;
+  }
+  .proof-copy h3{
+    margin:0 0 8px;
+    font-size:clamp(20px,4vw,27px);
+    line-height:1.45;
+  }
+  .proof-copy p{
+    margin:0 0 12px;
+    color:var(--ink-dim);
+    font-size:15.5px;
+    line-height:1.9;
+  }
+  .proof-points{
+    display:grid;
+    gap:8px;
+    margin-top:12px;
+  }
+  .proof-point{
+    display:grid;
+    grid-template-columns:72px minmax(0,1fr);
+    gap:10px;
+    padding:10px 12px;
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:8px;
+    background:rgba(255,255,255,.035);
+    color:var(--ink-dim);
+    font-size:14.5px;
+    line-height:1.75;
+  }
+  .proof-point b{
+    color:var(--ink);
+  }
+  .proof-flow{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:14px;
+  }
+  .proof-card{
+    display:grid;
+    gap:12px;
+    align-content:start;
+    padding:16px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--bg-card);
+  }
+  .proof-card .phone-frame{
+    max-width:220px;
+    padding:6px;
+    border-radius:16px;
+  }
+  .proof-card .phone-frame img{
+    border-radius:11px;
+  }
+  .proof-card h3{
+    margin:0;
+    color:var(--ink);
+    font-size:17px;
+    line-height:1.45;
+  }
+  .proof-card p{
+    margin:0;
+    color:var(--ink-dim);
+    font-size:14.5px;
+    line-height:1.8;
+  }
+  .proof-card .tag{
+    color:var(--teal);
+    font-family:var(--f-mono);
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.04em;
+  }
+
+  .steps{counter-reset:step;display:grid;gap:12px}
+  .step{
+    counter-increment:step;
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    gap:14px;
+    align-items:flex-start;
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:16px;
+  }
+  .step::before{
+    content:counter(step);
+    display:grid;
+    place-items:center;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--red),var(--gold));
+    color:#1d0900;
+    font-family:var(--f-mono);
+    font-weight:700;
+  }
+  .step h3{font-size:18px;margin-bottom:4px;line-height:1.45}
+  .step p{color:var(--ink-dim);font-size:15.5px;line-height:1.9}
+
+  footer{margin-top:56px;padding-top:28px;border-top:1px solid var(--line);text-align:center}
+  footer .share-status{
+    max-width:560px;
+    margin:0 auto;
+    padding:12px 14px;
+    border:1px solid rgba(255,215,0,.26);
+    border-radius:8px;
+    background:rgba(255,215,0,.06);
+    margin-top:12px;
+    color:var(--ink-dim);
+    font-size:14px;
+    line-height:1.8;
+    text-align:left;
+  }
+  footer .share-status b{color:var(--gold)}
+  footer .leak-note{
+    max-width:560px;
+    margin:14px auto 0;
+    padding:12px 14px;
+    border:1px solid rgba(255,90,20,.32);
+    border-left:3px solid var(--red);
+    border-radius:8px;
+    background:rgba(255,90,20,.07);
+    color:var(--ink-dim);
+    font-size:14px;
+    line-height:1.8;
+    text-align:left;
+  }
+  footer .leak-note b{color:var(--ink)}
+  footer small{display:block;margin-top:12px;color:var(--ink-faint);font-family:var(--f-mono);font-size:11px;letter-spacing:.04em}
+
+  @media(max-width:700px){
+    body{line-height:1.85;padding-bottom:48px}
+    .wrap{padding:0 18px}
+    header{padding:44px 16px 26px}
+    header h1{font-size:clamp(30px,10vw,46px)}
+    header .sub{font-size:15px;margin-top:14px}
+    header .date{font-size:13px;padding:7px 14px;flex-wrap:wrap;justify-content:center}
+    section{padding-top:40px}
+    .sec-head{gap:10px;margin-bottom:18px}
+    .sec-head .en{display:none}
+    .grid3,.grid2,.flow{grid-template-columns:1fr;gap:12px}
+    .arrow{display:none}
+    .admin-proof-main,.proof-flow{grid-template-columns:1fr;gap:12px}
+    .admin-proof-main{padding:14px}
+    .phone-frame{max-width:270px}
+    .proof-card .phone-frame{max-width:230px}
+    .proof-point{grid-template-columns:1fr;gap:4px}
+    .card,.lead-card{padding:20px 18px;border-radius:8px}
+    .step{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">Backend Role Brief</div>
+  <h1>BATTLE FES<span>バックエンドの役割</span></h1>
+  <div class="sub">演者向けに、投票の裏側で何をしているかをまとめた資料です。</div>
+  <div class="date"><b>2026.07.18</b>（土） · INTERNAL BRIEF</div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <div class="sec-head">
+      <span class="no">01</span><h2>バックエンドの役割</h2><span class="en">PURPOSE</span>
+    </div>
+    <div class="lead-card">
+      <div class="big">投票を受け取り、<br><b>同じ基準で結果に反映する</b>ための仕組みです。</div>
+      <p>リスナーの投票、個人賞、コメント、キーワード欄を1件の記録として扱い、確認・集計・表示までを裏側でつなぎます。</p>
+    </div>
+    <div class="grid3" style="margin-top:14px">
+      <div class="card">
+        <h3>受け取る</h3>
+        <p>投票先、個人賞、コメント、イベント感想をまとめて記録します。</p>
+      </div>
+      <div class="card">
+        <h3>確認する</h3>
+        <p>対象、重複、キーワード判定を確認し、有効な投票だけを結果に入れます。</p>
+      </div>
+      <div class="card">
+        <h3>残して見せる</h3>
+        <p>総合、個人賞、コメント、投票ログに分け、後から確認できる形にします。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="no">02</span><h2>投票から結果まで</h2><span class="en">RESULT FLOW</span>
+    </div>
+    <div class="lead-card">
+      <div class="big">届いた投票は、<br><b>確認後に点数とコメントへ分かれます。</b></div>
+      <p>細かい投票ルールは既存資料で確認します。この資料では、裏側でどの順番に処理されるかだけを説明します。</p>
+    </div>
+    <div class="flow" style="margin-top:14px">
+      <div class="node">
+        <div class="label">STEP 1</div>
+        <h3>送信内容を記録</h3>
+        <p>チーム投票、個人賞、コメント、キーワード欄を同じ投票IDで残します。</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node">
+        <div class="label">STEP 2</div>
+        <h3>確認して集計</h3>
+        <p>存在する対象か、重複していないかを確認し、投票ポイントへ変換します。</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node">
+        <div class="label">STEP 3</div>
+        <h3>画面へ表示</h3>
+        <p>総合、個人賞、イベント感想、賞別コメント、投票ログに分けます。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="no">03</span><h2>ライブスコアの計算</h2><span class="en">LIVE SCORE</span>
+    </div>
+    <div class="lead-card">
+      <div class="big">ライブスコアは、<br><b>加算分を戻して実ポイントにします。</b></div>
+      <p>枠内月間推しPtに加算分が含まれている場合、その加算％を使って元のポイントに戻します。</p>
+    </div>
+    <div class="grid3" style="margin-top:14px">
+      <div class="card">
+        <h3>加算％を倍率にする</h3>
+        <p>10%加算なら、倍率は <b>1 + 10 / 100 = 1.10</b> です。</p>
+      </div>
+      <div class="card">
+        <h3>対象ポイントを割る</h3>
+        <p>例: <b>2200PT ÷ 1.10 = 2000PT</b>。計算後は100PT単位で丸め、ライブスコアとして扱います。</p>
+      </div>
+      <div class="card">
+        <h3>記入について</h3>
+        <p>入力は各チームリーダーが行います。メンバーの皆さんは何も記入しなくて大丈夫です。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="no">04</span><h2>管理画面で見えるもの</h2><span class="en">ADMIN VIEW</span>
+    </div>
+    <div class="lead-card">
+      <div class="big">管理画面では、<br><b>集計・入力・コメント・ログ</b>を分けて確認します。</div>
+      <p>ログイン情報はコアメンバー3名のみで管理します。演者向けには画面例だけを共有します。</p>
+    </div>
+    <div class="admin-proof">
+      <div class="admin-proof-main">
+        <div class="phone-frame">
+          <img src="/materials/images/admin-overall.png" alt="総合スコアの集計画面">
+        </div>
+        <div class="proof-copy">
+          <span class="label">MAIN DASHBOARD</span>
+          <h3>最終的に見るのは、チーム別の総合スコアです。</h3>
+          <p>投票ポイントとライブスコアを同じ画面で確認します。途中経過・終了後どちらも、全体の状況はここで見ます。</p>
+          <div class="proof-points">
+            <div class="proof-point"><b>投票</b><span>各チームの投票数と、時間加重・BONUS込みの投票ポイント。</span></div>
+            <div class="proof-point"><b>ライブ</b><span>枠内月間推しPtから戻した実ライブスコア。</span></div>
+            <div class="proof-point"><b>総合</b><span>投票ポイント + ライブスコア。勝敗確認に使う数字。</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="proof-flow">
+        <article class="proof-card">
+          <span class="tag">INPUT</span>
+          <div class="phone-frame">
+            <img src="/materials/images/admin-input.png" alt="ライブスコア入力画面">
+          </div>
+          <h3>ライブスコアを入力する</h3>
+          <p>各メンバーの推しボーナス実％と枠内月間推しPtを入れると、加算分を戻した実ライブスコアに変換します。</p>
+        </article>
+
+        <article class="proof-card">
+          <span class="tag">COMMENTS</span>
+          <div class="phone-frame">
+            <img src="/materials/images/admin-award-comments.png" alt="賞別コメント画面">
+          </div>
+          <h3>コメントを読める形にする</h3>
+          <p>イベント感想と個人賞の投票理由を分け、イベント後に見返しやすい形で残します。</p>
+        </article>
+
+        <article class="proof-card">
+          <span class="tag">AUDIT LOG</span>
+          <div class="phone-frame">
+            <img src="/materials/images/admin-vote-log.png" alt="投票ログ画面">
+          </div>
+          <h3>投票ログで確認する</h3>
+          <p>誰がどこへ投票したか、何ポイントになったか、キーワード欄の判定がどうだったかを確認できます。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="no">05</span><h2>当日の確認ポイント</h2><span class="en">CHECKLIST</span>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div>
+          <h3>投票を取りこぼさない</h3>
+          <p>送られた投票を受け取り、結果に反映できる形に整えます。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h3>同じ基準で扱う</h3>
+          <p>届いた投票を、同じルールに沿って確認・集計します。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h3>後から確認できる形に残す</h3>
+          <p>感想、賞別コメント、投票ログを分けて、イベント後にも見返せる形にします。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="share-status"><b>管理画面のログイン情報:</b> コアメンバー3名のみで管理します。この資料にはログインキー・パスワードは掲載しません。</div>
+    <div class="leak-note"><b>注意:</b> この資料は関係者限りです。URLやスクリーンショットをリスナー向けの案内、SNS、外部チャットへ共有しないでください。</div>
+    <div class="leak-note"><b>イベント終了後:</b> 集計結果・コメントは何らかの形で共有予定です。現時点では、イベント後に閲覧用ログインキーを渡す、または資料にまとめて配布する案を検討しています。</div>
+    <small>© 2026 BATTLE FES 2026 · BACKEND BRIEF</small>
+  </footer>
+
+</main>
+</body>
+</html>

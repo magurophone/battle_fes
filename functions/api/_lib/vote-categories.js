@@ -7,17 +7,17 @@ export const TEAMS = [
   { id: 3, name: "GOLDEN" },
 ];
 
-// 3チーム × 3名 = 9名。本番前に実名へ差し替え。
+// 3チーム × 3名 = 9名。リーダーは全チーム3番手。
 export const MEMBERS = [
   { id: 1, teamId: 1, name: "CRIMSON メンバー1" },
   { id: 2, teamId: 1, name: "CRIMSON メンバー2" },
-  { id: 3, teamId: 1, name: "CRIMSON メンバー3" },
+  { id: 3, teamId: 1, name: "まぐろふぉん" },
   { id: 4, teamId: 2, name: "NOVA メンバー1" },
   { id: 5, teamId: 2, name: "NOVA メンバー2" },
-  { id: 6, teamId: 2, name: "NOVA メンバー3" },
+  { id: 6, teamId: 2, name: "りんか🔔" },
   { id: 7, teamId: 3, name: "GOLDEN メンバー1" },
   { id: 8, teamId: 3, name: "GOLDEN メンバー2" },
-  { id: 9, teamId: 3, name: "GOLDEN メンバー3" },
+  { id: 9, teamId: 3, name: "iran痔" },
 ];
 
 const TEAM_IDS = TEAMS.map((t) => t.id);

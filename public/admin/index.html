@@ -66,7 +66,7 @@
       margin-bottom: 22px;
       padding: 20px 22px;
       border: 1px solid var(--border);
-      border-radius: 24px;
+      border-radius: 8px;
       background:
         radial-gradient(circle at top right, rgba(56, 212, 255, 0.16), transparent 34%),
         radial-gradient(circle at top left, rgba(255, 224, 64, 0.1), transparent 26%),
@@ -93,7 +93,7 @@
     .panel {
       margin-bottom: 18px;
       padding: 18px 20px;
-      border-radius: 20px;
+      border-radius: 8px;
       border: 1px solid var(--border);
       background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
@@ -140,23 +140,26 @@
       text-transform: uppercase;
     }
 
-    input {
+    input,
+    select {
       width: 100%;
       min-width: 0;
       padding: 12px 14px;
       color: var(--text);
       font: inherit;
-      border-radius: 12px;
+      border-radius: 8px;
       border: 1px solid rgba(255, 124, 30, 0.28);
       background: rgba(8, 14, 29, 0.92);
       transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
     }
 
-    input:hover {
+    input:hover,
+    select:hover {
       border-color: rgba(255, 224, 64, 0.4);
     }
 
-    input:focus {
+    input:focus,
+    select:focus {
       outline: none;
       border-color: var(--accent);
       box-shadow: var(--focus-ring);
@@ -171,7 +174,7 @@
       font-weight: 700;
       letter-spacing: 0.05em;
       padding: 10px 16px;
-      border-radius: 999px;
+      border-radius: 8px;
       cursor: pointer;
       transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, color 0.16s ease;
     }
@@ -243,6 +246,72 @@
       color: var(--muted);
     }
 
+    .admin-tabs {
+      display: none;
+    }
+
+    .admin-tab-panel {
+      margin-bottom: 18px;
+    }
+
+    .award-tabs {
+      display: flex;
+      gap: 8px;
+      margin: 0 0 14px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .award-tabs button {
+      flex: 1 1 0;
+      min-width: 132px;
+      min-height: 42px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .award-tabs button[aria-selected="true"] {
+      border-color: transparent;
+      color: #1d0900;
+      background: linear-gradient(135deg, var(--teal), var(--accent2));
+    }
+
+    .comment-log-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin: 0 0 14px;
+      padding: 8px;
+      border: 1px solid rgba(255, 124, 30, 0.24);
+      border-radius: 8px;
+      background: rgba(6, 12, 26, 0.72);
+    }
+
+    .comment-log-tabs button {
+      min-height: 42px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      letter-spacing: 0;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .comment-log-tabs button[aria-selected="true"] {
+      border-color: transparent;
+      color: #1d0900;
+      background: linear-gradient(135deg, var(--teal), var(--accent2));
+    }
+
+    .comment-log-panel {
+      display: none;
+    }
+
+    .comment-log-panel.is-active {
+      display: block;
+    }
+
     .stats-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -252,7 +321,7 @@
 
     .stat-card {
       padding: 14px 16px;
-      border-radius: 16px;
+      border-radius: 8px;
       border: 1px solid rgba(56, 212, 255, 0.18);
       background: rgba(56, 212, 255, 0.06);
     }
@@ -276,7 +345,7 @@
     .category-block {
       margin-bottom: 18px;
       padding: 18px 20px;
-      border-radius: 20px;
+      border-radius: 8px;
       border: 1px solid var(--border);
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015)), rgba(9, 14, 26, 0.92);
       box-shadow: var(--shadow);
@@ -314,7 +383,7 @@
       padding: 8px 18px;
       font-size: 1.35rem;
       letter-spacing: 0.14em;
-      border-radius: 999px;
+      border-radius: 8px;
       background: linear-gradient(135deg, rgba(255,124,30,0.22), rgba(255,224,64,0.10));
       border: 1px solid rgba(255,124,30,0.45);
       color: var(--accent);
@@ -350,12 +419,57 @@
     }
     .meta-grid div { white-space: nowrap; }
 
+    .leader-strip {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      margin: 0 0 14px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 224, 64, 0.2);
+      background: rgba(255, 224, 64, 0.06);
+    }
+
+    .leader-strip.individual {
+      border-color: rgba(56, 212, 255, 0.22);
+      background: rgba(56, 212, 255, 0.06);
+    }
+
+    .leader-kicker {
+      color: var(--accent2);
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+    }
+
+    .leader-strip.individual .leader-kicker {
+      color: var(--teal);
+    }
+
+    .leader-name {
+      min-width: 0;
+      color: var(--text);
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .leader-detail {
+      color: var(--muted);
+      font-size: 0.86rem;
+      text-align: right;
+      white-space: nowrap;
+    }
+
     /* PC: テーブルが横にはみ出した場合のスクロール用ラッパー */
     .table-scroll {
       overflow-x: auto;
       overflow-y: hidden;
       overflow: hidden auto;
-      border-radius: 14px;
+      border-radius: 8px;
       border: 1px solid rgba(255, 255, 255, 0.06);
       background: rgba(255, 255, 255, 0.02);
       margin-bottom: 12px;
@@ -419,7 +533,7 @@
       margin-bottom: 12px;
     }
     .team-group-card {
-      border-radius: 14px;
+      border-radius: 8px;
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.08);
       background: rgba(255, 255, 255, 0.03);
@@ -440,6 +554,287 @@
     .team-group-card table { background: transparent; border: none; }
     .team-group-card th { background: rgba(255,255,255,0.04); }
 
+    .recipient-comment-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .award-comment-section {
+      margin-bottom: 18px;
+    }
+
+    .award-comment-section h3 {
+      margin: 0 0 12px;
+      color: var(--teal);
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 1.25rem;
+      letter-spacing: 0.12em;
+      text-align: center;
+    }
+
+    .comment-filter-bar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px;
+      margin: 0 0 16px;
+    }
+
+    .comment-filter-bar label {
+      margin: 0;
+    }
+
+    .recipient-comment-card {
+      border-radius: 8px;
+      border: 1px solid rgba(56, 212, 255, 0.18);
+      background: rgba(56, 212, 255, 0.05);
+      overflow: hidden;
+    }
+
+    .recipient-comment-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .recipient-comment-header strong {
+      min-width: 0;
+      color: var(--text);
+      overflow-wrap: anywhere;
+    }
+
+    .comment-count {
+      color: var(--muted);
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .recipient-comment-list {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .recipient-comment-item {
+      display: grid;
+      gap: 6px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 224, 64, 0.14);
+      background: rgba(255, 224, 64, 0.05);
+    }
+
+    .recipient-comment-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .award-label {
+      color: var(--teal);
+      font-weight: 700;
+    }
+
+    .recipient-comment-text {
+      color: var(--text);
+      font-size: 0.92rem;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .operation-log-table th,
+    .operation-log-table td {
+      font-size: 0.84rem;
+    }
+
+    .operation-log-keyword,
+    .operation-log-target,
+    .operation-log-point {
+      min-width: 150px;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .operation-log-target {
+      display: grid;
+      gap: 4px;
+    }
+
+    .operation-log-target strong {
+      color: var(--teal);
+      font-size: 0.8rem;
+    }
+
+    .operation-log-target small,
+    .operation-log-point small {
+      display: block;
+      color: var(--muted);
+      font-size: 0.76rem;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .operation-log-point b {
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .keyword-status {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .keyword-status.is-match {
+      color: #04190c;
+      background: var(--ok);
+    }
+
+    .keyword-status.is-mismatch {
+      color: #2a0508;
+      background: var(--danger);
+    }
+
+    .keyword-status.is-empty {
+      color: var(--muted);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .keyword-value {
+      display: block;
+      margin-top: 4px;
+      color: var(--text);
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .live-score-panel .lead strong {
+      color: var(--accent2);
+    }
+
+    .live-score-details {
+      margin-top: 14px;
+    }
+
+    .live-score-details summary {
+      width: fit-content;
+      padding: 9px 14px;
+      border: 1px solid rgba(255, 124, 30, 0.34);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .live-score-details[open] summary {
+      margin-bottom: 14px;
+    }
+
+    .live-score-team-tabs {
+      display: none;
+    }
+
+    .score-team-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 10px;
+      margin: 14px 0 18px;
+    }
+
+    .score-summary-card {
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 224, 64, 0.16);
+      background: rgba(255, 224, 64, 0.06);
+      text-align: center;
+    }
+
+    .score-summary-card strong {
+      display: block;
+      color: var(--muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+    }
+
+    .score-summary-card span {
+      display: block;
+      margin-top: 4px;
+      color: var(--text);
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .live-score-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .live-score-card {
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(56, 212, 255, 0.18);
+      background: rgba(56, 212, 255, 0.05);
+    }
+
+    .live-score-card h3 {
+      display: grid;
+      grid-template-columns: 82px minmax(0, 1fr);
+      align-items: baseline;
+      column-gap: 10px;
+      margin: 0 0 12px;
+      font-family: "Noto Sans JP", system-ui, sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text);
+    }
+
+    .live-score-card h3 .team-tag {
+      width: 82px;
+      text-align: left;
+    }
+
+    .live-score-card h3 .member-name-label {
+      min-width: 0;
+      justify-self: stretch;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .score-input-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .computed-score {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .computed-score strong {
+      color: var(--accent2);
+      font-size: 1.05rem;
+    }
+
     /* 貫通 BONUS バッジ (ポイント列の値の右に固定位置で表示) */
     .bonus-mark {
       display: inline-block;
@@ -450,7 +845,7 @@
       letter-spacing: 0.14em;
       color: #1d0900;
       background: linear-gradient(135deg, var(--accent2), var(--accent));
-      border-radius: 999px;
+      border-radius: 4px;
       vertical-align: middle;
     }
 
@@ -484,7 +879,7 @@
         padding: 12px 14px;
         background: rgba(255, 255, 255, 0.04);
         border: 1px solid rgba(255, 124, 30, 0.18);
-        border-radius: 12px;
+        border-radius: 8px;
       }
       .table-scroll tr:last-child {
         margin-bottom: 0;
@@ -554,11 +949,117 @@
         padding: 20px 12px 48px;
       }
 
+      .admin-tabs {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        display: flex;
+        gap: 8px;
+        margin: 0 0 14px;
+        padding: 8px;
+        overflow-x: auto;
+        border: 1px solid rgba(255, 124, 30, 0.24);
+        border-radius: 8px;
+        background: rgba(6, 12, 26, 0.94);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .admin-tabs button {
+        flex: 0 0 auto;
+        width: auto;
+        min-height: 42px;
+        padding: 9px 14px;
+        font-size: 0.86rem;
+        letter-spacing: 0;
+        white-space: nowrap;
+      }
+
+      .admin-tabs button[aria-selected="true"] {
+        border-color: transparent;
+        color: #1d0900;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+      }
+
+      .award-tabs {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .award-tabs button {
+        min-width: 0;
+        width: 100%;
+        padding: 8px 6px;
+        font-size: 0.78rem;
+        line-height: 1.2;
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+
+      .comment-log-tabs {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .comment-log-tabs button {
+        min-width: 0;
+        padding: 8px 6px;
+        font-size: 0.78rem;
+        line-height: 1.2;
+      }
+
+      .leader-strip {
+        grid-template-columns: 1fr;
+        gap: 4px;
+        text-align: center;
+      }
+
+      .leader-detail {
+        text-align: center;
+      }
+
+      .admin-tab-panel {
+        display: none;
+      }
+
+      .admin-tab-panel.is-active {
+        display: block;
+      }
+
+      .live-score-details summary {
+        display: none;
+      }
+
+      .live-score-team-tabs {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin: 0 0 12px;
+      }
+
+      .live-score-team-tabs button {
+        width: 100%;
+        min-height: 42px;
+        padding: 8px 6px;
+        font-size: 0.78rem;
+        letter-spacing: 0;
+      }
+
+      .live-score-team-tabs button[aria-pressed="true"] {
+        border-color: transparent;
+        color: #1d0900;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+      }
+
+      .score-team-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
       .hero,
       .panel,
       .category-block {
         padding: 16px;
-        border-radius: 18px;
+        border-radius: 8px;
       }
 
       .password-row,
@@ -569,6 +1070,10 @@
       .toggle-password-btn,
       .admin-actions button {
         width: 100%;
+      }
+
+      .score-input-grid {
+        grid-template-columns: 1fr;
       }
 
       th,
@@ -598,52 +1103,106 @@
       </div>
     </section>
 
-    <section id="adminBar" class="panel row hidden">
-      <h2>管理操作</h2>
-      <div class="admin-actions">
-        <button type="button" class="primary" onclick="loadAdmin()">再読み込み</button>
-        <button type="button" class="danger" onclick="resetVotes()">投票をリセット</button>
-        <button type="button" onclick="logout()">ログアウト</button>
-      </div>
-    </section>
-
     <div class="row">
       <span id="statusText" class="status" role="status" aria-live="polite"></span>
     </div>
 
-    <section class="panel testmode row">
-      <h2>テストモード</h2>
-      <p class="lead">実投票画面の投票UIにテスト表示を反映します。APIの挙動は変えず、表示だけを切り替えます。</p>
-      <div class="admin-actions">
-        <button type="button" id="testModeToggleBtn" onclick="toggleTestMode()">テストモード OFF</button>
-        <span id="testModeStatus" class="status"></span>
-      </div>
-    </section>
-
     <main id="dashboard" class="hidden">
-      <section class="stats-row">
-        <div class="stat-card">
-          <strong>投票状態</strong>
-          <span id="voteStatus">-</span>
-        </div>
+      <nav class="admin-tabs" aria-label="管理画面の表示切り替え">
+        <button type="button" data-admin-tab="overall" aria-selected="true" onclick="activateAdminTab('overall')">総合</button>
+        <button type="button" data-admin-tab="input" aria-selected="false" onclick="activateAdminTab('input')">入力</button>
+        <button type="button" data-admin-tab="individual" aria-selected="false" onclick="activateAdminTab('individual')">個人賞</button>
+        <button type="button" data-admin-tab="logs" aria-selected="false" onclick="activateAdminTab('logs')">コメント/ログ</button>
+        <button type="button" data-admin-tab="settings" aria-selected="false" onclick="activateAdminTab('settings')">設定</button>
+      </nav>
+
+      <section class="admin-tab-panel" data-admin-tab-panel="settings">
+        <section id="adminBar" class="panel row hidden">
+          <h2>管理操作</h2>
+          <div class="admin-actions">
+            <button type="button" class="primary" onclick="loadAdmin()">再読み込み</button>
+            <button type="button" class="danger" onclick="resetVotes()">投票をリセット</button>
+            <button type="button" onclick="logout()">ログアウト</button>
+          </div>
+        </section>
+
+        <section class="panel testmode row">
+          <h2>テストモード</h2>
+          <p class="lead">実投票画面の投票UIにテスト表示を反映します。管理者ログイン済みの同じブラウザでは、投票開始前のテスト送信も許可されます。</p>
+          <div class="admin-actions">
+            <button type="button" id="testModeToggleBtn" onclick="toggleTestMode()">テストモード OFF</button>
+            <span id="testModeStatus" class="status"></span>
+          </div>
+        </section>
       </section>
 
-      <div id="categoriesWrap"></div>
+      <section class="admin-tab-panel is-active" data-admin-tab-panel="overall">
+        <section class="stats-row">
+          <div class="stat-card">
+            <strong>投票状態</strong>
+            <span id="voteStatus">-</span>
+          </div>
+        </section>
+        <div id="overallCategoryWrap"></div>
+      </section>
 
-      <section class="panel">
-        <h2>イベント感想</h2>
-        <div class="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>時刻</th>
-                <th>投票者</th>
-                <th>コメント</th>
-              </tr>
-            </thead>
-            <tbody id="eventImpressionsBody"></tbody>
-          </table>
+      <section class="admin-tab-panel" data-admin-tab-panel="input">
+        <section class="panel live-score-panel">
+          <h2>ライブスコア入力</h2>
+          <p class="lead">
+            各人の <strong>推しボーナスの加算％</strong> と <strong>枠内月間推しPtの（）内部分</strong> を入力します。
+            実ライブスコアは「枠内月間推しPt ÷ ((100 + 加算％) / 100)」で自動計算します。
+          </p>
+          <div id="liveScoreSummary" class="score-team-summary"></div>
+          <details id="liveScoreDetails" class="live-score-details">
+            <summary>ライブスコア入力欄</summary>
+            <div id="liveScoreTeamTabs" class="live-score-team-tabs" aria-label="ライブスコア入力チーム切り替え"></div>
+            <form id="liveScoreForm" onsubmit="saveLiveScores(event)">
+              <div id="liveScoreInputs" class="live-score-grid"></div>
+              <div class="admin-actions">
+                <button type="submit" class="primary">ライブスコアを保存</button>
+                <button type="button" onclick="resetLiveScoreInputs()">入力を戻す</button>
+              </div>
+            </form>
+          </details>
+        </section>
+      </section>
+
+      <section class="admin-tab-panel" data-admin-tab-panel="individual">
+        <div id="individualAwardTabs" class="award-tabs" aria-label="個人賞の表示切り替え"></div>
+        <div id="individualCategoriesWrap"></div>
+      </section>
+
+      <section class="admin-tab-panel" data-admin-tab-panel="logs">
+        <div class="comment-log-tabs" aria-label="コメントとログの表示切り替え">
+          <button type="button" data-comment-log-tab="event" aria-selected="true" onclick="activateCommentLogTab('event')">イベント感想</button>
+          <button type="button" data-comment-log-tab="awards" aria-selected="false" onclick="activateCommentLogTab('awards')">賞別コメント</button>
+          <button type="button" data-comment-log-tab="audit" aria-selected="false" onclick="activateCommentLogTab('audit')">投票ログ</button>
         </div>
+
+        <section class="comment-log-panel is-active" data-comment-log-panel="event">
+          <section class="panel">
+            <h2>イベント感想</h2>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>時刻</th>
+                    <th>投票者</th>
+                    <th>コメント</th>
+                  </tr>
+                </thead>
+                <tbody id="eventImpressionsBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+        <section class="comment-log-panel" data-comment-log-panel="awards">
+          <div id="awardCommentsWrap"></div>
+        </section>
+        <section class="comment-log-panel" data-comment-log-panel="audit">
+          <div id="operationLogWrap"></div>
+        </section>
       </section>
     </main>
   </div>
@@ -651,8 +1210,50 @@
   <script>
     const TEST_MODE_KEY = "battlefes_test_mode";
     const TOKEN_KEY = "battlefes_admin_token";
+    const DEFAULT_ADMIN_TAB = "overall";
 
     let configCache = { categories: [], teams: [], members: [] };
+    let categoriesDataCache = {};
+    let voteStatusCache = "waiting";
+    let liveScoresCache = { memberScores: {}, teamScores: {}, totalLiveScore: 0 };
+    let liveScoresDraft = null;
+    let liveScoreActiveTeamId = null;
+    let activeIndividualCategoryId = null;
+    let commentMemberFilterId = "all";
+    let activeCommentLogTab = "event";
+
+    function activateAdminTab(tabId = DEFAULT_ADMIN_TAB) {
+      const buttons = Array.from(document.querySelectorAll("[data-admin-tab]"));
+      const panels = Array.from(document.querySelectorAll("[data-admin-tab-panel]"));
+      const hasPanel = panels.some((panel) => panel.getAttribute("data-admin-tab-panel") === tabId);
+      const nextTab = hasPanel ? tabId : DEFAULT_ADMIN_TAB;
+
+      buttons.forEach((button) => {
+        const isActive = button.getAttribute("data-admin-tab") === nextTab;
+        button.setAttribute("aria-selected", isActive ? "true" : "false");
+      });
+
+      panels.forEach((panel) => {
+        panel.classList.toggle("is-active", panel.getAttribute("data-admin-tab-panel") === nextTab);
+      });
+    }
+
+    function activateCommentLogTab(tabId = "event") {
+      const buttons = Array.from(document.querySelectorAll("[data-comment-log-tab]"));
+      const panels = Array.from(document.querySelectorAll("[data-comment-log-panel]"));
+      const hasPanel = panels.some((panel) => panel.getAttribute("data-comment-log-panel") === tabId);
+      const nextTab = hasPanel ? tabId : "event";
+      activeCommentLogTab = nextTab;
+
+      buttons.forEach((button) => {
+        const isActive = button.getAttribute("data-comment-log-tab") === nextTab;
+        button.setAttribute("aria-selected", isActive ? "true" : "false");
+      });
+
+      panels.forEach((panel) => {
+        panel.classList.toggle("is-active", panel.getAttribute("data-comment-log-panel") === nextTab);
+      });
+    }
 
     function setStatus(message) {
       document.getElementById("statusText").textContent = message || "";
@@ -664,10 +1265,13 @@
       document.getElementById("dashboard").classList.toggle("hidden", !isLoggedIn);
 
       if (!isLoggedIn) {
+        activateAdminTab(DEFAULT_ADMIN_TAB);
         const input = document.getElementById("adminToken");
         input.type = "password";
         input.value = "";
         syncPasswordToggleUI(false);
+      } else if (!document.querySelector(".admin-tab-panel.is-active")) {
+        activateAdminTab(DEFAULT_ADMIN_TAB);
       }
     }
 
@@ -807,6 +1411,221 @@
       }[char]));
     }
 
+    function parseScoreNumber(value) {
+      if (value == null || value === "") return 0;
+      const normalized = String(value)
+        .trim()
+        .replace(/[０-９]/g, (ch) => String(ch.charCodeAt(0) - 0xff10))
+        .replace(/[．]/g, ".")
+        .replace(/[，、]/g, ",")
+        .replace(/[,%％\s]/g, "");
+      const n = Number(normalized);
+      return Number.isFinite(n) && n >= 0 ? n : 0;
+    }
+
+    function calcLiveScoreValue(oshiBonusPercent, monthlyOshiPointInFrame) {
+      const addPercent = parseScoreNumber(oshiBonusPercent);
+      const monthlyPoint = roundToHundred(parseScoreNumber(monthlyOshiPointInFrame));
+      if (monthlyPoint <= 0) return 0;
+      return roundToHundred(monthlyPoint / (1 + addPercent / 100));
+    }
+
+    function roundToHundred(value) {
+      const n = Number(value);
+      if (!Number.isFinite(n) || n <= 0) return 0;
+      return Math.round(n / 100) * 100;
+    }
+
+    function formatScore(value) {
+      const n = Number(value);
+      return (Number.isFinite(n) ? Math.round(n) : 0).toLocaleString();
+    }
+
+    function scoreInputValue(value) {
+      const n = Number(value);
+      return Number.isFinite(n) && n > 0 ? String(value) : "";
+    }
+
+    function summarizeLiveScores(memberScores) {
+      const normalizedMembers = {};
+      const teamScores = Object.fromEntries(configCache.teams.map((team) => [team.id, 0]));
+      let totalLiveScore = 0;
+
+      configCache.members.forEach((member) => {
+        const source = (memberScores && (memberScores[member.id] || memberScores[String(member.id)])) || {};
+        const oshiBonusPercent = parseScoreNumber(source.oshiBonusPercent);
+        const monthlyOshiPointInFrame = roundToHundred(parseScoreNumber(source.monthlyOshiPointInFrame));
+        const liveScore = calcLiveScoreValue(oshiBonusPercent, monthlyOshiPointInFrame);
+        normalizedMembers[member.id] = {
+          memberId: Number(member.id),
+          teamId: Number(member.teamId),
+          oshiBonusPercent,
+          monthlyOshiPointInFrame,
+          liveScore,
+        };
+        teamScores[member.teamId] = (teamScores[member.teamId] || 0) + liveScore;
+        totalLiveScore += liveScore;
+      });
+
+      return { memberScores: normalizedMembers, teamScores, totalLiveScore };
+    }
+
+    function isMobileLayout() {
+      return window.matchMedia && window.matchMedia("(max-width: 720px)").matches;
+    }
+
+    function ensureLiveScoreActiveTeam() {
+      const teams = Array.isArray(configCache.teams) ? configCache.teams : [];
+      const valid = teams.some((team) => Number(team.id) === Number(liveScoreActiveTeamId));
+      if (!valid) liveScoreActiveTeamId = teams.length ? Number(teams[0].id) : null;
+      return liveScoreActiveTeamId;
+    }
+
+    function liveScoreSourceMemberScores() {
+      if (liveScoresDraft && liveScoresDraft.memberScores) return liveScoresDraft.memberScores;
+      if (liveScoresCache && liveScoresCache.memberScores) return liveScoresCache.memberScores;
+      return {};
+    }
+
+    function syncVisibleLiveScoreInputsToDraft() {
+      const memberScores = { ...liveScoreSourceMemberScores() };
+      document.querySelectorAll(".live-score-card[data-member-id]").forEach((card) => {
+        const memberId = Number(card.getAttribute("data-member-id"));
+        if (!Number.isFinite(memberId)) return;
+        const member = configCache.members.find((entry) => Number(entry.id) === memberId);
+        const percentInput = card.querySelector('[data-score-field="oshiBonusPercent"]');
+        const pointInput = card.querySelector('[data-score-field="monthlyOshiPointInFrame"]');
+        memberScores[memberId] = {
+          memberId,
+          teamId: member ? Number(member.teamId) : Number(memberScores[memberId] && memberScores[memberId].teamId),
+          oshiBonusPercent: parseScoreNumber(percentInput && percentInput.value),
+          monthlyOshiPointInFrame: parseScoreNumber(pointInput && pointInput.value),
+        };
+      });
+      liveScoresDraft = summarizeLiveScores(memberScores);
+      return liveScoresDraft;
+    }
+
+    function collectLiveScoreInputs() {
+      return syncVisibleLiveScoreInputsToDraft();
+    }
+
+    function renderLiveScoreTeamTabs() {
+      const wrap = document.getElementById("liveScoreTeamTabs");
+      if (!wrap) return;
+      const activeTeamId = ensureLiveScoreActiveTeam();
+      wrap.innerHTML = configCache.teams.map((team) => {
+        const id = Number(team.id);
+        const active = id === Number(activeTeamId);
+        return `<button type="button" aria-pressed="${active ? "true" : "false"}" onclick="setLiveScoreTeam(${id})">${escapeHtml(team.name)}</button>`;
+      }).join("");
+    }
+
+    function setLiveScoreTeam(teamId) {
+      syncVisibleLiveScoreInputsToDraft();
+      liveScoreActiveTeamId = Number(teamId);
+      renderLiveScorePanel(liveScoresCache, { preserveDraft: true });
+    }
+
+    function resetLiveScoreInputs() {
+      liveScoresDraft = summarizeLiveScores(liveScoresCache && liveScoresCache.memberScores ? liveScoresCache.memberScores : {});
+      renderLiveScorePanel(liveScoresCache, { preserveDraft: true });
+      setStatus("ライブスコア入力を保存済みの値に戻しました");
+    }
+
+    function renderLiveScoreSummary(liveScores) {
+      const summary = summarizeLiveScores(liveScores && liveScores.memberScores ? liveScores.memberScores : {});
+      const el = document.getElementById("liveScoreSummary");
+      if (!el) return;
+      const teamCards = configCache.teams.map((team) => {
+        const score = summary.teamScores[team.id] || summary.teamScores[String(team.id)] || 0;
+        return `<div class="score-summary-card">
+          <strong>${escapeHtml(team.name)}</strong>
+          <span>${formatScore(score)}</span>
+        </div>`;
+      }).join("");
+      el.innerHTML = `${teamCards}<div class="score-summary-card">
+        <strong>合計ライブスコア</strong>
+        <span>${formatScore(summary.totalLiveScore)}</span>
+      </div>`;
+    }
+
+    function renderLiveScorePanel(liveScores, options = {}) {
+      const details = document.getElementById("liveScoreDetails");
+      const keepOpen = details ? details.open : false;
+      liveScoresCache = liveScores || { memberScores: {}, teamScores: {}, totalLiveScore: 0 };
+      if (!options.preserveDraft || !liveScoresDraft) {
+        liveScoresDraft = summarizeLiveScores(liveScoresCache.memberScores || {});
+      }
+      renderLiveScoreSummary(liveScoresDraft);
+      renderLiveScoreTeamTabs();
+
+      if (details) details.open = isMobileLayout() || keepOpen;
+
+      const wrap = document.getElementById("liveScoreInputs");
+      if (!wrap) return;
+      const storedMembers = liveScoresDraft.memberScores || {};
+      const activeTeamId = ensureLiveScoreActiveTeam();
+      const members = configCache.members.slice().filter((member) => {
+        return !isMobileLayout() || Number(member.teamId) === Number(activeTeamId);
+      }).sort((a, b) => {
+        const teamDiff = Number(a.teamId) - Number(b.teamId);
+        return teamDiff || Number(a.id) - Number(b.id);
+      });
+
+      wrap.innerHTML = members.map((member) => {
+        const entry = storedMembers[member.id] || storedMembers[String(member.id)] || {};
+        const liveScore = calcLiveScoreValue(entry.oshiBonusPercent, entry.monthlyOshiPointInFrame);
+        return `<section class="live-score-card" data-member-id="${Number(member.id)}">
+          <h3>${teamTagHtml(member.teamId)}<span class="member-name-label">${escapeHtml(member.name)}</span></h3>
+          <div class="score-input-grid">
+            <label>
+              推しボーナス加算％
+              <input type="text" inputmode="decimal" data-score-field="oshiBonusPercent" value="${escapeHtml(scoreInputValue(entry.oshiBonusPercent))}" placeholder="例: 25" oninput="updateLiveScorePreview()">
+            </label>
+            <label>
+              枠内月間推しPt（ ）内
+              <input type="text" inputmode="numeric" data-score-field="monthlyOshiPointInFrame" value="${escapeHtml(scoreInputValue(entry.monthlyOshiPointInFrame))}" placeholder="例: 1000" oninput="updateLiveScorePreview()">
+            </label>
+          </div>
+          <div class="computed-score">実ライブスコア: <strong data-live-score-preview>${formatScore(liveScore)}</strong></div>
+        </section>`;
+      }).join("");
+    }
+
+    function updateLiveScorePreview() {
+      const liveScores = collectLiveScoreInputs();
+      document.querySelectorAll(".live-score-card[data-member-id]").forEach((card) => {
+        const memberId = Number(card.getAttribute("data-member-id"));
+        const entry = liveScores.memberScores[memberId] || {};
+        const preview = card.querySelector("[data-live-score-preview]");
+        if (preview) preview.textContent = formatScore(entry.liveScore);
+      });
+      renderLiveScoreSummary(liveScores);
+    }
+
+    async function saveLiveScores(event) {
+      if (event) event.preventDefault();
+      const liveScores = collectLiveScoreInputs();
+      setStatus("ライブスコアを保存中...");
+      try {
+        const data = await api("/api/admin/live-scores", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ memberScores: Object.values(liveScores.memberScores) }),
+        });
+        renderSnapshot(data);
+        setLoggedInUi(true);
+        setStatus("ライブスコアを保存しました");
+      } catch (error) {
+        if (isAuthError(error)) {
+          clearToken();
+          setLoggedInUi(false);
+        }
+        setStatus(error.message);
+      }
+    }
+
     // 日時表示用ヘルパ: 本番は 7/18 の単日イベントなので時刻のみで一意に識別できる
     function formatJstTime(iso) {
       if (!iso) return "-";
@@ -819,10 +1638,11 @@
     }
 
     /* ── 時間加重ポイント計算 (public 側 VOTE POWER と同一仕様) ──
-       受付開始 100PT → 本投票直前 5000PT への線形上昇。
-       VOTE_OPEN / VOTE_CLOSE は functions/api/_lib/vote-store.js と同期必須。 */
+       受付開始 100PT → 本投票開始 5000PT、以後は終了まで 5000PT 固定。
+       VOTE_OPEN / VOTE_CLOSE / VOTE_POINT_MAX は functions/api/_lib/vote-store.js と同期必須。 */
     const VOTE_OPEN_ISO  = "2026-07-18T20:45:00+09:00";
-    const VOTE_CLOSE_ISO = "2026-07-18T22:25:00+09:00";
+    const VOTE_CLOSE_ISO = "2026-07-18T22:30:00+09:00";
+    const VOTE_POINT_MAX_ISO = "2026-07-18T22:15:00+09:00";
     const VP_MIN = 100;
     const VP_MAX = 5000;
 
@@ -831,7 +1651,7 @@
       const t = new Date(iso).getTime();
       if (isNaN(t)) return VP_MIN;
       const open  = new Date(VOTE_OPEN_ISO).getTime();
-      const close = new Date(VOTE_CLOSE_ISO).getTime();
+      const close = new Date(VOTE_POINT_MAX_ISO).getTime();
       if (t <= open)  return VP_MIN;
       if (t >= close) return VP_MAX;
       const progress = (t - open) / (close - open);
@@ -872,9 +1692,103 @@
         const member = configCache.members.find((entry) => Number(entry.id) === Number(candidateId));
         if (!member) return escapeHtml(`member#${candidateId}`);
         // 投票ログ等で文脈にチーム情報が無い場合の表示用にチームタグを併記
-        return `${escapeHtml(member.name)} ${teamTagHtml(member.teamId)}`;
+        return `${teamTagHtml(member.teamId)} ${escapeHtml(member.name)}`;
       }
       return escapeHtml(String(candidateId));
+    }
+
+    function resultHeaderLabel() {
+      return voteStatusCache === "closed" ? "WINNER" : "現在トップ";
+    }
+
+    function buildLeaderEntry(category, orderedIds, counts, totalVotes, pointsByCandidate, isTeamCategory) {
+      const entries = orderedIds.map((id) => {
+        const key = String(id);
+        const votes = Number(counts[id] || counts[key] || 0);
+        const percent = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
+        const votePoint = Number(pointsByCandidate[id] || pointsByCandidate[key] || 0);
+        const liveScore = isTeamCategory
+          ? Number(liveScoresCache.teamScores && (liveScoresCache.teamScores[id] || liveScoresCache.teamScores[key])) || 0
+          : 0;
+        const score = isTeamCategory ? votePoint + liveScore : votes;
+        return { id: Number(id), votes, percent, votePoint, liveScore, score };
+      });
+
+      const hasData = isTeamCategory
+        ? entries.some((entry) => entry.score > 0 || entry.votes > 0)
+        : totalVotes > 0;
+      if (!hasData) return null;
+
+      return entries
+        .slice()
+        .sort((a, b) => b.score - a.score || b.votes - a.votes || a.id - b.id)[0];
+    }
+
+    function renderLeaderStrip(category, orderedIds, counts, totalVotes, pointsByCandidate, isTeamCategory) {
+      const leader = buildLeaderEntry(category, orderedIds, counts, totalVotes, pointsByCandidate, isTeamCategory);
+      const detail = leader
+        ? isTeamCategory
+          ? `総合 ${formatScore(leader.score)}`
+          : `${leader.votes}票 / ${leader.percent}%`
+        : "未集計";
+      const name = leader ? candidateHtml(category, leader.id) : "まだありません";
+      return `
+        <div class="leader-strip ${escapeHtml(category.type || "")}">
+          <div class="leader-kicker">${resultHeaderLabel()}</div>
+          <div class="leader-name">${name}</div>
+          <div class="leader-detail">${escapeHtml(detail)}</div>
+        </div>
+      `;
+    }
+
+    function getIndividualCategories() {
+      return Array.isArray(configCache.categories)
+        ? configCache.categories.filter((category) => category.id !== "team")
+        : [];
+    }
+
+    function ensureActiveIndividualCategory(individualCategories) {
+      const categories = Array.isArray(individualCategories) ? individualCategories : getIndividualCategories();
+      const valid = categories.some((category) => category.id === activeIndividualCategoryId);
+      if (!valid) activeIndividualCategoryId = categories.length ? categories[0].id : null;
+      return activeIndividualCategoryId;
+    }
+
+    function renderIndividualAwardTabs(individualCategories) {
+      const wrap = document.getElementById("individualAwardTabs");
+      if (!wrap) return;
+      const categories = Array.isArray(individualCategories) ? individualCategories : getIndividualCategories();
+      const activeId = ensureActiveIndividualCategory(categories);
+      wrap.innerHTML = categories.map((category) => {
+        const active = category.id === activeId;
+        return `<button type="button" aria-selected="${active ? "true" : "false"}" onclick="activateIndividualAward('${escapeHtml(category.id)}')">${escapeHtml(category.label)}</button>`;
+      }).join("");
+    }
+
+    function renderIndividualAwardPanel(individualCategories, categoriesData) {
+      const wrap = document.getElementById("individualCategoriesWrap");
+      if (!wrap) return;
+      const categories = Array.isArray(individualCategories) ? individualCategories : getIndividualCategories();
+      const activeId = ensureActiveIndividualCategory(categories);
+      const activeCategory = categories.find((category) => category.id === activeId);
+      if (!activeCategory) {
+        wrap.innerHTML = `<section class="panel"><p class="empty">個人賞データがありません</p></section>`;
+        return;
+      }
+      const data = categoriesData || categoriesDataCache || {};
+      wrap.innerHTML = renderCategoryBlock(activeCategory, data[activeCategory.id], { includeLog: false });
+    }
+
+    function renderIndividualAwards(individualCategories, categoriesData) {
+      renderIndividualAwardTabs(individualCategories);
+      renderIndividualAwardPanel(individualCategories, categoriesData);
+    }
+
+    function activateIndividualAward(categoryId) {
+      activeIndividualCategoryId = categoryId;
+      const categories = getIndividualCategories();
+      renderIndividualAwards(categories, categoriesDataCache);
+      syncResponsiveTableLabels(document.getElementById("individualCategoriesWrap"));
     }
 
     // 個人賞専用: チームごとに 3 メンバーをまとめたグループカード列
@@ -933,7 +1847,8 @@
       });
     }
 
-    function renderCategoryBlock(category, payload) {
+    function renderCategoryBlock(category, payload, options = {}) {
+      const includeLog = options.includeLog !== false;
       const results = payload && payload.results ? payload.results : { counts: {}, totalVotes: 0, updatedAt: null };
       const meta = payload && payload.meta ? payload.meta : { totalSubmissions: 0, lastVoteAt: null };
       const voteLog = Array.isArray(payload && payload.voteLog) ? payload.voteLog : [];
@@ -944,18 +1859,16 @@
         ? category.candidateIds
         : Object.keys(counts).map((id) => Number(id));
 
-      // 優勝チーム投票のみ、各候補の投票ポイントを timestamp から再計算
+      // 優勝チーム投票のみ、backend が保存/再集計したポイントを正本として表示
       const isTeamCategory = category.id === "team";
       const pointsByCandidate = {};
       let totalPoints = 0;
       if (isTeamCategory) {
-        for (const id of orderedIds) pointsByCandidate[id] = 0;
-        for (const entry of voteLog) {
-          const cid = Number(entry.candidateId);
-          const pt = calcVotePoint(entry.timestamp);
-          pointsByCandidate[cid] = (pointsByCandidate[cid] || 0) + pt;
-          totalPoints += pt;
+        const storedPoints = results.points || {};
+        for (const id of orderedIds) {
+          pointsByCandidate[id] = Number(storedPoints[id] || storedPoints[String(id)] || 0);
         }
+        totalPoints = Number(results.totalPoints) || Object.values(pointsByCandidate).reduce((sum, value) => sum + value, 0);
       }
 
       const rows = orderedIds.map((id) => {
@@ -963,11 +1876,15 @@
         const percent = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
         if (isTeamCategory) {
           const pts = pointsByCandidate[id] || 0;
+          const liveScore = Number(liveScoresCache.teamScores && (liveScoresCache.teamScores[id] || liveScoresCache.teamScores[String(id)])) || 0;
+          const overallScore = pts + liveScore;
           return `
             <tr>
               <td>${candidateHtml(category, id)}</td>
               <td data-label="投票数">${votes}</td>
               <td data-label="投票ポイント">${pts.toLocaleString()}</td>
+              <td data-label="ライブスコア">${liveScore.toLocaleString()}</td>
+              <td data-label="総合スコア">${overallScore.toLocaleString()}</td>
               <td data-label="割合">${percent}%</td>
             </tr>
           `;
@@ -1004,9 +1921,9 @@
 
       // 「候補」「メンバー」ヘッダーは省略 (第1列の値自体が識別子になる)
       const tableHead = isTeamCategory
-        ? `<tr><th></th><th>投票数</th><th>投票ポイント</th><th>割合</th></tr>`
+        ? `<tr><th></th><th>投票数</th><th>投票ポイント</th><th>ライブスコア</th><th>総合スコア</th><th>割合</th></tr>`
         : `<tr><th></th><th>投票数</th><th>割合</th></tr>`;
-      const tableEmptyCols = isTeamCategory ? 4 : 3;
+      const tableEmptyCols = isTeamCategory ? 6 : 3;
 
       const logHead = isTeamCategory
         ? `<tr><th>時刻</th><th></th><th>投票者</th><th>ポイント</th><th>コメント</th></tr>`
@@ -1014,9 +1931,9 @@
       const logEmptyCols = isTeamCategory ? 5 : 4;
 
       const teamPointRow = isTeamCategory
-        ? `<div><strong>総ポイント:</strong> ${totalPoints.toLocaleString()}</div>
-           <div><strong>ライブスコア:</strong> 未入力</div>
-           <div><strong>総合スコア:</strong> ${totalPoints.toLocaleString()} <small style="color:var(--muted);">(+ライブスコア)</small></div>`
+        ? `<div><strong>投票ポイント合計:</strong> ${totalPoints.toLocaleString()}</div>
+           <div><strong>ライブスコア合計:</strong> ${formatScore(liveScoresCache.totalLiveScore)}</div>
+           <div><strong>総合スコア合計:</strong> ${formatScore(totalPoints + (Number(liveScoresCache.totalLiveScore) || 0))}</div>`
         : "";
 
       // 個人賞 (member) はチーム単位グループカード、それ以外はフラットテーブル
@@ -1028,10 +1945,19 @@
               <tbody>${rows || `<tr><td colspan="${tableEmptyCols}" class="empty">データがありません</td></tr>`}</tbody>
             </table>
           </div>`;
+      const leaderStrip = renderLeaderStrip(
+        category,
+        orderedIds,
+        counts,
+        totalVotes,
+        pointsByCandidate,
+        isTeamCategory
+      );
 
       return `
         <section class="category-block ${escapeHtml(category.type || "")}">
           <h3>${escapeHtml(category.label)}</h3>
+          ${leaderStrip}
           <div class="meta-grid">
             <div><strong>総投票数:</strong> ${totalVotes}</div>
             <div><strong>ユニーク端末:</strong> ${uniqueFingerprints}</div>
@@ -1039,29 +1965,299 @@
             ${teamPointRow}
           </div>
           ${candidateBlock}
-          <details>
-            <summary>投票ログ (${voteLog.length})</summary>
+          ${includeLog ? `<details>
+            <summary>投票コメント (${voteLog.length})</summary>
             <div class="table-scroll">
               <table>
                 <thead>${logHead}</thead>
-                <tbody>${logRows || `<tr><td colspan="${logEmptyCols}" class="empty">ログがありません</td></tr>`}</tbody>
+                <tbody>${logRows || `<tr><td colspan="${logEmptyCols}" class="empty">コメントはまだありません</td></tr>`}</tbody>
               </table>
             </div>
-          </details>
+          </details>` : ""}
         </section>
       `;
     }
 
+    function renderCategoryLogBlock(category, payload) {
+      const voteLog = Array.isArray(payload && payload.voteLog) ? payload.voteLog : [];
+      const isTeamCategory = category.id === "team";
+      const logRows = voteLog.map((entry) => {
+        let ptCell = "";
+        if (isTeamCategory) {
+          const vp = Number.isFinite(Number(entry.votePoint)) ? Number(entry.votePoint) : calcVotePoint(entry.timestamp);
+          const bp = Number(entry.bonusPoint) || 0;
+          const total = vp + bp;
+          const badge = bp > 0 ? '<span class="bonus-mark">BONUS</span>' : "";
+          ptCell = `<td data-label="ポイント">${total.toLocaleString()}${badge}</td>`;
+        }
+        return `
+          <tr>
+            <td data-label="時刻">${escapeHtml(formatJstTime(entry.timestamp))}</td>
+            <td>${candidateHtml(category, entry.candidateId)}</td>
+            <td data-label="投票者">${escapeHtml(entry.voterName || "-")}</td>
+            ${ptCell}
+            <td data-label="コメント">${escapeHtml(entry.comment || "")}</td>
+          </tr>
+        `;
+      }).join("");
+
+      const logHead = isTeamCategory
+        ? `<tr><th>時刻</th><th></th><th>投票者</th><th>ポイント</th><th>コメント</th></tr>`
+        : `<tr><th>時刻</th><th></th><th>投票者</th><th>コメント</th></tr>`;
+      const logEmptyCols = isTeamCategory ? 5 : 4;
+
+      return `
+        <section class="category-block ${escapeHtml(category.type || "")}">
+          <h3>${escapeHtml(category.label)} コメント</h3>
+          <div class="table-scroll">
+            <table>
+              <thead>${logHead}</thead>
+              <tbody>${logRows || `<tr><td colspan="${logEmptyCols}" class="empty">コメントはまだありません</td></tr>`}</tbody>
+            </table>
+          </div>
+        </section>
+      `;
+    }
+
+    function collectAwardMemberComments(category, categoriesData, memberFilterId = "all") {
+      const selectedMemberId = memberFilterId === "all" ? null : Number(memberFilterId);
+      const byMember = new Map();
+      configCache.members
+        .filter((member) => !selectedMemberId || Number(member.id) === selectedMemberId)
+        .forEach((member) => {
+          byMember.set(Number(member.id), { member, comments: [] });
+        });
+
+      const payload = categoriesData && categoriesData[category.id];
+      const voteLog = Array.isArray(payload && payload.voteLog) ? payload.voteLog : [];
+      voteLog.forEach((entry) => {
+        const text = String(entry.comment || "").trim();
+        if (!text) return;
+        const memberId = Number(entry.candidateId);
+        const bucket = byMember.get(memberId);
+        if (!bucket) return;
+        bucket.comments.push({
+          voterName: entry.voterName || "-",
+          timestamp: entry.timestamp || null,
+          comment: text,
+        });
+      });
+
+      byMember.forEach((bucket) => {
+        bucket.comments.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+      });
+      return [...byMember.values()]
+        .filter((bucket) => bucket.comments.length > 0)
+        .sort((a, b) => {
+          const teamDiff = Number(a.member.teamId) - Number(b.member.teamId);
+          return teamDiff || Number(a.member.id) - Number(b.member.id);
+        });
+    }
+
+    function renderAwardCommentCards(category, categoriesData, memberFilterId = "all") {
+      const groups = collectAwardMemberComments(category, categoriesData, memberFilterId);
+      if (!groups.length) return '<p class="empty">コメントはまだありません</p>';
+      return `<div class="recipient-comment-grid">${groups.map(({ member, comments }) => {
+        const items = comments.map((entry) => `
+          <article class="recipient-comment-item">
+            <div class="recipient-comment-meta">
+              <span>${escapeHtml(formatJstTime(entry.timestamp))}</span>
+              <span>${escapeHtml(entry.voterName)}</span>
+            </div>
+            <div class="recipient-comment-text">${escapeHtml(entry.comment)}</div>
+          </article>
+        `).join("");
+        return `
+          <section class="recipient-comment-card" data-member-id="${Number(member.id)}">
+            <div class="recipient-comment-header">
+              <strong>${teamTagHtml(member.teamId)} ${escapeHtml(member.name)}</strong>
+              <span class="comment-count">${comments.length}件</span>
+            </div>
+            <div class="recipient-comment-list">
+              ${items || '<p class="empty">コメントはまだありません</p>'}
+            </div>
+          </section>
+        `;
+      }).join("")}</div>`;
+    }
+
+    function renderAwardCommentSections(categories, categoriesData) {
+      return categories
+        .filter((category) => category.candidateType === "member")
+        .map((category) => `
+          <section class="award-comment-section" data-award-id="${escapeHtml(category.id)}">
+            <h3>${escapeHtml(category.label)}</h3>
+            ${renderAwardCommentCards(category, categoriesData, commentMemberFilterId)}
+          </section>
+        `).join("");
+    }
+
+    function renderCommentMemberFilter() {
+      const options = [
+        '<option value="all">全員</option>',
+        ...configCache.members.map((member) => {
+          const id = String(member.id);
+          const selected = id === String(commentMemberFilterId) ? " selected" : "";
+          return `<option value="${id}"${selected}>${escapeHtml(member.name)} / ${escapeHtml(teamName(member.teamId))}</option>`;
+        }),
+      ].join("");
+      return `
+        <div class="comment-filter-bar">
+          <label for="commentMemberFilter">メンバーで絞り込み</label>
+          <select id="commentMemberFilter" onchange="setCommentMemberFilter(this.value)">
+            ${options}
+          </select>
+        </div>
+      `;
+    }
+
+    function collectOperationVoteLog(categories, categoriesData) {
+      const entries = [];
+      categories.forEach((category) => {
+        const payload = categoriesData && categoriesData[category.id];
+        const voteLog = Array.isArray(payload && payload.voteLog) ? payload.voteLog : [];
+        voteLog.forEach((entry) => {
+          const votePoint = Number.isFinite(Number(entry.votePoint)) ? Number(entry.votePoint) : calcVotePoint(entry.timestamp);
+          const bonusPoint = Number(entry.bonusPoint) || 0;
+          entries.push({
+            category,
+            categoryId: category.id,
+            candidateId: Number(entry.candidateId),
+            voterName: entry.voterName || "-",
+            comment: entry.comment || "",
+            timestamp: entry.timestamp || null,
+            votePoint,
+            bonusPoint,
+            totalPoint: votePoint + bonusPoint,
+            bonusKeywordSubmitted: String(entry.bonusKeywordSubmitted || "").trim(),
+            bonusKeywordMatched: isAuditFlagTrue(entry.bonusKeywordMatched),
+          });
+        });
+      });
+      return entries.sort((a, b) => {
+        const timeDiff = new Date(b.timestamp || 0) - new Date(a.timestamp || 0);
+        if (timeDiff) return timeDiff;
+        return String(a.categoryId).localeCompare(String(b.categoryId));
+      });
+    }
+
+    function isAuditFlagTrue(value) {
+      if (value === true || value === 1 || value === "1") return true;
+      return String(value).toLowerCase() === "true";
+    }
+
+    function bonusKeywordAuditHtml(entry) {
+      const submitted = String(entry.bonusKeywordSubmitted || "").trim();
+      if (!submitted) return '<span class="keyword-status is-empty">未入力</span>';
+      const matched = isAuditFlagTrue(entry.bonusKeywordMatched);
+      if (matched) return '<span class="keyword-status is-match">一致</span>';
+      return `
+        <span class="keyword-status is-mismatch">不一致</span>
+        <span class="keyword-value">${escapeHtml(submitted)}</span>
+      `;
+    }
+
+    function operationTargetHtml(entry) {
+      const comment = String(entry.comment || "").trim();
+      return `
+        <div class="operation-log-target">
+          <strong>${escapeHtml(entry.category.label || entry.categoryId)}</strong>
+          <span>${candidateHtml(entry.category, entry.candidateId)}</span>
+          ${comment ? `<small>${escapeHtml(comment)}</small>` : ""}
+        </div>
+      `;
+    }
+
+    function operationPointHtml(entry) {
+      const detail = entry.bonusPoint > 0
+        ? `投票 ${entry.votePoint.toLocaleString()} / BONUS ${entry.bonusPoint.toLocaleString()}`
+        : `投票 ${entry.votePoint.toLocaleString()}`;
+      const badge = entry.bonusPoint > 0 ? '<span class="bonus-mark">BONUS</span>' : "";
+      return `
+        <div class="operation-log-point">
+          <b>${entry.totalPoint.toLocaleString()}</b>${badge}
+          <small>${detail}</small>
+        </div>
+      `;
+    }
+
+    function renderOperationVoteLogPanel(categories, categoriesData) {
+      const entries = collectOperationVoteLog(categories, categoriesData);
+      const rows = entries.map((entry) => {
+        return `
+          <tr>
+            <td data-label="時刻">${escapeHtml(formatJstTime(entry.timestamp))}</td>
+            <td data-label="投票者">${escapeHtml(entry.voterName || "-")}</td>
+            <td data-label="投票内容">${operationTargetHtml(entry)}</td>
+            <td data-label="ポイント">${operationPointHtml(entry)}</td>
+            <td data-label="キーワード" class="operation-log-keyword">${bonusKeywordAuditHtml(entry)}</td>
+          </tr>
+        `;
+      }).join("");
+
+      return `
+        <section class="panel" id="operationVoteLogPanel">
+          <h2>投票ログ</h2>
+          <div class="table-scroll">
+            <table class="operation-log-table">
+              <thead>
+                <tr>
+                  <th>時刻</th>
+                  <th>投票者</th>
+                  <th>投票内容</th>
+                  <th>ポイント</th>
+                  <th>キーワード</th>
+                </tr>
+              </thead>
+              <tbody id="operationVoteLogBody">
+                ${rows || '<tr><td colspan="5" class="empty">投票ログはまだありません</td></tr>'}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderCommentPanel(categories, categoriesData) {
+      document.getElementById("awardCommentsWrap").innerHTML = `
+        <section class="panel">
+          <h2>賞別コメント</h2>
+          ${renderCommentMemberFilter()}
+          ${renderAwardCommentSections(categories, categoriesData)}
+        </section>
+      `;
+      document.getElementById("operationLogWrap").innerHTML = renderOperationVoteLogPanel(categories, categoriesData);
+      activateCommentLogTab(activeCommentLogTab);
+    }
+
+    function setCommentMemberFilter(value) {
+      const requested = String(value || "all");
+      const valid = requested === "all" || configCache.members.some((member) => String(member.id) === requested);
+      commentMemberFilterId = valid ? requested : "all";
+      renderCommentPanel(configCache.categories || [], categoriesDataCache || {});
+    }
+
     function renderSnapshot(data) {
       configCache = data.config || { categories: [], teams: [], members: [] };
+      categoriesDataCache = data.categories || {};
+      voteStatusCache = data.status || "waiting";
+      liveScoresCache = data.liveScores || { memberScores: {}, teamScores: {}, totalLiveScore: 0 };
 
-      document.getElementById("voteStatus").textContent = data.status || "-";
+      document.getElementById("voteStatus").textContent = voteStatusCache || "-";
+      renderLiveScorePanel(liveScoresCache);
 
       const categories = Array.isArray(configCache.categories) ? configCache.categories : [];
-      const categoriesData = data.categories || {};
-      document.getElementById("categoriesWrap").innerHTML = categories
-        .map((category) => renderCategoryBlock(category, categoriesData[category.id]))
+      const categoriesData = categoriesDataCache;
+      const teamCategories = categories.filter((category) => category.id === "team");
+      const individualCategories = categories.filter((category) => category.id !== "team");
+
+      document.getElementById("overallCategoryWrap").innerHTML = teamCategories
+        .map((category) => renderCategoryBlock(category, categoriesData[category.id], { includeLog: false }))
         .join("");
+
+      renderIndividualAwards(individualCategories, categoriesData);
+
+      renderCommentPanel(categories, categoriesData);
 
       const impressions = Array.isArray(data.eventImpressions) ? data.eventImpressions : [];
       document.getElementById("eventImpressionsBody").innerHTML = impressions.length
@@ -1073,6 +2269,8 @@
             </tr>
           `).join("")
         : '<tr><td colspan="3" class="empty">感想はまだありません</td></tr>';
+
+      syncResponsiveTableLabels(document.getElementById("dashboard"));
     }
 
     async function loadAdmin(options = {}) {
@@ -1133,6 +2331,16 @@
           setStatus("別タブでログアウトされました");
         }
       }
+    });
+
+    let liveScoreResizeTimer = null;
+    window.addEventListener("resize", () => {
+      if (document.getElementById("dashboard").classList.contains("hidden")) return;
+      window.clearTimeout(liveScoreResizeTimer);
+      liveScoreResizeTimer = window.setTimeout(() => {
+        syncVisibleLiveScoreInputsToDraft();
+        renderLiveScorePanel(liveScoresCache, { preserveDraft: true });
+      }, 120);
     });
 
     initialize();

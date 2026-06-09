@@ -6,9 +6,10 @@ Workspace: `c:\Users\iimy\Desktop\夏フェス`
 ## 現在の公開状態
 
 - ホスティング: Cloudflare Pages
-- 本番URL: `https://battle-fes-2026-pages.pages.dev`
-- 管理画面URL: `https://battle-fes-2026-pages.pages.dev/admin/`
-- 管理画面パスワード: `bfadmin`
+- Cloudflare Pages project: `battle-fes`
+- 本番URL: `https://battle-fes.pages.dev`
+- 管理画面URL: `https://battle-fes.pages.dev/admin/`
+- 管理画面パスワード: Cloudflare Pages secret `ADMIN_TOKEN` に保存（値はドキュメントへ記載しない）
 - 公開ディレクトリ: `public`
 
 ## 現在入っているバックエンド機能
@@ -17,17 +18,18 @@ Workspace: `c:\Users\iimy\Desktop\夏フェス`
 - 投票送信API: `/api/votes`
 - 管理画面用API:
   - `/api/admin/results`
+  - `/api/admin/live-scores`
   - `/api/admin/reset`
-- 保存先: Cloudflare KV `BATTLE_FES_VOTE_STORE`
+- 保存先: Cloudflare D1 `BATTLE_FES_DB` / database `battle-fes-vote-db`
 
 ## これまでの経緯
 
 1. 最初は静的HTMLサイトとして公開準備を開始
 2. Cloudflare Workers Static Assets での公開を試行
 3. `workers.dev` まわりの相性を見て Cloudflare Pages へ移行
-4. Pages 上で本番URL `https://battle-fes-2026-pages.pages.dev` を有効化
+4. Pages 上で本番URL `https://battle-fes.pages.dev` を有効化
 5. ヒーロー画像を軽量化し、`WebP` ベースへ変更
-6. 投票機能を `localStorage` 中心の仮実装から、Cloudflare Pages Functions + KV の本実装へ移行
+6. 投票機能を `localStorage` 中心の仮実装から、Cloudflare Pages Functions + D1 の本実装へ移行
 7. 管理画面 `/admin/` と管理APIを追加
 8. 管理画面のパスワードを Cloudflare Pages secret `ADMIN_TOKEN` に移行
 9. 作業中にこちらの文字コード処理ミスで文字化け事故を発生させた
@@ -72,13 +74,18 @@ Workspace: `c:\Users\iimy\Desktop\夏フェス`
   - 名前
   - コメント
   - 投票時刻
+- ライブスコア入力値
+  - 推しボーナス実％
+  - 枠内月間推しPt（）内
+  - 算出ライブスコア
 
 ## 現在の投票仕様
 
-- 投票数の正本は `localStorage` ではなく Cloudflare KV
+- 投票数の正本は `localStorage` ではなく Cloudflare D1
 - `localStorage` は「このブラウザでは投票済み」の補助情報だけに使用
 - 重複投票チェックはサーバー側で実施
 - 管理画面では集計と投票ログを確認可能
+- 管理画面では各メンバーのライブスコア入力と、チーム別総合スコア確認が可能
 - 管理画面からサーバー側投票データのリセットが可能
 
 ## 管理画面について

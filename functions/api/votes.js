@@ -4,12 +4,14 @@ import {
   readAllResults,
   recordBulkVotes,
 } from "./_lib/vote-store.js";
+import { isAdminAuthorized } from "./_lib/admin-auth.js";
 import {
   CATEGORIES,
   CATEGORY_IDS,
   INDIVIDUAL_CATEGORY_IDS,
   isValidCandidateForCategory,
 } from "./_lib/vote-categories.js";
+import { isBonusKeywordMatch } from "./_lib/bonus-keyword.js";
 
 const MAX_NAME_LEN = 30;
 const MAX_COMMENT_LEN = 100;
@@ -96,7 +98,9 @@ function normalizePayload(body) {
 
 export async function onRequestPost(context) {
   const status = getVoteWindowStatus();
-  if (!isVoteSubmissionAllowed()) {
+  const testSubmissionAllowed =
+    status === "waiting" && isAdminAuthorized(context.request, context.env);
+  if (!isVoteSubmissionAllowed() && !testSubmissionAllowed) {
     return json(
       {
         ok: false,
@@ -124,14 +128,13 @@ export async function onRequestPost(context) {
   const expectedBonusKeyword = String(context.env.BONUS_KEYWORD || "").trim();
   const submittedBonusKeyword = String(payload.bonusKeyword || "").trim();
   // env 照合のみの結果（時間判定なし）。テストモード時の burst 演出判定用にレスポンスへ乗せる。
-  const bonusKeywordMatched =
-    Boolean(expectedBonusKeyword) && submittedBonusKeyword === expectedBonusKeyword;
+  const bonusKeywordMatched = isBonusKeywordMatch(submittedBonusKeyword, expectedBonusKeyword);
 
   const writeResult = await recordBulkVotes(
-    context.env.BATTLE_FES_VOTE_STORE,
+    context.env,
     fingerprint,
     payload,
-    { bonusGranted: bonusKeywordMatched }
+    { bonusKeywordMatched }
   );
 
   if (!writeResult.ok && writeResult.duplicate) {
@@ -142,7 +145,7 @@ export async function onRequestPost(context) {
         duplicate: true,
         conflicts: writeResult.conflicts,
         existing: writeResult.existing,
-        results: await readAllResults(context.env.BATTLE_FES_VOTE_STORE),
+        results: await readAllResults(context.env),
       },
       { status: 409 }
     );
