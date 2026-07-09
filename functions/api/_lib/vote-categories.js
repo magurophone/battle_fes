@@ -1,5 +1,4 @@
 // 投票カテゴリ・候補のマスタ定義。フロント・API・管理画面が参照する唯一のソース。
-// メンバー名/チーム名は本番確定時に差し替える（PROGRESS.md 参照）。
 
 export const TEAMS = [
   { id: 1, name: "CRIMSON" },
@@ -9,15 +8,15 @@ export const TEAMS = [
 
 // 3チーム × 3名 = 9名。リーダーは全チーム3番手。
 export const MEMBERS = [
-  { id: 1, teamId: 1, name: "CRIMSON メンバー1" },
-  { id: 2, teamId: 1, name: "CRIMSON メンバー2" },
+  { id: 1, teamId: 1, name: "んごご🍋‍🟩" },
+  { id: 2, teamId: 1, name: "PK" },
   { id: 3, teamId: 1, name: "まぐろふぉん" },
-  { id: 4, teamId: 2, name: "NOVA メンバー1" },
-  { id: 5, teamId: 2, name: "NOVA メンバー2" },
+  { id: 4, teamId: 2, name: "なぽる" },
+  { id: 5, teamId: 2, name: "犬飼音子(ねこ)" },
   { id: 6, teamId: 2, name: "りんか🔔" },
-  { id: 7, teamId: 3, name: "GOLDEN メンバー1" },
-  { id: 8, teamId: 3, name: "GOLDEN メンバー2" },
-  { id: 9, teamId: 3, name: "iran痔" },
+  { id: 7, teamId: 3, name: "🐻‍❄️あわ🥚" },
+  { id: 8, teamId: 3, name: "潮てら🐳💛" },
+  { id: 9, teamId: 3, name: "iran👳🏾‍♂️痔" },
 ];
 
 const TEAM_IDS = TEAMS.map((t) => t.id);

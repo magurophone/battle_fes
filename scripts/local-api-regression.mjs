@@ -6,6 +6,7 @@ import { onRequestPost as postBonus } from "../functions/api/check-bonus.js";
 import { onRequestGet as getAdminResults } from "../functions/api/admin/results.js";
 import { onRequestPost as postAdminReset } from "../functions/api/admin/reset.js";
 import { onRequestPost as postAdminLiveScores } from "../functions/api/admin/live-scores.js";
+import { onRequestPost as postAdminVoteStatus } from "../functions/api/admin/vote-status.js";
 import { calcLiveScore, calcVotePoint } from "../functions/api/_lib/vote-store.js";
 
 const ADMIN_TOKEN = "local-secret";
@@ -46,6 +47,7 @@ class MemoryD1 {
     this.votePicks = [];
     this.eventImpressions = [];
     this.liveScores = new Map();
+    this.systemState = new Map();
     this.adminAuditLogs = [];
     this.nextSubmissionId = 1;
     this.nextPickId = 1;
@@ -75,6 +77,7 @@ class MemoryD1 {
       votePicks: structuredClone(this.votePicks),
       eventImpressions: structuredClone(this.eventImpressions),
       liveScores: structuredClone([...this.liveScores.entries()]),
+      systemState: structuredClone([...this.systemState.entries()]),
       adminAuditLogs: structuredClone(this.adminAuditLogs),
       nextSubmissionId: this.nextSubmissionId,
       nextPickId: this.nextPickId,
@@ -88,6 +91,7 @@ class MemoryD1 {
     this.votePicks = snapshot.votePicks;
     this.eventImpressions = snapshot.eventImpressions;
     this.liveScores = new Map(snapshot.liveScores);
+    this.systemState = new Map(snapshot.systemState);
     this.adminAuditLogs = snapshot.adminAuditLogs;
     this.nextSubmissionId = snapshot.nextSubmissionId;
     this.nextPickId = snapshot.nextPickId;
@@ -161,12 +165,23 @@ class MemoryD1 {
     }
 
     if (normalized.startsWith("insert into live_scores")) {
-      const [memberId, teamId, oshiBonusPercent, monthlyOshiPointInFrame, liveScore, updatedAt] = params;
+      const [
+        memberId,
+        teamId,
+        oshiBonusBefore,
+        oshiBonusAfter,
+        liveScoreBefore,
+        liveScoreAfter,
+        liveScore,
+        updatedAt,
+      ] = params;
       this.liveScores.set(Number(memberId), {
         memberId: Number(memberId),
         teamId: Number(teamId),
-        oshiBonusPercent: Number(oshiBonusPercent),
-        monthlyOshiPointInFrame: Number(monthlyOshiPointInFrame),
+        oshiBonusBefore: Number(oshiBonusBefore),
+        oshiBonusAfter: Number(oshiBonusAfter),
+        liveScoreBefore: Number(liveScoreBefore),
+        liveScoreAfter: Number(liveScoreAfter),
         liveScore: Number(liveScore),
         updatedAt,
       });
@@ -182,6 +197,28 @@ class MemoryD1 {
         created_at: createdAt,
       });
       return [];
+    }
+
+    if (normalized.startsWith("insert into system_state")) {
+      const [key, value, updatedAt] = params;
+      this.systemState.set(String(key), {
+        key: String(key),
+        value: String(value),
+        updated_at: updatedAt,
+      });
+      return [];
+    }
+
+    if (normalized.startsWith("delete from system_state")) {
+      const [key] = params;
+      this.systemState.delete(String(key));
+      return [];
+    }
+
+    if (normalized.includes("from system_state") && normalized.includes("where key = ?")) {
+      const [key] = params;
+      const row = this.systemState.get(String(key));
+      return row ? [{ value: row.value }] : [];
     }
 
     if (normalized.startsWith("delete from vote_picks")) {
@@ -365,11 +402,12 @@ function withNow(iso, fn) {
     });
 }
 
-function req(path, { method = "GET", body, auth = false, ip = "203.0.113.10", headers = {} } = {}) {
+function req(path, { method = "GET", body, auth = false, ip = "203.0.113.10", clientId = "", headers = {} } = {}) {
   const requestHeaders = new Headers(headers);
-  requestHeaders.set("user-agent", "local-regression");
-  requestHeaders.set("accept-language", "ja-JP");
+  if (!requestHeaders.has("user-agent")) requestHeaders.set("user-agent", "local-regression");
+  if (!requestHeaders.has("accept-language")) requestHeaders.set("accept-language", "ja-JP");
   requestHeaders.set("CF-Connecting-IP", ip);
+  if (clientId) requestHeaders.set("x-battle-fes-client-id", clientId);
   if (auth) requestHeaders.set("authorization", `Bearer ${ADMIN_TOKEN}`);
   let payload = body;
   if (body !== undefined && typeof body !== "string") {
@@ -410,9 +448,10 @@ async function testCorePointAndLiveScoreMath() {
   assert.equal(calcVotePoint("2026-07-18T22:15:00+09:00"), 5000);
   assert.equal(calcVotePoint("2026-07-18T22:20:00+09:00"), 5000);
   assert.equal(calcVotePoint("2026-07-18T22:30:00+09:00"), 5000);
-  assert.equal(calcLiveScore(25, 2500), 2000);
-  assert.equal(calcLiveScore("100%", "1,000"), 500);
-  assert.equal(calcLiveScore(0, 2500), 2500);
+  assert.equal(calcLiveScore(25, 25, 0, 2500), 2000);
+  assert.equal(calcLiveScore("100%", "100%", 0, "1,000"), 500);
+  assert.equal(calcLiveScore(0, 0, 0, 2500), 2500);
+  assert.equal(calcLiveScore(10, 20, 0, 1000), 1000);
 }
 
 async function vote(env, options = {}) {
@@ -422,6 +461,8 @@ async function vote(env, options = {}) {
       body: voteBody(options),
       auth: options.auth || false,
       ip: options.ip || "203.0.113.10",
+      clientId: options.clientId || "",
+      headers: options.headers || {},
     }),
     env,
   });
@@ -436,6 +477,8 @@ async function testPublicResultsInitial() {
     assert.equal(data.status, "waiting");
     assert.equal(data.config.categories.length, 4);
     assert.equal(data.results.team.totalVotes, 0);
+    assert.equal(data.individualAwardBonuses.pointPerAward, 50000);
+    assert.equal(data.individualAwardBonuses.totalPoints, 0);
   });
 }
 
@@ -455,6 +498,58 @@ async function testAdminAuth() {
     env,
   });
   assert.equal(bearer.status, 200);
+}
+
+async function testAdminVoteStatusOverrideDoesNotAffectPublicVoteGate() {
+  await withNow("2026-06-02T12:00:00.000Z", async () => {
+    const db = new MemoryD1();
+    const env = createEnv(db);
+
+    const noAuth = await postAdminVoteStatus({
+      request: req("/api/admin/vote-status", {
+        method: "POST",
+        body: { status: "closed" },
+      }),
+      env,
+    });
+    assert.equal(noAuth.status, 401);
+
+    const enabled = await postAdminVoteStatus({
+      request: req("/api/admin/vote-status", {
+        method: "POST",
+        auth: true,
+        body: { status: "closed" },
+      }),
+      env,
+    });
+    const enabledData = await readJson(enabled);
+    assert.equal(enabled.status, 200);
+    assert.equal(enabledData.status, "closed");
+    assert.equal(enabledData.adminVoteStatusOverride, "closed");
+
+    const publicResults = await getResults({ request: req("/api/results"), env });
+    const publicData = await readJson(publicResults);
+    assert.equal(publicResults.status, 200);
+    assert.equal(publicData.status, "waiting");
+    assert.equal(publicData.adminVoteStatusOverride, undefined);
+
+    const testVote = await vote(env, { auth: true, ip: "203.0.113.90" });
+    assert.equal(testVote.status, 200);
+
+    const disabled = await postAdminVoteStatus({
+      request: req("/api/admin/vote-status", {
+        method: "POST",
+        auth: true,
+        body: { status: null },
+      }),
+      env,
+    });
+    const disabledData = await readJson(disabled);
+    assert.equal(disabled.status, 200);
+    assert.equal(disabledData.status, "waiting");
+    assert.equal(disabledData.adminVoteStatusOverride, null);
+    assert.equal(db.adminAuditLogs.some((entry) => entry.action === "admin_vote_status_override.set"), true);
+  });
 }
 
 async function testWaitingVoteGateAndAdminTestMode() {
@@ -519,6 +614,47 @@ async function testConcurrentSameFingerprintDoesNotDoubleCount() {
     assert.equal(data.results.team.totalVotes, 1);
     assert.equal(db.voteSubmissions.length, 1);
     assert.equal(db.votePicks.length, 4);
+  });
+}
+
+async function testIncognitoSameDeviceBlockedButSharedNatAllowed() {
+  // 指紋は IP + UserAgent + Accept-Language。clientId は無視する。
+  // - 同一端末のシークレットウィンドウ（IP/UA/言語同じ、clientId 違い）は重複ブロック。
+  // - 同一 IP でも UA が異なる別端末（モバイル NAT の別の人）は投票可能。
+  await withNow("2026-07-18T12:00:00.000Z", async () => {
+    const db = new MemoryD1();
+    const env = createEnv(db);
+    // 1人目: 通常ウィンドウ
+    const first = await vote(env, {
+      ip: "203.0.113.50",
+      clientId: "browser-a",
+      teamId: 1,
+    });
+    // 同一端末のシークレットウィンドウ: clientId は変わるが IP/UA/言語は同じ → ブロック
+    const incognito = await vote(env, {
+      ip: "203.0.113.50",
+      clientId: "browser-b",
+      teamId: 2,
+    });
+    // 同一 IP・別端末（別 UA）: NAT 共有の別の人 → 投票可能
+    const otherDevice = await vote(env, {
+      ip: "203.0.113.50",
+      clientId: "browser-c",
+      teamId: 3,
+      headers: { "user-agent": "Mozilla/5.0 (other-device)" },
+    });
+
+    assert.equal(first.status, 200);
+    assert.equal(incognito.status, 409);
+    assert.equal(otherDevice.status, 200);
+
+    const results = await getResults({ request: req("/api/results"), env });
+    const data = await readJson(results);
+    assert.equal(data.results.team.totalVotes, 2);
+    assert.equal(data.results.team.counts["1"], 1);
+    assert.equal(data.results.team.counts["2"], 0);
+    assert.equal(data.results.team.counts["3"], 1);
+    assert.equal(db.voteSubmissions.length, 2);
   });
 }
 
@@ -679,8 +815,9 @@ async function testAdminLiveScores() {
       auth: true,
       body: {
         memberScores: [
-          { memberId: 1, oshiBonusPercent: 25, monthlyOshiPointInFrame: 2500 },
-          { memberId: 4, oshiBonusPercent: "100%", monthlyOshiPointInFrame: "1,000" },
+          { memberId: 1, oshiBonusBefore: 25, oshiBonusAfter: 25, liveScoreBefore: 0, liveScoreAfter: 2500 },
+          { memberId: 4, oshiBonusBefore: "100%", oshiBonusAfter: "100%", liveScoreBefore: 0, liveScoreAfter: "1,000" },
+          { memberId: 7, oshiBonusBefore: 10, oshiBonusAfter: 20, liveScoreBefore: 0, liveScoreAfter: 1000 },
         ],
       },
     }),
@@ -690,9 +827,12 @@ async function testAdminLiveScores() {
   assert.equal(saved.status, 200);
   assert.equal(savedData.liveScores.memberScores["1"].liveScore, 2000);
   assert.equal(savedData.liveScores.memberScores["4"].liveScore, 500);
+  assert.equal(savedData.liveScores.memberScores["7"].oshiBonusAfter, 20);
+  assert.equal(savedData.liveScores.memberScores["7"].liveScore, 1000);
   assert.equal(savedData.liveScores.teamScores["1"], 2000);
   assert.equal(savedData.liveScores.teamScores["2"], 500);
-  assert.equal(savedData.liveScores.totalLiveScore, 2500);
+  assert.equal(savedData.liveScores.teamScores["3"], 1000);
+  assert.equal(savedData.liveScores.totalLiveScore, 3500);
 
   const admin = await getAdminResults({
     request: req("/api/admin/results", { auth: true }),
@@ -700,8 +840,9 @@ async function testAdminLiveScores() {
   });
   const adminData = await readJson(admin);
   assert.equal(admin.status, 200);
-  assert.equal(adminData.liveScores.memberScores["1"].monthlyOshiPointInFrame, 2500);
+  assert.equal(adminData.liveScores.memberScores["1"].liveScoreAfter, 2500);
   assert.equal(adminData.liveScores.teamScores["1"], 2000);
+  assert.equal(adminData.liveScores.teamScores["3"], 1000);
 }
 
 async function testD1VoteAdminAndDuplicate() {
@@ -731,14 +872,20 @@ async function testD1VoteAdminAndDuplicate() {
       request: req("/api/admin/results", { auth: true }),
       env,
     });
-    const adminData = await readJson(admin);
-    assert.equal(admin.status, 200);
-    assert.equal(adminData.categories.team.results.totalVotes, 2);
-    assert.equal(adminData.categories.team.results.counts["2"], 1);
-    assert.equal(adminData.categories.team.results.counts["3"], 1);
-    assert.equal(adminData.categories.team.meta.totalSubmissions, 2);
-    assert.equal(adminData.categories.team.uniqueFingerprints, 2);
-    assert.equal(adminData.categories.team.voteLog.length, 2);
+  const adminData = await readJson(admin);
+  assert.equal(admin.status, 200);
+  assert.equal(adminData.categories.team.results.totalVotes, 2);
+  assert.equal(adminData.categories.team.results.counts["2"], 1);
+  assert.equal(adminData.categories.team.results.counts["3"], 1);
+  assert.equal(adminData.individualAwardBonuses.pointPerAward, 50000);
+  assert.equal(adminData.individualAwardBonuses.teamScores["1"], 50000);
+  assert.equal(adminData.individualAwardBonuses.teamScores["2"], 50000);
+  assert.equal(adminData.individualAwardBonuses.teamScores["3"], 50000);
+  assert.equal(adminData.individualAwardBonuses.totalPoints, 150000);
+  assert.equal(adminData.individualAwardBonuses.awards.length, 3);
+  assert.equal(adminData.categories.team.meta.totalSubmissions, 2);
+  assert.equal(adminData.categories.team.uniqueFingerprints, 2);
+  assert.equal(adminData.categories.team.voteLog.length, 2);
     assert.equal(adminData.eventImpressions.length, 2);
   });
 }
@@ -763,8 +910,9 @@ async function testD1BonusLiveScoresAndReset() {
         auth: true,
         body: {
           memberScores: [
-          { memberId: 1, oshiBonusPercent: 25, monthlyOshiPointInFrame: 2500 },
-          { memberId: 4, oshiBonusPercent: "100%", monthlyOshiPointInFrame: "1,000" },
+            { memberId: 1, oshiBonusBefore: 25, oshiBonusAfter: 25, liveScoreBefore: 0, liveScoreAfter: 2500 },
+            { memberId: 4, oshiBonusBefore: "100%", oshiBonusAfter: "100%", liveScoreBefore: 0, liveScoreAfter: "1,000" },
+            { memberId: 7, oshiBonusBefore: 10, oshiBonusAfter: 20, liveScoreBefore: 0, liveScoreAfter: 1000 },
           ],
         },
       }),
@@ -774,7 +922,9 @@ async function testD1BonusLiveScoresAndReset() {
     assert.equal(saved.status, 200);
     assert.equal(savedData.liveScores.memberScores["1"].liveScore, 2000);
     assert.equal(savedData.liveScores.memberScores["4"].liveScore, 500);
-    assert.equal(savedData.liveScores.totalLiveScore, 2500);
+    assert.equal(savedData.liveScores.memberScores["7"].oshiBonusAfter, 20);
+    assert.equal(savedData.liveScores.memberScores["7"].liveScore, 1000);
+    assert.equal(savedData.liveScores.totalLiveScore, 3500);
     assert.equal(db.liveScores.size, 9);
     assert.equal(db.adminAuditLogs.some((entry) => entry.action === "live_scores.save"), true);
 
@@ -803,10 +953,12 @@ const tests = [
   testCorePointAndLiveScoreMath,
   testPublicResultsInitial,
   testAdminAuth,
+  testAdminVoteStatusOverrideDoesNotAffectPublicVoteGate,
   testWaitingVoteGateAndAdminTestMode,
   testOpenVoteWithoutAdmin,
   testConcurrentDifferentFingerprints,
   testConcurrentSameFingerprintDoesNotDoubleCount,
+  testIncognitoSameDeviceBlockedButSharedNatAllowed,
   testBonusFlow,
   testPayloadValidation,
   testAdminLiveScores,

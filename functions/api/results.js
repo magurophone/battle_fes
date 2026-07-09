@@ -1,4 +1,8 @@
-import { getVoteWindowStatus, readAllResults } from "./_lib/vote-store.js";
+import {
+  calcIndividualAwardBonuses,
+  getVoteWindowStatus,
+  readAllResults,
+} from "./_lib/vote-store.js";
 import { CATEGORIES, MEMBERS, TEAMS } from "./_lib/vote-categories.js";
 
 function json(data, init = {}) {
@@ -25,6 +29,7 @@ export async function onRequestGet(context) {
       teams: TEAMS,
       members: MEMBERS,
     },
+    individualAwardBonuses: calcIndividualAwardBonuses(results),
     results,
   });
 }

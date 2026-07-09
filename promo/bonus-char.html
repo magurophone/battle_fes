@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Dela+Gothic+One&family=Black+Ops+One&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#ff7c1e; --gold:#ffe040; --accent3:#ff4455;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{background:transparent;}
+  /* 透明背景。市松は確認用（?checker=1 のときだけ表示） */
+  body.checker{
+    background:
+      conic-gradient(#2b2b2b 0 25%, #202020 0 50%) 0 0/48px 48px;
+  }
+  /* 不透明版: 投票セクション準拠。上=ネイビー / 中=暗 / 下=暖色グロー の3ゾーン */
+  body.solid .stage{
+    background:
+      /* 下から立ち上る暖色グロー（赤み強め・広め） */
+      radial-gradient(115% 82% at 50% 120%, rgba(255,90,30,.42) 0%, rgba(255,60,26,.24) 34%, rgba(220,50,30,.10) 56%, rgba(220,50,30,0) 74%),
+      /* 左上のクールなネイビー光 */
+      radial-gradient(80% 60% at 26% -8%, rgba(50,68,150,.24) 0%, rgba(50,68,150,0) 56%),
+      /* 右上の淡い青紫 */
+      radial-gradient(66% 50% at 92% 2%, rgba(96,58,150,.14) 0%, rgba(96,58,150,0) 58%),
+      /* ベースの縦グラデ（ネイビー→暗→暖色黒） */
+      linear-gradient(178deg, #12122a 0%, #0e0e20 24%, #0a0910 50%, #1c0d0a 82%, #2a0f0a 100%);
+  }
+  /* 星屑ドット（上部に散布、中央〜下でフェード） */
+  body.solid .stage::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    z-index:0;
+    background-image:
+      radial-gradient(1.4px 1.4px at 12% 14%, rgba(255,238,205,.9), transparent),
+      radial-gradient(1.2px 1.2px at 78% 9%, rgba(200,215,255,.8), transparent),
+      radial-gradient(1px 1px at 46% 20%, rgba(255,240,210,.7), transparent),
+      radial-gradient(1.6px 1.6px at 88% 26%, rgba(255,180,120,.8), transparent),
+      radial-gradient(1px 1px at 32% 7%, rgba(210,220,255,.7), transparent),
+      radial-gradient(1.3px 1.3px at 63% 30%, rgba(255,235,200,.6), transparent),
+      radial-gradient(1px 1px at 6% 34%, rgba(255,220,180,.6), transparent),
+      radial-gradient(1.2px 1.2px at 94% 44%, rgba(255,200,150,.55), transparent);
+    -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 34%,transparent 66%);
+    mask-image:linear-gradient(180deg,#000 0%,#000 34%,transparent 66%);
+  }
+  /* ごく淡い粒子テクスチャ */
+  body.solid .stage::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    z-index:3;
+    background:url('/assets/textures/grain-fine-dark.png') center/360px;
+    opacity:.2;mix-blend-mode:screen;
+  }
+  .stage{
+    width:640px;height:640px;
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+    border-radius:18px;
+    overflow:hidden;
+    isolation:isolate;
+  }
+  /* ソフト放射状スクリム: 箱に見せず、どんな配信背景でも文字を浮かせる */
+  .scrim{
+    position:absolute;inset:0;
+    z-index:1;
+    background:radial-gradient(circle at 50% 52%,
+      rgba(6,3,0,.80) 0%,
+      rgba(6,3,0,.62) 30%,
+      rgba(6,3,0,.32) 52%,
+      rgba(6,3,0,0) 72%);
+  }
+  .tile{
+    position:relative;
+    z-index:2;
+    width:520px;height:520px;
+    display:flex;align-items:center;justify-content:center;
+    flex-direction:column;
+  }
+  .stage-frame{
+    position:absolute;inset:1px;
+    z-index:4;
+    pointer-events:none;
+    border:1px solid rgba(255,224,64,.38);
+    border-radius:17px;
+    box-shadow:
+      inset 0 0 0 1px rgba(255,124,30,.18),
+      inset 0 0 34px rgba(0,0,0,.24);
+  }
+  /* 軍用コーナーティック（金の細線） */
+  .corner{position:absolute;width:44px;height:44px;pointer-events:none;}
+  .corner::before,.corner::after{
+    content:"";position:absolute;background:linear-gradient(var(--accent),var(--gold));
+    box-shadow:0 0 8px rgba(255,180,60,.55);
+  }
+  .corner::before{width:100%;height:3px;}
+  .corner::after{width:3px;height:100%;}
+  .corner.tl{top:0;left:0;}
+  .corner.tr{top:0;right:0;} .corner.tr::before{right:0;} .corner.tr::after{right:0;}
+  .corner.bl{bottom:0;left:0;} .corner.bl::before{bottom:0;} .corner.bl::after{bottom:0;}
+  .corner.br{bottom:0;right:0;} .corner.br::before{right:0;bottom:0;} .corner.br::after{right:0;bottom:0;}
+
+  .label{
+    text-align:center;margin-bottom:14px;line-height:1;
+    text-shadow:0 0 18px rgba(255,120,30,.85),0 0 6px rgba(255,180,60,.9),0 2px 5px rgba(0,0,0,.95);
+  }
+  .label .main{
+    display:block;
+    font-family:'Dela Gothic One','Noto Sans JP',sans-serif;
+    font-size:44px;letter-spacing:.04em;color:#fff2d0;white-space:nowrap;
+  }
+  .label .sub{
+    display:block;margin-top:8px;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:26px;letter-spacing:.5em;text-indent:.5em;
+    color:var(--gold);white-space:nowrap;
+  }
+  /*
+    実ロゴの質感を再現:
+    - 文字本体は暗色（ほぼ黒）、内側に炎/エンバーが透ける
+    - 縁はクリーム金の細アウトライン
+    - 暖色グロー
+    レイヤ構成: 下から炎テクスチャ(clip) → 暗色本体 → 金アウトライン
+  */
+  .glyph{
+    position:relative;
+    width:360px;height:340px;
+    filter:drop-shadow(0 0 30px rgba(255,190,80,.5)) drop-shadow(0 0 10px rgba(255,150,40,.45)) drop-shadow(0 4px 8px rgba(0,0,0,.8));
+  }
+  .glyph span{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Dela Gothic One','Noto Sans JP',sans-serif;
+    font-size:290px;line-height:1;
+  }
+  /* 投票見出し「リスナー投票」準拠: ダーク地に金の中抜きアウトライン + 金グロー */
+  /* 1: 暗色フィル（わずかに暖色グラデ、締まった本体） */
+  .glyph .fire{
+    background:linear-gradient(180deg,#1c1a24 0%,#141019 52%,#241407 100%);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:transparent;
+  }
+  .glyph .body{display:none;}
+  /* 2: クリーム金の中抜きアウトライン */
+  .glyph .edge{
+    -webkit-text-fill-color:transparent;color:transparent;
+    -webkit-text-stroke:4px #ffe6a6;
+    filter:drop-shadow(0 0 2px rgba(255,206,120,.6));
+  }
+  .idx{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:34px;letter-spacing:.28em;
+    color:#fff8ee;text-indent:.28em;
+    text-shadow:0 0 12px rgba(255,120,30,.6),0 2px 4px rgba(0,0,0,.9);
+    margin-top:6px;
+  }
+  .idx b{color:var(--gold);}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="scrim"></div>
+  <div class="tile">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="label" id="label"><span class="main">貫通BONUS</span><span class="sub">KEYWORD</span></div>
+    <div class="glyph" id="glyph">
+      <span class="fire"></span><span class="body"></span><span class="edge"></span>
+    </div>
+    <div class="idx" id="idx"></div>
+  </div>
+  <div class="stage-frame" aria-hidden="true"></div>
+</div>
+<script>
+  const p=new URLSearchParams(location.search);
+  const ch=p.get('ch')||'真';
+  const idx=p.get('idx')||'1';
+  const total=p.get('total')||'9';
+  const g=document.getElementById('glyph');
+  g.querySelectorAll('span').forEach(s=>s.textContent=ch);
+  document.getElementById('idx').innerHTML='<b>'+idx+'</b> / '+total;
+  if(p.get('checker')) document.body.classList.add('checker');
+  if(p.get('solid')) document.body.classList.add('solid');
+</script>
+</body>
+</html>

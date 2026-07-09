@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOVA Layout Reference</title>
+<style>
+  @font-face {
+    font-family: "Black Ops One";
+    src: url("../public/assets/fonts/BlackOpsOne-Regular.ttf") format("truetype");
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: "DSEG14";
+    src: url("../public/assets/fonts/DSEG14Modern-Bold.woff2") format("woff2");
+    font-weight: 700;
+  }
+
+  * { box-sizing: border-box; }
+  html,
+  body {
+    margin: 0;
+    min-height: 100%;
+    background: #02030d;
+    color: #fff;
+    font-family: "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
+  }
+
+  body {
+    display: grid;
+    place-items: start center;
+    padding: 24px;
+  }
+
+  .stage {
+    position: relative;
+    width: min(100vw - 48px, 540px);
+    aspect-ratio: 9 / 16;
+    overflow: hidden;
+    background: #060723;
+    box-shadow: 0 28px 90px rgba(0, 0, 0, .68);
+    isolation: isolate;
+  }
+
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 47% 30%, rgba(130, 75, 255, .30), transparent 33%),
+      radial-gradient(ellipse at 22% 57%, rgba(48, 196, 255, .16), transparent 28%),
+      radial-gradient(ellipse at 86% 44%, rgba(196, 91, 255, .14), transparent 28%),
+      linear-gradient(180deg, rgba(3, 5, 20, .76) 0%, rgba(6, 6, 28, .22) 42%, rgba(3, 5, 18, .38) 100%),
+      url("../public/assets/teams/nova.png") center / cover no-repeat;
+    transform: scale(1.045);
+    z-index: -5;
+  }
+
+  .stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(0, 2, 12, .92) 0%, rgba(0, 2, 12, .38) 13%, transparent 28%),
+      linear-gradient(0deg, rgba(0, 2, 12, .90) 0%, rgba(0, 2, 12, .66) 29%, rgba(0, 2, 12, .10) 56%, transparent 70%),
+      radial-gradient(ellipse at 50% 23%, transparent 0%, rgba(2, 3, 14, .18) 60%, rgba(2, 3, 14, .68) 100%);
+    z-index: -4;
+    pointer-events: none;
+  }
+
+  .grain {
+    position: absolute;
+    inset: 0;
+    background: url("../public/assets/textures/grain-fine-dark.png") center / 560px auto repeat;
+    opacity: .17;
+    mix-blend-mode: screen;
+    z-index: -3;
+  }
+
+  .starfield {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 18% 13%, rgba(255,255,255,.82) 0 1px, transparent 2px),
+      radial-gradient(circle at 73% 18%, rgba(255,255,255,.75) 0 1px, transparent 2px),
+      radial-gradient(circle at 48% 31%, rgba(255,255,255,.90) 0 1px, transparent 2px),
+      radial-gradient(circle at 78% 56%, rgba(184,142,255,.72) 0 1px, transparent 2px),
+      radial-gradient(circle at 28% 72%, rgba(255,255,255,.60) 0 1px, transparent 2px);
+    background-size: 150px 230px, 210px 280px, 260px 340px, 190px 250px, 310px 430px;
+    opacity: .50;
+    mix-blend-mode: screen;
+    z-index: -2;
+  }
+
+  .safe-top,
+  .comment-zone {
+    position: absolute;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    z-index: 20;
+  }
+
+  .safe-top {
+    top: 0;
+    height: 8.4%;
+  }
+
+  .comment-zone {
+    bottom: 0;
+    height: 36%;
+  }
+
+  .content {
+    position: absolute;
+    left: 6.7%;
+    right: 6.7%;
+    top: 9.2%;
+    height: 52.7%;
+    display: grid;
+    grid-template-rows: 24% 43% 17%;
+    gap: 4%;
+  }
+
+  .brand {
+    position: relative;
+    min-width: 0;
+  }
+
+  .brand::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 24%;
+    height: 52%;
+    background:
+      radial-gradient(ellipse at 22% 52%, rgba(255, 150, 60, .18), transparent 58%),
+      radial-gradient(ellipse at 62% 50%, rgba(124, 58, 255, .36), transparent 68%),
+      linear-gradient(90deg, rgba(20, 8, 40, .04), rgba(124, 58, 255, .16), rgba(74, 220, 255, .07), transparent);
+    border-top: 1px solid rgba(182, 145, 255, .22);
+    border-bottom: 1px solid rgba(82, 229, 255, .16);
+    filter: blur(.2px);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+
+  .battle-logo {
+    position: absolute;
+    left: 3.5%;
+    top: 22%;
+    width: 24.5%;
+    height: auto;
+    filter:
+      drop-shadow(0 0 14px rgba(140, 90, 255, .62))
+      drop-shadow(0 5px 11px rgba(0, 0, 0, .75));
+    z-index: 2;
+  }
+
+  .team-kicker {
+    position: absolute;
+    left: 30%;
+    top: 10%;
+    color: rgba(218, 204, 255, .68);
+    font: 400 clamp(8px, 1.15vw, 11px) / 1 "Black Ops One", system-ui, sans-serif;
+    letter-spacing: .36em;
+    text-shadow: 0 0 10px rgba(124, 58, 255, .62);
+    z-index: 3;
+  }
+
+  .nova-logo {
+    position: absolute;
+    right: 1.5%;
+    top: 17%;
+    width: 73%;
+    height: auto;
+    filter:
+      drop-shadow(0 0 18px rgba(124, 58, 255, .95))
+      drop-shadow(0 5px 12px rgba(0, 0, 0, .82));
+  }
+
+  .brand-line {
+    position: absolute;
+    left: 4%;
+    right: 4%;
+    bottom: 8%;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(132, 80, 255, .08), rgba(190, 158, 255, .85), rgba(66, 229, 255, .20), transparent);
+    box-shadow: 0 0 16px rgba(124, 58, 255, .74);
+  }
+
+  .members {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: 3.6%;
+    min-width: 0;
+  }
+
+  .members::before {
+    content: "";
+    position: absolute;
+    left: -7%;
+    right: -7%;
+    top: 11%;
+    height: 60%;
+    background: radial-gradient(ellipse at 50% 50%, rgba(124, 58, 255, .34), transparent 72%);
+    filter: blur(8px);
+    z-index: -1;
+  }
+
+  .member {
+    position: relative;
+    min-width: 0;
+    display: grid;
+    grid-template-rows: auto min-content;
+    gap: 8px;
+  }
+
+  .member.lead {
+    transform: none;
+  }
+
+  .portrait {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    padding: 4px;
+    background:
+      linear-gradient(135deg, rgba(218, 196, 255, .95), rgba(126, 74, 255, .92) 45%, rgba(54, 226, 255, .86));
+    clip-path: polygon(8% 0, 100% 0, 100% 83%, 90% 100%, 0 100%, 0 14%);
+    box-shadow:
+      0 0 0 1px rgba(218, 196, 255, .52),
+      0 0 20px rgba(124, 58, 255, .58),
+      0 11px 20px rgba(0, 0, 0, .45);
+  }
+
+  .lead .portrait {
+    padding: 4px;
+    box-shadow:
+      0 0 0 1px rgba(218, 196, 255, .52),
+      0 0 20px rgba(124, 58, 255, .58),
+      0 11px 20px rgba(0, 0, 0, .45);
+  }
+
+  .portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    clip-path: inherit;
+  }
+
+  .portrait::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    clip-path: inherit;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.22), transparent 26%),
+      linear-gradient(0deg, rgba(13, 5, 35, .34), transparent 48%);
+    pointer-events: none;
+  }
+
+  .name {
+    min-width: 0;
+    height: clamp(22px, 4.4vw, 36px);
+    display: grid;
+    place-items: center;
+    padding: 0 7px;
+    color: rgba(255, 250, 255, .98);
+    font-size: clamp(13px, 2.25vw, 21px);
+    line-height: 1;
+    letter-spacing: .04em;
+    text-align: center;
+    white-space: nowrap;
+    background: linear-gradient(90deg, transparent, rgba(21, 10, 48, .76) 18%, rgba(21, 10, 48, .76) 82%, transparent);
+    text-shadow:
+      0 0 10px rgba(156, 112, 255, .92),
+      0 2px 7px rgba(0, 0, 0, .82);
+  }
+
+  .event {
+    position: relative;
+    align-self: center;
+    display: grid;
+    grid-template-columns: 1.08fr .92fr;
+    gap: 14px;
+    min-width: 0;
+    padding: 10px 12px;
+    background:
+      linear-gradient(90deg, rgba(136, 78, 255, .15), rgba(82, 223, 255, .06), rgba(136, 78, 255, .15)),
+      rgba(7, 8, 30, .58);
+    border-top: 1px solid rgba(196, 170, 255, .62);
+    border-bottom: 1px solid rgba(86, 229, 255, .34);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, .08),
+      0 0 26px rgba(124, 58, 255, .22);
+  }
+
+  .event::before,
+  .event::after {
+    content: "";
+    position: absolute;
+    top: -7px;
+    bottom: -7px;
+    width: 1px;
+    background: linear-gradient(transparent, rgba(190, 158, 255, .70), transparent);
+  }
+
+  .event::before { left: 0; }
+  .event::after { right: 0; }
+
+  .info {
+    min-width: 0;
+    display: grid;
+    gap: 4px;
+  }
+
+  .label {
+    color: rgba(206, 194, 255, .80);
+    font: 400 clamp(9px, 1.35vw, 13px) / 1 "Black Ops One", system-ui, sans-serif;
+    letter-spacing: .22em;
+  }
+
+  .value {
+    min-width: 0;
+    color: #fff;
+    font-family: "DSEG14", "Black Ops One", system-ui, sans-serif;
+    font-size: clamp(18px, 3.2vw, 30px);
+    line-height: 1;
+    letter-spacing: .02em;
+    text-shadow:
+      0 0 7px rgba(255, 255, 255, .92),
+      0 0 18px rgba(148, 82, 255, .94),
+      0 0 30px rgba(57, 223, 255, .34);
+    white-space: nowrap;
+  }
+
+  .value small {
+    font-family: "Black Ops One", system-ui, sans-serif;
+    font-size: .48em;
+    letter-spacing: .06em;
+    vertical-align: .12em;
+  }
+
+  .date-info .value {
+    font-family: "Black Ops One", system-ui, sans-serif;
+    font-size: clamp(18px, 2.75vw, 27px);
+    letter-spacing: .04em;
+  }
+
+  .time-info .value {
+    font-size: clamp(26px, 4.55vw, 43px);
+  }
+
+  .value .plain {
+    font-family: "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
+    font-weight: 900;
+    margin-left: .05em;
+  }
+
+  .empty-fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 40%;
+    background:
+      linear-gradient(180deg, transparent 0%, rgba(0, 2, 12, .34) 30%, rgba(0, 2, 12, .86) 100%);
+    pointer-events: none;
+  }
+
+  body.guides .safe-top,
+  body.guides .comment-zone {
+    background: rgba(255, 64, 120, .10);
+    outline: 1px dashed rgba(255, 145, 190, .76);
+  }
+
+  body.guides .safe-top::after,
+  body.guides .comment-zone::before {
+    position: absolute;
+    left: 16px;
+    color: rgba(255, 238, 248, .86);
+    font: 700 12px / 1 system-ui, sans-serif;
+    letter-spacing: .08em;
+    text-shadow: 0 2px 6px rgba(0,0,0,.8);
+  }
+
+  body.guides .safe-top::after {
+    content: "TOP NG";
+    bottom: 10px;
+  }
+
+  body.guides .comment-zone::before {
+    content: "COMMENT AREA - KEEP EMPTY";
+    top: 12px;
+  }
+
+  @media (max-width: 520px) {
+    body { padding: 0; }
+    .stage {
+      width: 100vw;
+      box-shadow: none;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="stage" aria-label="NOVA announcement layout reference">
+  <div class="grain"></div>
+  <div class="starfield"></div>
+  <div class="empty-fade"></div>
+
+  <section class="content">
+    <header class="brand">
+      <img class="battle-logo" src="../public/assets/logos/logo-B-trim.png" alt="BATTLE FES">
+      <div class="team-kicker">TEAM</div>
+      <img class="nova-logo" src="../public/assets/teams/wordmarks/nova.png" alt="NOVA">
+      <div class="brand-line"></div>
+    </header>
+
+    <div class="members" aria-label="NOVA members">
+      <article class="member">
+        <div class="portrait"><img src="../public/assets/members/nova-naporu.jpg" alt="なぽる"></div>
+        <div class="name">なぽる</div>
+      </article>
+      <article class="member lead">
+        <div class="portrait"><img src="../public/assets/members/nova-leader.jpg" alt="りんか"></div>
+        <div class="name">りんか</div>
+      </article>
+      <article class="member">
+        <div class="portrait"><img src="../public/assets/members/nova-neko.jpg" alt="犬飼音子"></div>
+        <div class="name">犬飼音子</div>
+      </article>
+    </div>
+
+    <section class="event" aria-label="date and time">
+      <div class="info date-info">
+        <div class="label">DATE</div>
+        <div class="value">2026.07.18 <small>SAT</small></div>
+      </div>
+      <div class="info time-info">
+        <div class="label">TIME</div>
+        <div class="value">19:45<span class="plain">~</span></div>
+      </div>
+    </section>
+  </section>
+
+  <div class="safe-top"></div>
+  <div class="comment-zone"></div>
+</main>
+<script>
+  if (new URLSearchParams(location.search).get("guides") === "1") {
+    document.body.classList.add("guides");
+  }
+</script>
+</body>
+</html>

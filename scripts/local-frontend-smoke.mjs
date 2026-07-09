@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
-import { createReadStream } from "node:fs";
+import { createReadStream, existsSync } from "node:fs";
 import { stat } from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
 import { chromium } from "playwright";
 
 const ADMIN_TOKEN = "local-secret";
+const EDGE_EXECUTABLE = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe";
 
 const teams = [
   { id: 1, name: "CRIMSON" },
@@ -162,7 +163,7 @@ function resultsPayload() {
   };
 }
 
-function adminPayload({ status = "waiting" } = {}) {
+function adminPayload({ status = "waiting", adminVoteStatusOverride = null } = {}) {
   const liveScores = {
     memberScores: Object.fromEntries(
       members.map((member) => [
@@ -170,8 +171,10 @@ function adminPayload({ status = "waiting" } = {}) {
         {
           memberId: member.id,
           teamId: member.teamId,
-          oshiBonusPercent: 0,
-          monthlyOshiPointInFrame: 0,
+          oshiBonusBefore: 0,
+          oshiBonusAfter: 0,
+          liveScoreBefore: 0,
+          liveScoreAfter: 0,
           liveScore: 0,
         },
       ])
@@ -183,6 +186,7 @@ function adminPayload({ status = "waiting" } = {}) {
   return {
     ok: true,
     status,
+    adminVoteStatusOverride,
     config: { categories, teams, members },
     categories: Object.fromEntries(
       categories.map((c) => [
@@ -195,6 +199,16 @@ function adminPayload({ status = "waiting" } = {}) {
         },
       ])
     ),
+    individualAwardBonuses: {
+      pointPerAward: 50000,
+      teamScores: { 1: 0, 2: 100000, 3: 50000 },
+      totalPoints: 150000,
+      awards: [
+        { categoryId: "mvp", categoryLabel: "MVP", memberId: 4, memberName: "Member 4", teamId: 2, bonusPoint: 50000, votes: 3 },
+        { categoryId: "entertainer", categoryLabel: "Entertainer", memberId: 5, memberName: "Member 5", teamId: 2, bonusPoint: 50000, votes: 2 },
+        { categoryId: "moment", categoryLabel: "Moment", memberId: 9, memberName: "Member 9", teamId: 3, bonusPoint: 50000, votes: 1 },
+      ],
+    },
     eventImpressions: [
       {
         voterName: "Listener Z",
@@ -255,7 +269,7 @@ function startStaticServer() {
 }
 
 async function runPublicVoteSmoke(browser, baseUrl) {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: "no-preference" });
   await context.addInitScript((token) => {
     localStorage.setItem("battlefes_test_mode", "1");
     localStorage.setItem("battlefes_admin_token", token);
@@ -264,6 +278,8 @@ async function runPublicVoteSmoke(browser, baseUrl) {
   const page = await context.newPage();
   const errors = [];
   let voteAuthHeader = "";
+  let voteClientIdHeader = "";
+  let votePayload = null;
 
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => {
@@ -280,6 +296,8 @@ async function runPublicVoteSmoke(browser, baseUrl) {
 
   await page.route("**/api/votes", async (route) => {
     voteAuthHeader = route.request().headers().authorization || "";
+    voteClientIdHeader = route.request().headers()["x-battle-fes-client-id"] || "";
+    votePayload = JSON.parse(route.request().postData() || "{}");
     route.fulfill({
       status: 200,
       contentType: "application/json; charset=utf-8",
@@ -295,6 +313,34 @@ async function runPublicVoteSmoke(browser, baseUrl) {
 
   await page.goto(`${baseUrl}/index.html#vote`, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => typeof submitBulkVote === "function" && typeof getAdminTestVoteToken === "function");
+  await page.waitForFunction(() => document.querySelector("#vote .section-title")?.classList.contains("visible"));
+  await page.waitForTimeout(1600);
+
+  const titleMotionState = await page.evaluate(() => ({
+    titleCount: document.querySelectorAll(".section-title").length,
+    charTitleCount: document.querySelectorAll(".section-title.char-reveal").length,
+    charCount: document.querySelectorAll(".section-title .char-reveal-char").length,
+    labelCount: document.querySelectorAll(".section-label").length,
+    lineLabelCount: document.querySelectorAll(".section-label.line-reveal").length,
+    labelsWithCharReveal: document.querySelectorAll(".section-label.char-reveal").length,
+    voteTitleLabel: document.querySelector("#vote .section-title")?.getAttribute("aria-label"),
+    voteTitleChars: Array.from(document.querySelectorAll("#vote .section-title .char-reveal-inner"))
+      .map((node) => node.textContent)
+      .join(""),
+    voteTitlePosition: getComputedStyle(document.querySelector("#vote .section-title")).position,
+    voteTitleFilter: getComputedStyle(document.querySelector("#vote .section-title")).filter,
+    voteTitleTextShadow: getComputedStyle(document.querySelector("#vote .section-title")).textShadow,
+  }));
+  assert.equal(titleMotionState.titleCount, 4);
+  assert.equal(titleMotionState.charTitleCount, 4);
+  assert.ok(titleMotionState.charCount >= 20);
+  assert.equal(titleMotionState.labelCount, titleMotionState.lineLabelCount);
+  assert.equal(titleMotionState.labelsWithCharReveal, 0);
+  assert.equal(titleMotionState.voteTitleLabel, "リスナー投票");
+  assert.equal(titleMotionState.voteTitleChars, "リスナー投票");
+  assert.equal(titleMotionState.voteTitlePosition, "relative");
+  assert.notEqual(titleMotionState.voteTitleFilter, "none");
+  assert.equal(titleMotionState.voteTitleTextShadow, "none");
 
   const votePowerState = await page.evaluate(() => {
     const realNow = Date.now;
@@ -318,22 +364,217 @@ async function runPublicVoteSmoke(browser, baseUrl) {
   assert.equal(votePowerState.atMainVoteStart, 1);
   assert.equal(votePowerState.duringMainVote, 1);
 
-  const state = await page.evaluate(async () => {
-    selected = 1;
-    modalSelections = { mvp: 1, entertainer: 4, moment: 7 };
-    document.getElementById("voterName").value = "Smoke User";
-    document.getElementById("eventComment").value = "Smoke comment";
-    await submitBulkVote();
-    return {
-      token: getAdminTestVoteToken(),
-      voted,
-    };
-  });
+  await page.waitForFunction(() =>
+    !document.getElementById("voteUI").hidden &&
+    document.querySelectorAll("#voteTeams .vote-card").length === 3
+  );
+  await page.waitForFunction(() =>
+    Array.isArray(members) &&
+    members.some((member) => member.name === "Member 1")
+  );
+
+  await page.locator("#voteTeams .vote-card").first().click();
+  await page.locator("#voterName").fill("Smoke User");
+  await page.locator("#voteBtn").click();
+  await page.waitForFunction(() => document.getElementById("voteModalOverlay").classList.contains("show"));
+  await page.locator(".award-section").nth(0).getByRole("button", { name: "Member 1" }).click();
+  await page.locator(".award-section").nth(1).getByRole("button", { name: "Member 4" }).click();
+  await page.locator(".award-section").nth(2).getByRole("button", { name: "Member 7" }).click();
+  await page.locator("#comment-mvp").fill("MVP comment");
+  await page.locator("#comment-entertainer").fill("Entertainer comment");
+  await page.locator("#comment-moment").fill("Moment comment");
+  await page.locator("#eventComment").fill("Smoke comment");
+  await page.locator("#bonusKeyword").fill("SMOKE-BONUS");
+  await page.locator("#modalSubmitBtn").click();
+  await page.waitForFunction(() =>
+    voted === true &&
+    localStorage.getItem("battlefes2026_vote") === "1" &&
+    document.getElementById("thankYouOverlay").classList.contains("show")
+  );
+
+  const state = await page.evaluate(() => ({
+    token: getAdminTestVoteToken(),
+    voted,
+    selected,
+    voteButtonDisabled: document.getElementById("voteBtn").disabled,
+    voteFormDisplay: getComputedStyle(document.getElementById("voteForm")).display,
+    modalOpen: document.getElementById("voteModalOverlay").classList.contains("show"),
+  }));
 
   assert.equal(state.token, ADMIN_TOKEN);
   assert.equal(state.voted, true);
+  assert.equal(state.selected, 1);
+  assert.equal(state.voteButtonDisabled, true);
+  assert.equal(state.voteFormDisplay, "none");
+  assert.equal(state.modalOpen, false);
   assert.equal(voteAuthHeader, `Bearer ${ADMIN_TOKEN}`);
+  assert.ok(voteClientIdHeader.length >= 16);
+  assert.equal(votePayload.voterName, "Smoke User");
+  assert.equal(votePayload.eventComment, "Smoke comment");
+  assert.equal(votePayload.bonusKeyword, "SMOKE-BONUS");
+  assert.equal(votePayload.picks.length, 4);
+  assert.deepEqual(votePayload.picks, [
+    { categoryId: "team", candidateId: 1, comment: "" },
+    { categoryId: "mvp", candidateId: 1, comment: "MVP comment" },
+    { categoryId: "entertainer", candidateId: 4, comment: "Entertainer comment" },
+    { categoryId: "moment", candidateId: 7, comment: "Moment comment" },
+  ]);
   assert.deepEqual(errors, []);
+  await context.close();
+}
+
+async function runPublicMobileTeamCardScenario(browser, baseUrl, reducedMotion) {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    deviceScaleFactor: 3,
+    isMobile: true,
+    hasTouch: true,
+    reducedMotion,
+  });
+  await context.addInitScript(() => {
+    localStorage.setItem("battlefes_test_mode", "1");
+  });
+  const page = await context.newPage();
+  await page.route("**/api/results", (route) => {
+    route.fulfill({
+      status: 200,
+      contentType: "application/json; charset=utf-8",
+      body: JSON.stringify(resultsPayload()),
+    });
+  });
+
+  await page.goto(`${baseUrl}/index.html#teams`, { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => typeof isTouchLikeDevice === "function" && document.querySelectorAll(".team-card").length === 3);
+  await page.evaluate(() => {
+    document.documentElement.style.scrollBehavior = "auto";
+    document.body.style.scrollBehavior = "auto";
+  });
+  await page.evaluate(() => {
+    window.__teamCardSmoke = { styleMutations: 0, replayClassMutations: 0 };
+    document.querySelectorAll(".team-card").forEach((card) => {
+      new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          if (mutation.attributeName === "style") {
+            window.__teamCardSmoke.styleMutations += 1;
+          }
+          if (mutation.attributeName === "class" && card.classList.contains("reveal-replayed")) {
+            window.__teamCardSmoke.replayClassMutations += 1;
+          }
+        }
+      }).observe(card, { attributes: true, attributeFilter: ["class", "style"] });
+    });
+  });
+
+  const teamsTop = await page.locator("#teams").evaluate((el) => Math.round(el.getBoundingClientRect().top + window.scrollY));
+  const maxScrollY = await page.evaluate(() => document.documentElement.scrollHeight - window.innerHeight);
+  const scrollPoints = [teamsTop - 40, teamsTop + 260, teamsTop + 680, teamsTop + 1160, teamsTop + 1660, teamsTop + 680]
+    .map((y) => Math.max(0, Math.min(maxScrollY, y)));
+  const pSamples = [];
+  for (const y of scrollPoints) {
+    await page.evaluate((nextY) => window.scrollTo(0, nextY), y);
+    await page.waitForTimeout(180);
+    pSamples.push(...await page.evaluate(() =>
+      Array.from(document.querySelectorAll(".team-card")).map((card) => Number(card.style.getPropertyValue("--p") || "0.5"))
+    ));
+  }
+  await page.waitForFunction(() =>
+    Array.from(document.querySelectorAll(".team-card")).every((card) =>
+      card.classList.contains("visible") &&
+      getComputedStyle(card).opacity === "1" &&
+      getComputedStyle(card).clipPath === "inset(0px)"
+    )
+  );
+
+  const teamState = await page.evaluate(() => ({
+    touchLike: isTouchLikeDevice(),
+    reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    cards: Array.from(document.querySelectorAll(".team-card")).map((card) => ({
+      className: card.className,
+      p: Number(card.style.getPropertyValue("--p") || "0"),
+      opacity: getComputedStyle(card).opacity,
+      clipPath: getComputedStyle(card).clipPath,
+    })),
+    smoke: window.__teamCardSmoke,
+  }));
+  const maxPDelta = Math.max(...pSamples.map((p) => Math.abs(p - 0.5)));
+  assert.equal(teamState.touchLike, true);
+  assert.equal(teamState.reducedMotion, reducedMotion === "reduce");
+  assert.equal(teamState.cards.length, 3);
+  assert.ok(maxPDelta > 0.05);
+  assert.ok(teamState.cards.every((card) => card.className.includes("visible")));
+  assert.ok(teamState.cards.every((card) => !card.className.includes("reveal-replayed")));
+  assert.ok(teamState.cards.every((card) => card.opacity === "1"));
+  assert.ok(teamState.cards.every((card) => card.clipPath === "inset(0px)"));
+  assert.ok(teamState.smoke.styleMutations > 0);
+  assert.equal(teamState.smoke.replayClassMutations, 0);
+  await context.close();
+}
+
+async function runPublicMobileTeamCardSmoke(browser, baseUrl) {
+  await runPublicMobileTeamCardScenario(browser, baseUrl, "no-preference");
+  await runPublicMobileTeamCardScenario(browser, baseUrl, "reduce");
+}
+
+async function runPublicDesktopTeamStackSmoke(browser, baseUrl) {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+  await context.addInitScript(() => {
+    localStorage.setItem("battlefes_test_mode", "1");
+  });
+  const page = await context.newPage();
+  await page.route("**/api/results", (route) => {
+    route.fulfill({
+      status: 200,
+      contentType: "application/json; charset=utf-8",
+      body: JSON.stringify(resultsPayload()),
+    });
+  });
+
+  await page.goto(`${baseUrl}/index.html#teams`, { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => document.querySelectorAll(".teams-grid > .team-card").length === 3);
+  await page.evaluate(() => {
+    document.documentElement.style.scrollBehavior = "auto";
+    document.body.style.scrollBehavior = "auto";
+  });
+  await page.waitForTimeout(300);
+
+  const desktopStyles = await page.evaluate(() => ({
+    min1000: window.matchMedia("(min-width: 1000px)").matches,
+    gridColumns: getComputedStyle(document.querySelector(".teams-grid")).gridTemplateColumns,
+    cards: Array.from(document.querySelectorAll(".teams-grid > .team-card")).map((card) => ({
+      position: getComputedStyle(card).position,
+      top: getComputedStyle(card).top,
+    })),
+  }));
+  assert.equal(desktopStyles.min1000, true);
+  assert.ok(!desktopStyles.gridColumns.includes(" "));
+  assert.ok(desktopStyles.cards.every((card) => card.position === "sticky"));
+  assert.ok(desktopStyles.cards.every((card) => card.top === "100px"));
+
+  const gridTop = await page.locator(".teams-grid").evaluate((el) =>
+    Math.round(el.getBoundingClientRect().top + window.scrollY)
+  );
+  const samples = [];
+  for (let offset = 0; offset <= 1080; offset += 120) {
+    await page.evaluate(([top, nextOffset]) => window.scrollTo(0, top + nextOffset), [gridTop, offset]);
+    await page.waitForTimeout(100);
+    samples.push(await page.evaluate((nextOffset) => {
+      const cards = Array.from(document.querySelectorAll(".teams-grid > .team-card"));
+      const tops = cards.map((card) => Math.round(card.getBoundingClientRect().top));
+      const topCard = document.elementFromPoint(window.innerWidth / 2, 130)?.closest(".team-card");
+      return {
+        offset: nextOffset,
+        tops,
+        topCardIndex: cards.indexOf(topCard) + 1,
+      };
+    }, offset));
+  }
+  const stacked = samples.find((sample) =>
+    Math.abs(sample.tops[0] - 100) <= 2 &&
+    Math.abs(sample.tops[1] - 100) <= 2 &&
+    sample.tops[2] > 100 &&
+    sample.topCardIndex === 2
+  );
+  assert.ok(stacked, JSON.stringify(samples));
   await context.close();
 }
 
@@ -346,6 +587,10 @@ async function runAdminSmoke(browser, baseUrl) {
   const errors = [];
   let resultsAuthHeader = "";
   let resetAuthHeader = "";
+  let voteStatusAuthHeader = "";
+  const voteStatusPayloads = [];
+  let adminStatus = "waiting";
+  let adminVoteStatusOverride = null;
 
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => {
@@ -357,7 +602,20 @@ async function runAdminSmoke(browser, baseUrl) {
     route.fulfill({
       status: 200,
       contentType: "application/json; charset=utf-8",
-      body: JSON.stringify(adminPayload({ status: "closed" })),
+      body: JSON.stringify(adminPayload({ status: adminStatus, adminVoteStatusOverride })),
+    });
+  });
+
+  await page.route("**/api/admin/vote-status", async (route) => {
+    voteStatusAuthHeader = route.request().headers().authorization || "";
+    const payload = JSON.parse(route.request().postData() || "{}");
+    voteStatusPayloads.push(payload);
+    adminVoteStatusOverride = payload.status === "closed" ? "closed" : null;
+    adminStatus = adminVoteStatusOverride || "waiting";
+    route.fulfill({
+      status: 200,
+      contentType: "application/json; charset=utf-8",
+      body: JSON.stringify(adminPayload({ status: adminStatus, adminVoteStatusOverride })),
     });
   });
 
@@ -366,7 +624,7 @@ async function runAdminSmoke(browser, baseUrl) {
     route.fulfill({
       status: 200,
       contentType: "application/json; charset=utf-8",
-      body: JSON.stringify(adminPayload({ status: "closed" })),
+      body: JSON.stringify(adminPayload({ status: adminStatus, adminVoteStatusOverride })),
     });
   });
 
@@ -381,20 +639,77 @@ async function runAdminSmoke(browser, baseUrl) {
     liveScoreTabsDisplay: getComputedStyle(document.getElementById("liveScoreTeamTabs")).display,
     leaderLabel: document.querySelector("#overallCategoryWrap .leader-kicker")?.textContent.trim(),
     leaderName: document.querySelector("#overallCategoryWrap .leader-name")?.textContent.trim(),
+    leaderDetail: document.querySelector("#overallCategoryWrap .leader-detail")?.textContent.trim(),
+    overallText: document.getElementById("overallCategoryWrap")?.textContent || "",
+    aggregateLabels: Array.from(document.querySelectorAll("#overallCategoryWrap .aggregate-section strong"))
+      .map((node) => node.textContent.trim().replace(/:$/, "")),
+    detailHeaders: Array.from(document.querySelectorAll("#overallCategoryWrap .detail-section thead th"))
+      .map((node) => node.textContent.trim()),
   }));
   assert.equal(desktopState.activeTab, "overall");
   assert.equal(desktopState.activePanel, "overall");
   assert.equal(desktopState.liveScoreDetailsOpen, false);
   assert.equal(desktopState.liveScoreCardCount, 9);
   assert.equal(desktopState.liveScoreTabsDisplay, "none");
-  assert.equal(desktopState.leaderLabel, "WINNER");
-  assert.ok(desktopState.leaderName.includes("CRIMSON"));
+  assert.ok(desktopState.overallText.includes("全体集計"));
+  assert.ok(desktopState.overallText.includes("チーム別内訳"));
+  assert.ok(desktopState.overallText.includes("個人賞加点"));
+  assert.ok(desktopState.overallText.includes("150,000"));
+  assert.deepEqual(desktopState.aggregateLabels.slice(3), [
+    "全チームライブスコア",
+    "全チーム個人賞加点",
+    "全チーム投票ポイント",
+    "全チーム総合スコア",
+  ]);
+  assert.deepEqual(desktopState.detailHeaders, [
+    "",
+    "ライブスコア",
+    "個人賞加点",
+    "投票ポイント",
+    "総合スコア",
+    "投票数",
+    "割合",
+  ]);
+
+  await page.evaluate(() => activateAdminTab("settings"));
+  await page.locator("#testClosedViewToggleBtn").click();
+  await page.waitForFunction(() =>
+    document.getElementById("testClosedViewToggleBtn")?.textContent.trim().includes("ON")
+  );
+  const testClosedState = await page.evaluate(() => ({
+    buttonText: document.getElementById("testClosedViewToggleBtn")?.textContent.trim(),
+    statusText: document.getElementById("testModeStatus")?.textContent.trim(),
+    voteStatusText: document.getElementById("voteStatus")?.textContent.trim(),
+    leaderLabel: document.querySelector("#overallCategoryWrap .leader-kicker")?.textContent.trim(),
+    leaderName: document.querySelector("#overallCategoryWrap .leader-name")?.textContent.trim(),
+    leaderDetail: document.querySelector("#overallCategoryWrap .leader-detail")?.textContent.trim(),
+  }));
+  assert.deepEqual(voteStatusPayloads[0], { status: "closed" });
+  assert.equal(testClosedState.buttonText, "締切後表示 ON");
+  assert.ok(testClosedState.statusText.includes("締切後表示"));
+  assert.equal(testClosedState.voteStatusText, "closed");
+  assert.equal(testClosedState.leaderLabel, "WINNER");
+  assert.ok(testClosedState.leaderName.includes("NOVA"));
+  assert.ok(testClosedState.leaderDetail.includes("101,800"));
+
+  await page.locator("#testClosedViewToggleBtn").click();
+  await page.waitForFunction(() =>
+    document.getElementById("testClosedViewToggleBtn")?.textContent.trim().includes("OFF")
+  );
+  const testClosedOffState = await page.evaluate(() => ({
+    buttonText: document.getElementById("testClosedViewToggleBtn")?.textContent.trim(),
+    voteStatusText: document.getElementById("voteStatus")?.textContent.trim(),
+  }));
+  assert.deepEqual(voteStatusPayloads[1], { status: null });
+  assert.equal(testClosedOffState.buttonText, "締切後表示 OFF");
+  assert.equal(testClosedOffState.voteStatusText, "waiting");
 
   page.once("dialog", (dialog) => dialog.accept());
   await page.locator("button.danger").click();
   await page.waitForFunction(() => document.getElementById("statusText").textContent.includes("リセット"));
 
   assert.equal(resultsAuthHeader, `Bearer ${ADMIN_TOKEN}`);
+  assert.equal(voteStatusAuthHeader, `Bearer ${ADMIN_TOKEN}`);
   assert.equal(resetAuthHeader, `Bearer ${ADMIN_TOKEN}`);
   assert.deepEqual(errors, []);
   await context.close();
@@ -419,6 +734,14 @@ async function runAdminMobileLayoutSmoke(browser, baseUrl) {
 
   await page.route("**/api/admin/results", (route) => {
     resultsAuthHeader = route.request().headers().authorization || "";
+    route.fulfill({
+      status: 200,
+      contentType: "application/json; charset=utf-8",
+      body: JSON.stringify(adminPayload()),
+    });
+  });
+
+  await page.route("**/api/admin/live-scores", (route) => {
     route.fulfill({
       status: 200,
       contentType: "application/json; charset=utf-8",
@@ -476,7 +799,13 @@ async function runAdminMobileLayoutSmoke(browser, baseUrl) {
   assert.ok(inputState.maxButtonRadius <= 8);
   assert.ok(inputState.maxCardRadius <= 8);
 
-  await page.locator('.live-score-card[data-member-id="1"] [data-score-field="oshiBonusPercent"]').fill("25");
+  await page.locator('.live-score-card[data-member-id="1"] [data-score-field="liveScoreBefore"]').fill("0");
+  await page.locator('.live-score-card[data-member-id="1"] [data-score-field="liveScoreAfter"]').fill("1");
+  await page.locator('.live-score-card[data-member-id="1"] [data-score-field="oshiBonusBefore"]').fill("10");
+  await page.locator('.live-score-card[data-member-id="1"] [data-score-field="oshiBonusAfter"]').fill("20");
+  const increasingBonusScore = await page.locator('.live-score-card[data-member-id="1"] [data-live-score-preview]').textContent();
+  assert.equal(increasingBonusScore, "1,000");
+
   await page.locator("#liveScoreTeamTabs button").nth(1).click();
   await page.waitForFunction(() => {
     const ids = Array.from(document.querySelectorAll(".live-score-card")).map((card) => card.getAttribute("data-member-id"));
@@ -487,8 +816,12 @@ async function runAdminMobileLayoutSmoke(browser, baseUrl) {
     const ids = Array.from(document.querySelectorAll(".live-score-card")).map((card) => card.getAttribute("data-member-id"));
     return ids.join(",") === "1,2,3";
   });
-  const preservedDraft = await page.locator('.live-score-card[data-member-id="1"] [data-score-field="oshiBonusPercent"]').inputValue();
-  assert.equal(preservedDraft, "25");
+  const preservedDraft = await page.locator('.live-score-card[data-member-id="1"] [data-score-field="oshiBonusBefore"]').inputValue();
+  const preservedAfterBonus = await page.locator('.live-score-card[data-member-id="1"] [data-score-field="oshiBonusAfter"]').inputValue();
+  const preservedScore = await page.locator('.live-score-card[data-member-id="1"] [data-live-score-preview]').textContent();
+  assert.equal(preservedDraft, "10");
+  assert.equal(preservedAfterBonus, "20");
+  assert.equal(preservedScore, "1,000");
 
   await page.locator('[data-admin-tab="individual"]').click();
   await page.waitForFunction(() => document.querySelectorAll("#individualAwardTabs button").length === 3);
@@ -623,11 +956,26 @@ async function runAdminMobileLayoutSmoke(browser, baseUrl) {
   await context.close();
 }
 
+async function launchSmokeBrowser() {
+  try {
+    return await chromium.launch();
+  } catch (error) {
+    if (existsSync(EDGE_EXECUTABLE)) {
+      return await chromium.launch({ executablePath: EDGE_EXECUTABLE });
+    }
+    throw error;
+  }
+}
+
 const server = await startStaticServer();
-const browser = await chromium.launch();
+const browser = await launchSmokeBrowser();
 try {
   await runPublicVoteSmoke(browser, server.baseUrl);
   console.log("OK public vote smoke");
+  await runPublicDesktopTeamStackSmoke(browser, server.baseUrl);
+  console.log("OK public desktop team stack smoke");
+  await runPublicMobileTeamCardSmoke(browser, server.baseUrl);
+  console.log("OK public mobile team card smoke");
   await runAdminSmoke(browser, server.baseUrl);
   console.log("OK admin smoke");
   await runAdminMobileLayoutSmoke(browser, server.baseUrl);

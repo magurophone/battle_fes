@@ -19,6 +19,7 @@
     --muted: #b09870;
     --card: rgba(255,190,90,0.07);
     --border: rgba(255,160,60,0.2);
+    --reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -104,10 +105,12 @@
     position: relative; padding: 8rem 2rem 4rem; overflow: hidden;
   }
   .hero-bg {
-    position: absolute; inset: 0;
+    position: absolute; left: 0; right: 0; top: -9%; height: 118%;
     background-image: url('/hero-bg.webp');
     background-size: cover; background-position: center 30%;
     background-repeat: no-repeat;
+    transform: translate3d(0, calc((var(--p, 0.5) - 0.5) * 15.25%), 0);
+    will-change: transform;
   }
   .hero-rays { display: none; }
   .hero-firework {
@@ -685,14 +688,27 @@
     color: var(--accent); text-transform: uppercase;
     margin-bottom: 0.8rem;
   }
-  .section-label, .section-title { position: relative; text-shadow: 0 0 24px rgba(6,12,26,0.95), 0 0 12px rgba(6,12,26,0.95), 0 2px 4px rgba(0,0,0,0.6); }
+  .section-label, .section-title { position: relative; }
+  .section-label { text-shadow: 0 0 24px rgba(6,12,26,0.95), 0 0 12px rgba(6,12,26,0.95), 0 2px 4px rgba(0,0,0,0.6); }
   .section-title {
     font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
     font-weight: 400; font-size: clamp(2.4rem, 5.5vw, 4rem);
     line-height: 1.15; letter-spacing: 0.06em;
     margin-bottom: 3rem;
     color: transparent; -webkit-text-stroke: 2px #ffd47a;
-    filter: drop-shadow(0 0 16px rgba(255,180,80,0.4));
+    filter: drop-shadow(0 0 0 rgba(255,180,80,0)) drop-shadow(0 0 0 rgba(6,12,26,0)) drop-shadow(0 0 0 rgba(0,0,0,0));
+    text-shadow: none;
+  }
+  .section-title.visible {
+    animation: section-title-glow-in 0.75s ease-out calc(var(--reveal-delay, 0s) + 0.72s) both;
+  }
+  @keyframes section-title-glow-in {
+    from {
+      filter: drop-shadow(0 0 0 rgba(255,180,80,0)) drop-shadow(0 0 0 rgba(6,12,26,0)) drop-shadow(0 0 0 rgba(0,0,0,0));
+    }
+    to {
+      filter: drop-shadow(0 0 16px rgba(255,180,80,0.46)) drop-shadow(0 0 20px rgba(6,12,26,0.9)) drop-shadow(0 2px 5px rgba(0,0,0,0.7));
+    }
   }
   .divider {
     width: 100%; height: 1px;
@@ -1022,17 +1038,6 @@
     color: rgba(255,160,80,0.85);
     white-space: nowrap;
   }
-  .ar-secret-mark {
-    font-family: 'Black Ops One', sans-serif;
-    font-size: 1.7rem;
-    color: #ffba3a;
-    text-shadow:
-      -1px 0 0 rgba(255,80,30,0.7),
-       1px 0 0 rgba(40,120,255,0.4),
-       0 0 14px rgba(255,140,40,0.55);
-    letter-spacing: 0.05em;
-    line-height: 1;
-  }
   .ar-secret-text {
     font-size: 0.95rem;
     color: rgba(255,235,210,0.95);
@@ -1108,12 +1113,11 @@
     .ar-formula-eq .op { margin: 0 0.25rem; font-size: 1.1em; }
     .ar-secret { flex-direction: column; align-items: flex-start; gap: 0.5rem; padding: 0.85rem 1rem; }
     .ar-secret-tag { font-size: 0.6rem; letter-spacing: 0.2em; }
-    .ar-secret-mark { font-size: 1.4rem; }
     .ar-secret-text { font-size: 0.82rem; }
     .ar-secret-hint { margin-left: 0; font-size: 0.66rem; }
   }
 
-  #teams { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
+  #teams { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; position: relative; }
   .entry-reg {
     display: flex;
     align-items: center;
@@ -1197,12 +1201,19 @@
     .reg-badge-stack { padding: 0.35rem 0.7rem 0.4rem 0.6rem; }
     .reg-badge-sub { font-size: 0.62rem; }
   }
-  .teams-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.2rem; }
+  .teams-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+  /* 静と動の対比: PC ではチームカードが top で止まり、次のカードがポスターの重ね貼りのように上へスライドする */
+  @media (min-width: 1000px) {
+    .teams-grid { gap: 4rem; }
+    .teams-grid > .team-card { position: sticky; top: 100px; }
+  }
   .team-card {
+    --p: 0.5;
+    --team-bg-scale: 1.12;
     position: relative;
     display: flex;
     flex-direction: column;
-    min-height: 380px;
+    min-height: 480px;
     padding: 0;
     background: #050203;
     border: 1px solid rgba(180,130,60,0.22);
@@ -1217,8 +1228,10 @@
     background-image: var(--team-bg);
     background-size: cover; background-position: center;
     z-index: 0;
-    transform: scale(1.04);
-    transition: transform 6s ease-out;
+    transform: scale3d(var(--team-bg-scale, 1.12), var(--team-bg-scale, 1.12), 1) translate3d(0, calc((var(--p, 0.5) - 0.5) * -14%), 0);
+    will-change: transform;
+    backface-visibility: hidden;
+    contain: paint;
   }
   .team-card::after {
     content: ''; position: absolute; inset: 0;
@@ -1234,15 +1247,17 @@
     position: relative;
     z-index: 2;
   }
-  .team-card:hover {
-    transform: translateY(-6px);
-    border-color: var(--team-color, var(--accent));
-    box-shadow:
-      0 20px 50px rgba(0,0,0,0.55),
-      0 0 0 1px var(--team-color, var(--accent)),
-      0 0 60px color-mix(in srgb, var(--team-color, #ff7c1e) 40%, transparent);
+  @media (hover: hover) and (pointer: fine) {
+    .team-card:hover {
+      --team-bg-scale: 1.14;
+      transform: translateY(-6px);
+      border-color: var(--team-color, var(--accent));
+      box-shadow:
+        0 20px 50px rgba(0,0,0,0.55),
+        0 0 0 1px var(--team-color, var(--accent)),
+        0 0 60px color-mix(in srgb, var(--team-color, #ff7c1e) 40%, transparent);
+    }
   }
-  .team-card:hover::before { transform: scale(1.10); }
   .team-num {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 0.78rem;
@@ -1255,7 +1270,7 @@
   .team-name {
     font-family: 'Black Ops One', 'Bebas Neue', sans-serif;
     font-weight: 400;
-    font-size: clamp(2.2rem, 4vw, 3rem);
+    font-size: 3.2rem;
     letter-spacing: 0.04em;
     line-height: 1;
     color: var(--team-color, var(--accent));
@@ -1293,18 +1308,22 @@
     -webkit-backdrop-filter: blur(4px);
   }
   .team-roster {
-    display: flex; align-items: flex-end; gap: 1.2rem;
-    padding: 1.4rem 1.6rem 0;
+    /* リーダー・メンバーとも同じ正方形サイズで揃える */
+    --roster-member-size: 156px;
+    --roster-leader-size: 156px;
+    display: flex; align-items: flex-end; justify-content: center; gap: clamp(0.9rem, 2vw, 1.6rem);
+    padding: 2rem 1.6rem 0;
   }
   .roster-members {
-    flex: 1; min-width: 0;
-    display: flex; flex-direction: row; align-items: flex-end; gap: 0.9rem;
+    display: contents;
   }
   /* リーダー・メンバー共通: 正方形アイコン + 下に名前。底辺揃えで並べる */
   .roster-leader, .roster-member {
     display: flex; flex-direction: column; align-items: center; gap: 0.45rem;
     min-width: 0;
   }
+  .roster-leader { flex: 0 0 var(--roster-leader-size); }
+  .roster-member { flex: 0 0 var(--roster-member-size); }
   .roster-link {
     color: inherit;
     text-decoration: none;
@@ -1345,10 +1364,10 @@
     color: rgba(255,255,255,0.3);
     animation: none;
   }
-  /* 形は同じ正方形。リーダーだけ一回り大きく */
-  .avatar-lg { width: 104px; height: 104px; }
+  /* リーダーは大きめ、メンバーは同じ正方形サイズで揃える */
+  .avatar-lg { width: var(--roster-leader-size); height: var(--roster-leader-size); }
   .avatar-lg.placeholder::after { font-size: 2.5rem; }
-  .avatar-sm { width: 78px; height: 78px; }
+  .avatar-sm { width: var(--roster-member-size); height: var(--roster-member-size); }
   .avatar-sm.placeholder::after { font-size: 1.7rem; }
   /* LEADER はアバター角のバッジ (別行を作らず構造を揃える) */
   .leader-badge {
@@ -1360,14 +1379,16 @@
     text-shadow: none;
   }
   .roster-name {
-    font-size: 0.76rem; font-weight: 700;
+    font-size: 0.95rem; font-weight: 700;
     color: rgba(255,255,255,0.92);
     text-shadow: 0 1px 3px rgba(0,0,0,0.9);
     line-height: 1.5; text-align: center;
-    max-width: 92px; min-width: 0;
+    max-width: calc(var(--roster-member-size) + 10px); min-width: 0;
     padding: 0 2px 2px;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    overflow-wrap: anywhere; white-space: normal;
   }
+  .roster-leader .roster-name,
+  .roster-member .roster-name { max-width: calc(var(--roster-member-size) + 10px); font-size: 0.98rem; }
   .team-concept {
     margin-top: 1.1rem;
     padding: 0.9rem 1.6rem 1.4rem;
@@ -1388,6 +1409,13 @@
     line-height: 1.65;
     color: rgba(255,210,170,0.82);
     text-shadow: 0 1px 2px rgba(0,0,0,0.85);
+  }
+  .team-desc strong {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: #fff4e5;
   }
   .team-link {
     display: inline-flex; align-items: center; gap: 0.4rem;
@@ -1414,6 +1442,7 @@
 
   #schedule { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
   .schedule-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .round-group { display: flex; flex-direction: column; gap: 0.5rem; }
   .schedule-item {
     position: relative;
     display: grid;
@@ -1482,6 +1511,15 @@
     color: rgba(255,210,170,0.55);
     letter-spacing: 0.02em;
   }
+  .sched-performer {
+    font-size: 1.08rem;
+    font-weight: 800;
+    line-height: 1.35;
+    color: #fff7eb;
+    letter-spacing: 0;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.85), 0 0 12px rgba(255,210,160,0.18);
+    overflow-wrap: anywhere;
+  }
   .sched-badges { display: flex; gap: 0.3rem; flex-wrap: wrap; justify-content: flex-end; }
   .sched-badge {
     display: inline-block;
@@ -1511,12 +1549,19 @@
     border: 1px solid rgba(0,201,177,0.3);
   }
   .round-divider {
+    position: sticky;
+    top: 67px;
+    z-index: 4;
     display: flex;
     align-items: center;
     gap: 1rem;
     margin: 1.6rem 0 1rem;
-    padding: 0;
+    padding: 0.45rem 0;
     border: none;
+    border-radius: 4px;
+    background: rgba(6,12,26,0.66);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
   .round-divider::before, .round-divider::after {
     content: '';
@@ -1905,6 +1950,8 @@
   #vote .section-label,
   #vote .section-title {
     position: relative;
+  }
+  #vote .section-label {
     text-shadow:
       0 0 24px rgba(6,12,26,0.95),
       0 0 12px rgba(6,12,26,0.95),
@@ -2212,12 +2259,157 @@
 
   #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.5; }
 
-  .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal {
+    --reveal-delay: 0s;
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s var(--reveal-ease), transform 0.7s var(--reveal-ease);
+    transition-delay: var(--reveal-delay);
+  }
   .reveal.visible { opacity: 1; transform: translateY(0); }
-  .reveal-delay-1 { transition-delay: 0.1s; }
-  .reveal-delay-2 { transition-delay: 0.2s; }
-  .reveal-delay-3 { transition-delay: 0.3s; }
-  .reveal-delay-4 { transition-delay: 0.4s; }
+  .reveal-delay-1 { --reveal-delay: 0.12s; }
+  .reveal-delay-2 { --reveal-delay: 0.24s; }
+  .reveal-delay-3 { --reveal-delay: 0.36s; }
+  .reveal-delay-4 { --reveal-delay: 0.48s; }
+
+  .line-reveal {
+    --reveal-delay: 0s;
+    display: block;
+    overflow: hidden;
+  }
+  .line-reveal-line {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    vertical-align: bottom;
+  }
+  .line-reveal-inner {
+    display: inline-block;
+    transform: translateY(110%);
+    transition: transform 0.9s var(--reveal-ease);
+    transition-delay: var(--reveal-delay);
+    will-change: transform;
+  }
+  .line-reveal.visible .line-reveal-inner { transform: translateY(0); }
+
+  .char-reveal {
+    --reveal-delay: 0s;
+    display: block;
+  }
+  .char-reveal-line {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .char-reveal-char {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+  }
+  .char-reveal-inner {
+    display: inline-block;
+    transform: translateY(112%);
+    transition: transform 0.72s var(--reveal-ease);
+    transition-delay: calc(var(--reveal-delay) + var(--char-delay, 0s));
+    will-change: transform;
+  }
+  .char-reveal.visible .char-reveal-inner { transform: translateY(0); }
+
+  .team-card.reveal {
+    opacity: 1;
+    transform: translateY(0);
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 0.75s var(--reveal-ease), transform 0.4s, border-color 0.4s, box-shadow 0.4s;
+    transition-delay: var(--reveal-delay), 0s, 0s, 0s;
+    will-change: clip-path, transform;
+  }
+  .team-card.reveal.visible { clip-path: inset(0 0 0 0); }
+  @media (hover: none), (pointer: coarse), (max-width: 900px) {
+    .team-card.reveal {
+      opacity: 0;
+      clip-path: inset(0 0 0 0);
+      transform: translate3d(0, 18px, 0);
+      transition: opacity 0.42s var(--reveal-ease), transform 0.42s var(--reveal-ease), border-color 0.4s, box-shadow 0.4s;
+      transition-delay: var(--reveal-delay), var(--reveal-delay), 0s, 0s;
+      will-change: opacity, transform;
+    }
+    .team-card.reveal.visible {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .team-card.reveal.visible:hover { transform: translateY(-6px); }
+  }
+
+  .divider.divider-reveal {
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.8s var(--reveal-ease);
+    transition-delay: var(--reveal-delay, 0s);
+    will-change: transform;
+  }
+  .divider.divider-reveal.visible { transform: scaleX(1); }
+
+  .schedule-reveal,
+  .ar-reveal {
+    --reveal-delay: 0s;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.5s var(--reveal-ease), transform 0.5s var(--reveal-ease);
+    transition-delay: var(--reveal-delay);
+    will-change: opacity, transform;
+  }
+  .schedule-reveal.visible,
+  .ar-reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .schedule-item.schedule-reveal.visible:hover { transform: translateX(4px); }
+  .reveal-complete { --reveal-delay: 0s !important; }
+  /* 再入時は簡易フェード（clip-path のフル演出は初回のみ） */
+  .team-card.reveal.reveal-replayed {
+    clip-path: inset(0 0 0 0);
+    opacity: 0;
+    transition: opacity 0.45s ease, transform 0.4s, border-color 0.4s, box-shadow 0.4s;
+  }
+  .team-card.reveal.reveal-replayed.visible { opacity: 1; }
+  .reveal.reveal-replayed:not(.team-card) { transition-duration: 0.5s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-bg {
+      transform: translate3d(0, 0, 0);
+      will-change: auto;
+    }
+    .section-title {
+      animation: none;
+      filter: drop-shadow(0 0 16px rgba(255,180,80,0.46)) drop-shadow(0 0 20px rgba(6,12,26,0.9)) drop-shadow(0 2px 5px rgba(0,0,0,0.7));
+      text-shadow: none;
+    }
+    .team-card::before {
+      transition: none;
+    }
+    .line-reveal,
+    .line-reveal-line,
+    .char-reveal-line {
+      overflow: visible;
+    }
+    .reveal,
+    .team-card.reveal,
+    .reveal-replayed,
+    .schedule-reveal,
+    .ar-reveal,
+    .divider.divider-reveal,
+    .line-reveal .line-reveal-inner,
+    .char-reveal .char-reveal-inner {
+      opacity: 1;
+      transform: none;
+      clip-path: inset(0 0 0 0);
+      transition: none;
+      transition-delay: 0s;
+      will-change: auto;
+    }
+  }
 
   .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
   .nav-hamburger span { display: block; width: 24px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s; }
@@ -2245,13 +2437,23 @@
     .vote-status-text span { display: block; margin-left: 0; margin-top: 0.15rem; }
     .vote-result-bar-wrap { display: none; }
     .about-stats { grid-template-columns: 1fr 1fr; }
-    .round-divider { margin: 1.2rem 0 0.8rem; gap: 0.6rem; }
+    .round-divider { top: 64px; margin: 1.2rem 0 0.8rem; gap: 0.6rem; padding: 0.35rem 0; }
     .round-divider .round-label { font-size: 1.1rem; letter-spacing: 0.3em; padding: 0.3rem 0.7rem; }
     .hero-firework { width: 180px; height: 180px; }
     .hero-firework.fw-a { top: 8%;  left: 0; }
     .hero-firework.fw-b { top: 12%; right: 0; }
     .hero-firework.fw-c { bottom: 22%; left: 0; }
     .hero-firework.fw-d { bottom: 26%; right: 0; }
+    .team-card { min-height: 420px; }
+    .team-name { font-size: clamp(2rem, 11vw, 2.7rem); }
+    .team-roster {
+      --roster-member-size: clamp(88px, 24vw, 100px);
+      --roster-leader-size: clamp(88px, 24vw, 100px);
+      gap: clamp(0.35rem, 2.2vw, 0.65rem);
+      padding-inline: clamp(0.3rem, 2vw, 0.75rem);
+    }
+    .roster-leader .roster-name { font-size: 0.82rem; }
+    .roster-member .roster-name { font-size: 0.76rem; }
     #vote::before {
       width: 130%;
       aspect-ratio: 1 / 1;
@@ -2264,6 +2466,8 @@
       to   { transform: translateX(-50%) rotate(360deg); }
     }
   }
+  @media (max-width: 900px) {
+  }
   @media (max-width: 420px) { .nav-logo img { height: 28px; } }
 </style>
 </head>
@@ -2274,8 +2478,8 @@
   <ul class="nav-links">
     <li><a href="#about">概要</a></li>
     <li><a href="#teams">チーム</a></li>
-    <!-- 段階公開: タイムテーブル非表示に合わせてリンクも非表示。戻すときは hidden を外す -->
-    <li hidden><a href="#schedule">スケジュール</a></li>
+    <!-- 段階公開: タイムテーブル公開中 -->
+    <li><a href="#schedule">スケジュール</a></li>
     <li><a href="#vote">投票</a></li>
   </ul>
   <button class="nav-hamburger" id="hamburger" onclick="toggleNav()" aria-label="メニュー">
@@ -2285,8 +2489,8 @@
 <div class="nav-drawer" id="navDrawer">
   <a href="#about" onclick="closeNav()">概要</a>
   <a href="#teams" onclick="closeNav()">チーム</a>
-  <!-- 段階公開: タイムテーブル非表示に合わせてリンクも非表示。戻すときは hidden を外す -->
-  <a href="#schedule" onclick="closeNav()" hidden>スケジュール</a>
+  <!-- 段階公開: タイムテーブル公開中 -->
+  <a href="#schedule" onclick="closeNav()">スケジュール</a>
   <a href="#vote" onclick="closeNav()">投票</a>
 </div>
 
@@ -2328,7 +2532,7 @@
     <p class="section-label">About</p>
     <h2 class="section-title">イベント<br>について</h2>
     <p>ColorSingの歌い手たちがチームを組み、歌唱力・表現力・チームワークで競い合う<strong>大型バトルイベント</strong>です。</p>
-    <p>各チームが持ち時間内にパフォーマンスを披露。リスナー投票と獲得ライブスコアで<strong>最強チームを決定</strong>します。</p>
+    <p>各チームが持ち時間内にパフォーマンスを披露。リスナー投票・個人賞加点・獲得ライブスコアで<strong>最強チームを決定</strong>します。</p>
     <p>応援したいチームに投票して、あなたもバトルフェスに参加しよう！</p>
   </div>
   <div class="about-stats">
@@ -2354,15 +2558,15 @@
     </div>
   </div>
 
-  <!-- 段階公開: ルールオブエンゲージメント 非表示中。再表示は下の hidden を外すだけ -->
-  <div class="about-rules" hidden>
+  <!-- 段階公開: ルールオブエンゲージメント 公開中 -->
+  <div class="about-rules">
     <div class="ar-shell">
       <div class="ar-top">
         <div class="ar-headline">
           <span class="ar-tag">// BATTLE RULES /  R001</span>
           <h3 class="ar-title">RULES OF<br>ENGAGEMENT</h3>
           <p class="ar-title-jp">勝敗について</p>
-          <p class="ar-lead">審査員はいない。リスナーの投票と ColorSing ライブスコア — それだけが優勝チームを決める。<br><strong>遅く投票するほど1票が重くなる</strong></p>
+          <p class="ar-lead">審査員はいない。リスナーの投票、個人賞加点、ColorSing ライブスコア — それだけが優勝チームを決める。<br><strong>遅く投票するほど1票が重くなる</strong></p>
         </div>
         <div class="ar-graph-wrap">
           <svg class="ar-graph" viewBox="0 0 400 160" preserveAspectRatio="none" aria-label="Vote power curve">
@@ -2429,14 +2633,13 @@
           <p class="ar-rlabel">FINAL SCORE</p>
           <p class="ar-rjp">優勝の決定</p>
           <div class="ar-rbody">
-            <strong>全投票のポイント合計</strong> に、<strong>ColorSing ライブスコア</strong> を足した合計が最も高いチームが優勝。
+            <strong>全投票のポイント合計</strong> と <strong>個人賞加点</strong> に、<strong>ColorSing ライブスコア</strong> を足した合計が最も高いチームが優勝。
           </div>
         </div>
       </div>
 
       <div class="ar-secret">
-        <span class="ar-secret-tag">// ?? CLASSIFIED</span>
-        <span class="ar-secret-mark">!?</span>
+        <span class="ar-secret-tag">CLASSIFIED</span>
         <span class="ar-secret-text">本投票中、<strong>一定条件達成で BONUS 発生</strong></span>
         <span class="ar-secret-hint">— 詳細は当日配信で</span>
       </div>
@@ -2445,7 +2648,7 @@
         <div class="ar-formula-label">// FINAL SCORE //</div>
         <div class="ar-formula-jp">総合スコア</div>
         <div class="ar-formula-eq">
-          投票ポイント合計 <span class="op">+</span> ライブスコア
+          投票ポイント合計 <span class="op">+</span> 個人賞加点 <span class="op">+</span> ライブスコア
         </div>
       </div>
     </div>
@@ -2475,19 +2678,19 @@
           <span class="roster-name">まぐろふぉん</span>
         </a>
         <div class="roster-members">
-          <div class="roster-member">
-            <div class="avatar avatar-sm placeholder"></div>
-            <span class="roster-name placeholder">Coming soon</span>
-          </div>
-          <div class="roster-member">
-            <div class="avatar avatar-sm placeholder"></div>
-            <span class="roster-name placeholder">Coming soon</span>
-          </div>
+          <a class="roster-member roster-link" href="https://web.colorsing.com/share/user?user_id=eb86400d-5683-4ff6-aab1-9ea35c9236a9" target="_blank" rel="noopener noreferrer" aria-label="んごご&#x1F34B;&#x200D;&#x1F7E9;のColorSingプロフィールを開く">
+            <div class="avatar avatar-sm"><img src="/assets/members/crimson-ngogo.jpg" alt="んごご&#x1F34B;&#x200D;&#x1F7E9;"></div>
+            <span class="roster-name">んごご&#x1F34B;&#x200D;&#x1F7E9;</span>
+          </a>
+          <a class="roster-member roster-link" href="https://web.colorsing.com/share/user?user_id=31996c5c-b889-4501-a227-ceebab10757a" target="_blank" rel="noopener noreferrer" aria-label="PKのColorSingプロフィールを開く">
+            <div class="avatar avatar-sm"><img src="/assets/members/crimson-pk.jpeg" alt="PK"></div>
+            <span class="roster-name">PK</span>
+          </a>
         </div>
       </div>
       <div class="team-concept">
         <span class="team-concept-label">CONCEPT</span>
-        <p class="team-desc placeholder">コンセプト・出演者は順次公開予定です</p>
+        <p class="team-desc"><strong>歌で、殴る</strong>三者三様の強みで、視聴者を虜にする。<br>それぞれの「色」「声」「ジャンル」すべてが違うからこそ面白い。<br>歌の暴力でバトルフェスがCRIMSON色に染まる。</p>
       </div>
     </div>
 
@@ -2500,19 +2703,19 @@
           <span class="roster-name">りんか🔔</span>
         </a>
         <div class="roster-members">
-          <div class="roster-member">
-            <div class="avatar avatar-sm placeholder"></div>
-            <span class="roster-name placeholder">Coming soon</span>
-          </div>
-          <div class="roster-member">
-            <div class="avatar avatar-sm placeholder"></div>
-            <span class="roster-name placeholder">Coming soon</span>
-          </div>
+          <a class="roster-member roster-link" href="https://web.colorsing.com/share/user?user_id=97fff16b-5d16-4aed-ba37-6ab15df2ac61" target="_blank" rel="noopener noreferrer" aria-label="なぽるのColorSingプロフィールを開く">
+            <div class="avatar avatar-sm"><img src="/assets/members/nova-naporu.jpg" alt="なぽる" style="object-fit: contain;"></div>
+            <span class="roster-name">なぽる</span>
+          </a>
+          <a class="roster-member roster-link" href="https://web.colorsing.com/share/user?user_id=ddba533b-8d21-4733-8cda-6764a6148fec" target="_blank" rel="noopener noreferrer" aria-label="犬飼音子(ねこ)のColorSingプロフィールを開く">
+            <div class="avatar avatar-sm"><img src="/assets/members/nova-neko.jpg" alt="犬飼音子(ねこ)"></div>
+            <span class="roster-name">犬飼音子(ねこ)</span>
+          </a>
         </div>
       </div>
       <div class="team-concept">
         <span class="team-concept-label">CONCEPT</span>
-        <p class="team-desc placeholder">コンセプト・出演者は順次公開予定です</p>
+        <p class="team-desc"><strong>星が、歌う</strong>アニソンへの「好き」を胸に、それぞれの場所で歌い続けてきた3人。<br>チーム全員が"宇宙コンセプトの象徴"ガンダム曲を携えて参戦。<br>新星の名を掲げて同じ夜空へ飛び立つ。</p>
       </div>
     </div>
 
@@ -2520,50 +2723,56 @@
       <div class="team-num">TEAM 03</div>
       <div class="team-name">GOLDEN</div>
       <div class="team-roster">
-        <a class="roster-leader roster-link" href="https://web.colorsing.com/share/user?user_id=e8a92a98-ed80-4ee2-9ccd-a0ed46165226" target="_blank" rel="noopener noreferrer" aria-label="iran痔のColorSingプロフィールを開く">
-          <div class="avatar avatar-lg"><img src="/assets/members/golden-leader.jpg" alt="iran痔"><span class="leader-badge">LEADER</span></div>
-          <span class="roster-name">iran痔</span>
+        <a class="roster-leader roster-link" href="https://web.colorsing.com/share/user?user_id=e8a92a98-ed80-4ee2-9ccd-a0ed46165226" target="_blank" rel="noopener noreferrer" aria-label="iran&#x1F473;&#x1F3FE;&#x200D;&#x2642;&#xFE0F;痔のColorSingプロフィールを開く">
+          <div class="avatar avatar-lg"><img src="/assets/members/golden-iran-july.jpg" alt="iran&#x1F473;&#x1F3FE;&#x200D;&#x2642;&#xFE0F;痔"><span class="leader-badge">LEADER</span></div>
+          <span class="roster-name">iran&#x1F473;&#x1F3FE;&#x200D;&#x2642;&#xFE0F;痔</span>
         </a>
         <div class="roster-members">
-          <div class="roster-member">
-            <div class="avatar avatar-sm placeholder"></div>
-            <span class="roster-name placeholder">Coming soon</span>
-          </div>
-          <div class="roster-member">
-            <div class="avatar avatar-sm placeholder"></div>
-            <span class="roster-name placeholder">Coming soon</span>
-          </div>
+          <a class="roster-member roster-link" href="https://web.colorsing.com/share/user?user_id=15c5d30b-edf2-4196-bf58-13eb394a5f67" target="_blank" rel="noopener noreferrer" aria-label="&#x1F43B;&#x200D;&#x2744;&#xFE0F;あわ&#x1F95A;のColorSingプロフィールを開く">
+            <div class="avatar avatar-sm"><img src="/assets/members/golden-awa.jpg" alt="&#x1F43B;&#x200D;&#x2744;&#xFE0F;あわ&#x1F95A;"></div>
+            <span class="roster-name">&#x1F43B;&#x200D;&#x2744;&#xFE0F;あわ&#x1F95A;</span>
+          </a>
+          <a class="roster-member roster-link" href="https://web.colorsing.com/share/user?user_id=b48457d7-d593-48d1-b72d-65be42baf9ca" target="_blank" rel="noopener noreferrer" aria-label="潮てら&#x1F433;&#x1F49B;のColorSingプロフィールを開く">
+            <div class="avatar avatar-sm"><img src="/assets/members/golden-tera.jpg" alt="潮てら&#x1F433;&#x1F49B;"></div>
+            <span class="roster-name">潮てら&#x1F433;&#x1F49B;</span>
+          </a>
         </div>
       </div>
       <div class="team-concept">
         <span class="team-concept-label">CONCEPT</span>
-        <p class="team-desc placeholder">コンセプト・出演者は順次公開予定です</p>
+        <p class="team-desc"><strong>夏の水族館</strong>いつでも癒しで包み込む、柔らかな声と人柄を持つ3人。<br>そこは、エンタメ性と包容力を両立する不思議な空間。<br>気づけば抜けられない沼族館。</p>
       </div>
     </div>
 
   </div>
 </section>
 
-<!-- 段階公開: タイムテーブル 非表示中。再表示は divider と section 両方の hidden を外すだけ -->
-<div class="divider" hidden></div>
+<!-- 段階公開: タイムテーブル公開中 -->
+<div class="divider"></div>
 
-<section id="schedule" hidden>
+<section id="schedule">
   <p class="section-label">Schedule</p>
   <h2 class="section-title">タイムスケジュール</h2>
   <div class="schedule-list">
     <div class="schedule-item"><div class="sched-time">19:45</div><div class="sched-content"><div class="sched-title">開会式・チーム紹介</div><div class="sched-detail">ルール説明・チームコール（15分）</div></div></div>
-    <div class="round-divider"><span class="round-label">ROUND 1</span></div>
-    <div class="schedule-item"><div class="sched-time">20:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">20:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">20:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="round-divider"><span class="round-label">ROUND 2<span class="sched-badge badge-vote">投票開始</span></span></div>
-    <div class="schedule-item"><div class="sched-time">20:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">21:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">21:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="round-divider"><span class="round-label">ROUND 3</span></div>
-    <div class="schedule-item"><div class="sched-time">21:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">21:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
-    <div class="schedule-item"><div class="sched-time">22:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span></div><div class="sched-detail">持ち時間 15分</div></div></div>
+    <div class="round-group">
+      <div class="round-divider"><span class="round-label">ROUND 1</span></div>
+    <div class="schedule-item"><div class="sched-time">20:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span></div><div class="sched-detail sched-performer">犬飼音子(ねこ)</div></div></div>
+    <div class="schedule-item"><div class="sched-time">20:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span></div><div class="sched-detail sched-performer">PK</div></div></div>
+    <div class="schedule-item"><div class="sched-time">20:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span></div><div class="sched-detail sched-performer">潮てら&#x1F433;&#x1F49B;</div></div></div>
+    </div>
+    <div class="round-group">
+      <div class="round-divider"><span class="round-label">ROUND 2<span class="sched-badge badge-vote">投票開始</span></span></div>
+    <div class="schedule-item"><div class="sched-time">20:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span></div><div class="sched-detail sched-performer">んごご&#x1F34B;&#x200D;&#x1F7E9;</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span></div><div class="sched-detail sched-performer">&#x1F43B;&#x200D;&#x2744;&#xFE0F;あわ&#x1F95A;</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:15<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span></div><div class="sched-detail sched-performer">なぽる</div></div></div>
+    </div>
+    <div class="round-group">
+      <div class="round-divider"><span class="round-label">ROUND 3</span></div>
+    <div class="schedule-item"><div class="sched-time">21:30<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team golden">GOLDEN</span></div><div class="sched-detail sched-performer">iran&#x1F473;&#x1F3FE;&#x200D;&#x2642;&#xFE0F;痔</div></div></div>
+    <div class="schedule-item"><div class="sched-time">21:45<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team nova">NOVA</span></div><div class="sched-detail sched-performer">りんか&#x1F514;</div></div></div>
+    <div class="schedule-item"><div class="sched-time">22:00<div class="sched-badges"><span class="sched-badge badge-live">LIVE</span></div></div><div class="sched-content"><div class="sched-title"><span class="sched-team crimson">CRIMSON</span></div><div class="sched-detail sched-performer">まぐろふぉん</div></div></div>
+    </div>
     <div class="schedule-item"><div class="sched-time">22:15<div class="sched-badges"><span class="sched-badge badge-vote">VOTE</span></div></div><div class="sched-content"><div class="sched-title">本投票開始</div><div class="sched-detail">15分間</div></div></div>
     <div class="schedule-item"><div class="sched-time">22:30</div><div class="sched-content"><div class="sched-title">結果発表・閉会式</div><div class="sched-detail">最終集計 ／ MVP・優勝チーム発表</div></div></div>
     <div class="schedule-item"><div class="sched-time">22:45</div><div class="sched-content"><div class="sched-title">終了</div></div></div>
@@ -2757,6 +2966,7 @@ let categories = [];   // [{ id, type, label, candidateType, candidateIds }]
 /* ── VOTE STATE ── */
 const API_BASE = '/api';
 const VOTE_KEY = 'battlefes2026_vote';
+const CLIENT_ID_KEY = 'battlefes2026_client_id';
 
 let selected = null;
 let voted = false;
@@ -2773,6 +2983,31 @@ function markVoted() {
 
 function clearVotedMarker() {
   try { localStorage.removeItem(VOTE_KEY); } catch(e) {}
+}
+
+function createClientId() {
+  if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+    return window.crypto.randomUUID();
+  }
+  const bytes = new Uint8Array(16);
+  if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+    window.crypto.getRandomValues(bytes);
+    return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+  }
+  return `bf-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+}
+
+function getOrCreateClientId() {
+  try {
+    let id = localStorage.getItem(CLIENT_ID_KEY);
+    if (!id) {
+      id = createClientId();
+      localStorage.setItem(CLIENT_ID_KEY, id);
+    }
+    return id;
+  } catch(e) {
+    return '';
+  }
 }
 
 function applyTeamResults(teamResults) {
@@ -2835,6 +3070,7 @@ function resetTrialVotes() {
 const VOTE_OPEN  = '2026-07-18T20:45:00+09:00'; // R1終了 = R2先頭 = 投票受付開始
 const VOTE_CLOSE = '2026-07-18T22:30:00+09:00'; // R3終了 + 本投票15分後
 const VOTE_POINT_MAX = '2026-07-18T22:15:00+09:00'; // 本投票開始から最大PT固定
+const RESULTS_PUBLISH_ISO = '2026-07-18T23:00:00+09:00';
 
 function getVoteStatus() {
   if (!VOTE_OPEN || !VOTE_CLOSE) return 'waiting';
@@ -2868,6 +3104,11 @@ function totalVotes() {
   return teams.reduce((s, t) => s + (t.votes || 0), 0);
 }
 
+function isPublicResultsPublished() {
+  const publishAt = new Date(RESULTS_PUBLISH_ISO).getTime();
+  return Number.isFinite(publishAt) && Date.now() >= publishAt;
+}
+
 function renderVote() {
   const container = document.getElementById('voteTeams');
   if (!container) return;
@@ -2898,7 +3139,7 @@ function renderRanking() {
   const wrap = document.getElementById('voteResultWrap');
   const rows = document.getElementById('voteResultRows');
   const total = totalVotes();
-  if (total === 0) { wrap.classList.remove('show'); return; }
+  if (total === 0 || !isPublicResultsPublished()) { wrap.classList.remove('show'); return; }
 
   wrap.classList.add('show');
   const sorted = [...teams].sort((a, b) => b.votes - a.votes);
@@ -2918,7 +3159,7 @@ function renderRanking() {
 }
 
 function selectTeam(id) {
-  if (voted || checkAlreadyVoted()) return;
+  if (voted || checkAlreadyVoted() || !isVoteUiInteractive()) return;
   selected = id;
   const team = teams.find(t => t.id === id);
   const num = String(id).padStart(2, '0');
@@ -3015,6 +3256,15 @@ function refreshBonusKeywordSection() {
 
 function isReducedMotion() {
   return Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+}
+function isTouchLikeDevice() {
+  if (!window.matchMedia) return false;
+  return Boolean(
+    (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) ||
+    window.matchMedia('(hover: none)').matches ||
+    window.matchMedia('(pointer: coarse)').matches ||
+    window.matchMedia('(max-width: 900px)').matches
+  );
 }
 
 function triggerBonusBurst() {
@@ -3171,6 +3421,8 @@ async function submitBulkVote() {
     const bonusInput = document.getElementById('bonusKeyword');
     const bonusKeyword = (bonusInput && bonusInput.value) ? bonusInput.value.trim() : '';
     const voteHeaders = { 'Content-Type': 'application/json' };
+    const clientId = getOrCreateClientId();
+    if (clientId) voteHeaders['X-Battle-Fes-Client-Id'] = clientId;
     const adminTestToken = getAdminTestVoteToken();
     if (adminTestToken) voteHeaders.Authorization = `Bearer ${adminTestToken}`;
     const res = await fetch(`${API_BASE}/votes`, {
@@ -3340,17 +3592,334 @@ function confettiBurst(color) {
   loop();
 })();
 
-/* ── SCROLL REVEAL ── */
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-      observer.unobserve(e.target);
+/* ── SCROLL MOTION ── */
+function clamp01(value) {
+  return Math.min(1, Math.max(0, value));
+}
+
+function setMotionDelay(el, seconds) {
+  el.style.setProperty('--reveal-delay', `${seconds.toFixed(2)}s`);
+}
+
+function wrapLineReveal(el) {
+  if (el.dataset.lineRevealReady === 'true') return;
+  const childNodes = Array.from(el.childNodes);
+  const lines = [[]];
+
+  childNodes.forEach(node => {
+    if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'BR') {
+      lines.push([]);
+    } else {
+      lines[lines.length - 1].push(node);
     }
   });
-}, { threshold: 0.12 });
 
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  const fragment = document.createDocumentFragment();
+  lines.forEach((lineNodes, index) => {
+    const line = document.createElement('span');
+    const inner = document.createElement('span');
+    line.className = 'line-reveal-line';
+    inner.className = 'line-reveal-inner';
+    lineNodes.forEach(node => inner.appendChild(node));
+    line.appendChild(inner);
+    fragment.appendChild(line);
+    if (index < lines.length - 1) fragment.appendChild(document.createElement('br'));
+  });
+
+  el.replaceChildren(fragment);
+  el.classList.add('line-reveal');
+  el.dataset.lineRevealReady = 'true';
+}
+
+function wrapCharReveal(el, step = 0.04) {
+  if (el.dataset.charRevealReady === 'true') return;
+  const accessibleText = el.textContent.trim().replace(/\s+/g, ' ');
+  const childNodes = Array.from(el.childNodes);
+  const lines = [[]];
+  let charIndex = 0;
+
+  childNodes.forEach(node => {
+    if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'BR') {
+      lines.push([]);
+    } else {
+      lines[lines.length - 1].push(node);
+    }
+  });
+
+  const fragment = document.createDocumentFragment();
+  lines.forEach((lineNodes, lineIndex) => {
+    const line = document.createElement('span');
+    line.className = 'char-reveal-line';
+
+    lineNodes.forEach(node => {
+      Array.from(node.textContent || '').forEach(char => {
+        const outer = document.createElement('span');
+        const inner = document.createElement('span');
+        outer.className = 'char-reveal-char';
+        outer.style.setProperty('--char-delay', `${(charIndex * step).toFixed(2)}s`);
+        outer.setAttribute('aria-hidden', 'true');
+        inner.className = 'char-reveal-inner';
+        inner.textContent = char === ' ' ? '\u00a0' : char;
+        outer.appendChild(inner);
+        line.appendChild(outer);
+        charIndex += 1;
+      });
+    });
+
+    fragment.appendChild(line);
+    if (lineIndex < lines.length - 1) fragment.appendChild(document.createElement('br'));
+  });
+
+  el.replaceChildren(fragment);
+  el.classList.add('char-reveal');
+  if (accessibleText) el.setAttribute('aria-label', accessibleText);
+  el.dataset.charRevealReady = 'true';
+}
+
+function queueRevealComplete(el) {
+  const fallback = window.setTimeout(() => el.classList.add('reveal-complete'), 1800);
+  el.addEventListener('transitionend', () => {
+    window.clearTimeout(fallback);
+    el.classList.add('reveal-complete');
+  }, { once: true });
+}
+
+function showRevealTarget(el) {
+  el.classList.add('visible');
+  queueRevealComplete(el);
+}
+
+function cssUrlToAbsoluteUrl(value) {
+  const match = String(value || '').match(/url\((['"]?)(.*?)\1\)/);
+  if (!match || !match[2]) return '';
+  try {
+    return new URL(match[2], window.location.href).href;
+  } catch {
+    return match[2];
+  }
+}
+
+function decodeImageUrl(src) {
+  if (!src) return Promise.resolve();
+  const img = new Image();
+  img.decoding = 'async';
+  img.src = src;
+  if (typeof img.decode === 'function') {
+    return img.decode().catch(() => {});
+  }
+  return new Promise(resolve => {
+    img.onload = resolve;
+    img.onerror = resolve;
+  });
+}
+
+function warmTeamCardMedia(card) {
+  if (!card || card.dataset.teamMediaReady === 'true') return Promise.resolve();
+  if (card._teamMediaPromise) return card._teamMediaPromise;
+
+  const imageDecodes = Array.from(card.querySelectorAll('img')).map(img => {
+    img.decoding = 'async';
+    if (img.complete && img.naturalWidth > 0 && typeof img.decode === 'function') {
+      return img.decode().catch(() => {});
+    }
+    if (img.complete) return Promise.resolve();
+    return new Promise(resolve => {
+      img.addEventListener('load', resolve, { once: true });
+      img.addEventListener('error', resolve, { once: true });
+    });
+  });
+
+  const bgUrl = cssUrlToAbsoluteUrl(card.style.getPropertyValue('--team-bg') || getComputedStyle(card).getPropertyValue('--team-bg'));
+  if (bgUrl) imageDecodes.push(decodeImageUrl(bgUrl));
+
+  const timeout = new Promise(resolve => window.setTimeout(resolve, 1400));
+  card._teamMediaPromise = Promise.race([
+    Promise.allSettled(imageDecodes),
+    timeout,
+  ]).then(() => {
+    card.dataset.teamMediaReady = 'true';
+  });
+  return card._teamMediaPromise;
+}
+
+function prepareRevealTargets() {
+  const targets = [];
+
+  document.querySelectorAll('.section-label').forEach(el => {
+    wrapLineReveal(el);
+    setMotionDelay(el, 0);
+    targets.push(el);
+  });
+
+  document.querySelectorAll('.section-title').forEach(el => {
+    wrapCharReveal(el);
+    setMotionDelay(el, 0.08);
+    targets.push(el);
+  });
+
+  document.querySelectorAll('.divider').forEach(el => {
+    el.classList.add('divider-reveal');
+    targets.push(el);
+  });
+
+  document.querySelectorAll('.schedule-list').forEach(list => {
+    Array.from(list.querySelectorAll('.schedule-item, .round-divider')).forEach(el => {
+      el.classList.add('schedule-reveal');
+      // 遅延は出現時にバッチ内の相対順で振る（絶対インデックスだとジャンプスクロールで待たされる）
+      targets.push(el);
+    });
+  });
+
+  document.querySelectorAll('.ar-rounds').forEach(list => {
+    Array.from(list.querySelectorAll('.ar-round')).forEach((el, index) => {
+      el.classList.add('ar-reveal');
+      setMotionDelay(el, index * 0.1);
+      targets.push(el);
+    });
+  });
+
+  document.querySelectorAll('.reveal').forEach(el => targets.push(el));
+
+  return Array.from(new Set(targets));
+}
+
+function initScrollReveal() {
+  const targets = prepareRevealTargets();
+  if (!targets.length) return;
+
+  if (isReducedMotion() || !('IntersectionObserver' in window)) {
+    targets.forEach(el => {
+      el.classList.add('visible', 'reveal-complete');
+    });
+    return;
+  }
+
+  // リトリガー方式: 画面に入るたび再生、外れたら解除（unobserve しない）
+  // ただしチームカードの clip-path フル演出は初回のみ、再入時は簡易フェード
+  const hideRevealTarget = el => {
+    el.classList.remove('visible', 'reveal-complete');
+    el.classList.add('reveal-replayed');
+  };
+  const revealObserver = new IntersectionObserver(entries => {
+    // 同時に画面へ入った要素同士で相対スタガー（バッチ内 0.06s 刻み・上限 0.3s）
+    let batchIndex = 0;
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        if (entry.target.classList.contains('schedule-reveal')) {
+          setMotionDelay(entry.target, Math.min(batchIndex * 0.06, 0.3));
+          batchIndex += 1;
+        }
+        showRevealTarget(entry.target);
+      } else if (entry.target.classList.contains('visible')) {
+        hideRevealTarget(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  targets.forEach(el => {
+    if (!el.matches('.team-card.reveal')) revealObserver.observe(el);
+  });
+
+  const keepTeamCardsVisible = isTouchLikeDevice();
+  document.querySelectorAll('.teams-grid .team-card.reveal').forEach(card => warmTeamCardMedia(card));
+  const teamCardObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const revealTeamCard = () => {
+          showRevealTarget(entry.target);
+          if (keepTeamCardsVisible) {
+            entry.target.classList.add('reveal-complete');
+            teamCardObserver.unobserve(entry.target);
+          }
+        };
+        if (keepTeamCardsVisible) {
+          if (entry.target.dataset.teamRevealQueued === 'true') return;
+          entry.target.dataset.teamRevealQueued = 'true';
+          warmTeamCardMedia(entry.target).then(revealTeamCard);
+        } else {
+          revealTeamCard();
+        }
+      } else if (!keepTeamCardsVisible && entry.target.classList.contains('visible')) {
+        hideRevealTarget(entry.target);
+      }
+    });
+  }, { threshold: 0 });
+
+  document.querySelectorAll('.teams-grid .team-card.reveal').forEach(card => teamCardObserver.observe(card));
+}
+
+function initScrollParallax() {
+  const items = [];
+  const reducedMotion = isReducedMotion();
+  const hero = document.getElementById('hero');
+  const heroBg = document.querySelector('.hero-bg');
+
+  if (!reducedMotion && hero && heroBg) {
+    items.push({ el: heroBg, measure: hero, current: 0.5, target: 0.5 });
+  }
+
+  document.querySelectorAll('.team-card').forEach(card => {
+    items.push({ el: card, measure: card, current: 0.5, target: 0.5 });
+  });
+
+  items.forEach(item => item.el.style.setProperty('--p', '0.5000'));
+  if (!items.length || !('IntersectionObserver' in window)) return;
+  /* タッチ端末では --p 書き込みを間引き、背景パララックス自体は維持する */
+  const activeItems = new Set();
+  const itemsByMeasure = new Map();
+  const touchLikeDevice = isTouchLikeDevice();
+  const writeThreshold = touchLikeDevice ? 0.006 : 0.0015;
+  const easing = touchLikeDevice ? 0.16 : 0.12;
+
+  items.forEach(item => {
+    if (!itemsByMeasure.has(item.measure)) itemsByMeasure.set(item.measure, []);
+    itemsByMeasure.get(item.measure).push(item);
+  });
+
+  const parallaxObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const entryItems = itemsByMeasure.get(entry.target) || [];
+      entryItems.forEach(item => {
+        if (entry.isIntersecting) activeItems.add(item);
+        else activeItems.delete(item);
+      });
+    });
+  }, { rootMargin: '15% 0px', threshold: 0 });
+
+  itemsByMeasure.forEach((_, measure) => parallaxObserver.observe(measure));
+
+  function updateParallax() {
+    if (activeItems.size) {
+      const viewportHeight = touchLikeDevice
+        ? (document.documentElement.clientHeight || window.innerHeight || 1)
+        : (window.innerHeight || document.documentElement.clientHeight || 1);
+      const reads = [];
+
+      activeItems.forEach(item => {
+        reads.push({ item, rect: item.measure.getBoundingClientRect() });
+      });
+
+      reads.forEach(({ item, rect }) => {
+        item.target = clamp01((viewportHeight - rect.top) / (viewportHeight + rect.height));
+        item.current += (item.target - item.current) * easing;
+      });
+
+      reads.forEach(({ item }) => {
+        if (Math.abs(item.current - (item.lastWritten ?? 0.5)) >= writeThreshold) {
+          item.el.style.setProperty('--p', item.current.toFixed(4));
+          item.lastWritten = item.current;
+        }
+      });
+    }
+
+    requestAnimationFrame(updateParallax);
+  }
+
+  requestAnimationFrame(updateParallax);
+}
+
+initScrollReveal();
+initScrollParallax();
 
 /* ── MOBILE NAV ── */
 function toggleNav() {
@@ -3508,9 +4077,9 @@ function ensureTestModeBadge() {
       badge = document.createElement('div');
       badge.id = 'testModeBadge';
       badge.style.cssText = 'position:fixed;top:14px;right:14px;background:#ff9933;color:#fff;font-weight:700;padding:6px 12px;border-radius:999px;font-size:0.78rem;letter-spacing:0.06em;box-shadow:0 4px 12px rgba(0,0,0,0.4);z-index:300;font-family:sans-serif;';
-      badge.textContent = 'TEST MODE';
       (document.body || document.documentElement).appendChild(badge);
     }
+    badge.textContent = 'TEST MODE';
   } else if (badge) {
     badge.remove();
   }

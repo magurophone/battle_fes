@@ -1,0 +1,7 @@
+Black Ops One Regular is stored in `BlackOpsOne-Regular.ttf`.
+
+Source:
+https://fonts.google.com/specimen/Black+Ops+One
+
+License:
+SIL Open Font License, Version 1.1

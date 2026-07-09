@@ -489,17 +489,17 @@
       <span class="no">03</span><h2>ライブスコアの計算</h2><span class="en">LIVE SCORE</span>
     </div>
     <div class="lead-card">
-      <div class="big">ライブスコアは、<br><b>加算分を戻して実ポイントにします。</b></div>
-      <p>枠内月間推しPtに加算分が含まれている場合、その加算％を使って元のポイントに戻します。</p>
+      <div class="big">ライブスコアは、<br><b>メーター差分からボーナスを割り戻して算出します。</b></div>
+      <p>配信前後のメーター数字の差分が「推しボーナス込みの獲得量」です。ここから推しボーナス加算分を割り戻した値を採用ライブスコアとして扱います。</p>
     </div>
     <div class="grid3" style="margin-top:14px">
       <div class="card">
-        <h3>加算％を倍率にする</h3>
-        <p>10%加算なら、倍率は <b>1 + 10 / 100 = 1.10</b> です。</p>
+        <h3>差分を出す</h3>
+        <p>配信後メーター − 配信前メーター。例: <b>21.5K − 10.5K = 11,000PT</b>。</p>
       </div>
       <div class="card">
-        <h3>対象ポイントを割る</h3>
-        <p>例: <b>2200PT ÷ 1.10 = 2000PT</b>。計算後は100PT単位で丸め、ライブスコアとして扱います。</p>
+        <h3>ボーナスを割り戻す</h3>
+        <p>推しボーナス10%なら <b>11,000 ÷ 1.10 = 10,000PT</b>。100PT単位で切り上げ。</p>
       </div>
       <div class="card">
         <h3>記入について</h3>
@@ -527,7 +527,7 @@
           <p>投票ポイントとライブスコアを同じ画面で確認します。途中経過・終了後どちらも、全体の状況はここで見ます。</p>
           <div class="proof-points">
             <div class="proof-point"><b>投票</b><span>各チームの投票数と、時間加重・BONUS込みの投票ポイント。</span></div>
-            <div class="proof-point"><b>ライブ</b><span>枠内月間推しPtから戻した実ライブスコア。</span></div>
+            <div class="proof-point"><b>ライブ</b><span>メーター差分から推しボーナスを割り戻した採用ライブスコア。</span></div>
             <div class="proof-point"><b>総合</b><span>投票ポイント + ライブスコア。勝敗確認に使う数字。</span></div>
           </div>
         </div>
@@ -540,7 +540,7 @@
             <img src="/materials/images/admin-input.png" alt="ライブスコア入力画面">
           </div>
           <h3>ライブスコアを入力する</h3>
-          <p>各メンバーの推しボーナス実％と枠内月間推しPtを入れると、加算分を戻した実ライブスコアに変換します。</p>
+          <p>各メンバーの推しボーナス実％と配信前後のメーター数字を入れると、差分からボーナスを割り戻した採用ライブスコアに変換します。</p>
         </article>
 
         <article class="proof-card">

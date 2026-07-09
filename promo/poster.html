@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>BATTLE FES 2026 告知ポスター</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Dela+Gothic+One&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1600px; height: 900px; overflow: hidden; background: #060c1a; }
+
+  .poster {
+    position: relative; width: 1600px; height: 900px;
+    overflow: hidden;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+  .bg {
+    position: absolute; inset: 0;
+    background-image: url('/hero-bg.webp');
+    background-size: cover; background-position: center 30%;
+  }
+  .bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 42%, transparent 30%, rgba(4,7,16,0.55) 78%, rgba(3,5,12,0.85) 100%),
+      linear-gradient(rgba(6,10,22,0.30), rgba(6,10,22,0.30));
+  }
+  .grain {
+    position: absolute; inset: 0;
+    background: url('/assets/textures/grain-fine-dark.png');
+    opacity: 0.25; mix-blend-mode: overlay;
+  }
+  .fw {
+    position: absolute; width: 300px; height: 300px;
+    background: url('/assets/effects/firework.png') center/contain no-repeat;
+    mix-blend-mode: screen; opacity: 0.85;
+  }
+  .fw-a { top: 3%;  left: 4%; }
+  .fw-b { top: 6%;  right: 5%; transform: scale(0.85); }
+  .fw-c { bottom: 14%; left: 1%; transform: scale(0.65); opacity: 0.6; }
+  .fw-d { bottom: 16%; right: 2%; transform: scale(0.75); opacity: 0.65; }
+
+  .center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding-bottom: 30px;
+  }
+  .sublogo {
+    width: 300px; height: auto;
+    margin-bottom: 14px;
+    filter: drop-shadow(0 4px 14px rgba(0,0,0,0.6));
+  }
+  .logo {
+    width: 600px; height: auto;
+    filter: drop-shadow(0 18px 60px rgba(255,80,20,0.4)) drop-shadow(0 8px 30px rgba(0,0,0,0.65));
+  }
+  .tagline {
+    font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
+    font-size: 26px; color: #fff8ee;
+    letter-spacing: 0.14em; margin-top: 18px;
+    text-shadow: 0 0 24px rgba(255,140,40,0.5), 0 2px 8px rgba(0,0,0,0.8);
+  }
+  .label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 0.5em;
+    color: #ffe040; text-transform: uppercase;
+    margin-top: 20px;
+    text-shadow: 0 0 24px rgba(255,220,10,0.6), 0 2px 8px rgba(0,0,0,0.6);
+  }
+  .date-row {
+    margin-top: 22px;
+    display: flex; gap: 22px; align-items: center; justify-content: center;
+  }
+  .date-chip {
+    position: relative;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 800; font-size: 26px;
+    letter-spacing: 0.1em;
+    color: #ffeec0;
+    background:
+      radial-gradient(ellipse at 50% 100%, rgba(255,90,30,0.55) 0%, rgba(255,50,40,0.15) 55%, transparent 85%),
+      linear-gradient(rgba(70,20,8,0.65), rgba(28,8,4,0.82)),
+      url('/assets/textures/marble-dark.png') center/cover no-repeat;
+    border: 2px solid rgba(255,170,80,0.95);
+    border-radius: 100px;
+    padding: 14px 44px;
+    text-shadow: 0 0 18px rgba(255,180,60,0.75), 0 1px 2px rgba(0,0,0,0.95);
+    box-shadow:
+      inset 0 1px 0 rgba(255,235,170,0.55),
+      inset 0 -1px 0 rgba(0,0,0,0.45),
+      0 6px 20px rgba(0,0,0,0.55),
+      0 0 50px rgba(255,107,26,0.55);
+  }
+
+  .team-bar {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    height: 10px; display: flex;
+  }
+  .team-bar span { flex: 1; }
+  .team-bar .crimson { background: linear-gradient(90deg, #ff2d78, #ff5594); box-shadow: 0 -2px 18px rgba(255,45,120,0.7); }
+  .team-bar .nova    { background: linear-gradient(90deg, #7c3aff, #b389ff); box-shadow: 0 -2px 18px rgba(124,58,255,0.7); }
+  .team-bar .golden  { background: linear-gradient(90deg, #ffd700, #ffe28a); box-shadow: 0 -2px 18px rgba(255,215,0,0.7); }
+
+  body.notext .text-layer { display: none; }
+  body.notext .center { padding-bottom: 0; }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="bg"></div>
+  <div class="grain"></div>
+  <div class="fw fw-a"></div>
+  <div class="fw fw-b"></div>
+  <div class="fw fw-c"></div>
+  <div class="fw fw-d"></div>
+  <div class="center">
+    <img class="sublogo" src="/assets/logos/sublogo-colorsing-trim.png" alt="">
+    <img class="logo" src="/assets/logos/logo-B-trim.png" alt="BATTLE FES">
+    <div class="text-layer">
+      <p class="tagline">チーム対抗 歌唱バトルフェスティバル</p>
+      <div class="date-row">
+        <div class="date-chip">2026.07.18（土）</div>
+        <div class="date-chip">19:45 START</div>
+      </div>
+    </div>
+  </div>
+  <div class="team-bar"><span class="crimson"></span><span class="nova"></span><span class="golden"></span></div>
+</div>
+<script>
+  if (new URLSearchParams(location.search).get('notext') === '1') {
+    document.body.classList.add('notext');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRIMSON 勝敗設計メモ（内部資料）</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'Black Ops One';
+    src: url('../public/assets/fonts/BlackOpsOne-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  :root {
+    --team-color: #ff2d78;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { min-height: 100%; background: #050203; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: #050203;
+    color: #fff;
+    min-height: 100svh;
+    padding: 2.5rem 1rem;
+    line-height: 1.75;
+    font-size: 0.95rem;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 50% 10%, color-mix(in srgb, var(--team-color) 18%, transparent), transparent 52%);
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  /* ── HEADER ── */
+  header { margin-bottom: 3rem; }
+
+  .header-eyebrow {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.42em;
+    color: rgba(255,255,255,0.64);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.85);
+    margin-bottom: 0.4rem;
+  }
+
+  header h1 {
+    font-family: 'Black Ops One', 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    font-weight: 400;
+    line-height: 0.92;
+    letter-spacing: 0.04em;
+    color: var(--team-color);
+    text-shadow:
+      0 0 28px rgba(0,0,0,0.85),
+      0 2px 6px rgba(0,0,0,0.95);
+    -webkit-text-stroke: 0.4px rgba(0,0,0,0.55);
+  }
+
+  .header-rule {
+    width: 64px;
+    height: 3px;
+    margin-top: 14px;
+    border-radius: 2px;
+    background: var(--team-color);
+    box-shadow: 0 0 14px var(--team-color);
+  }
+
+  .header-sub {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.4);
+    margin-top: 0.7rem;
+  }
+
+  /* ── SECTION ── */
+  section { margin-bottom: 2.8rem; }
+
+  h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.32em;
+    color: var(--team-color);
+    margin-bottom: 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--team-color) 24%, rgba(255,255,255,0.06));
+    text-shadow: 0 0 14px color-mix(in srgb, var(--team-color) 40%, transparent);
+  }
+
+  p { margin-bottom: 0.8rem; color: rgba(255,255,255,0.88); }
+  strong { color: #fff; font-weight: 700; }
+
+  /* ── FORMULA ── */
+  .formula {
+    border: 1px solid color-mix(in srgb, var(--team-color) 52%, rgba(255,255,255,0.12));
+    border-radius: 6px;
+    background: rgba(5,2,3,0.72);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.04),
+      0 0 32px color-mix(in srgb, var(--team-color) 12%, transparent);
+    padding: 1rem 1.2rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.05rem;
+    letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 1.2rem;
+  }
+  .formula em {
+    color: var(--team-color);
+    font-style: normal;
+    text-shadow: 0 0 12px color-mix(in srgb, var(--team-color) 50%, transparent);
+  }
+
+  /* ── HIGHLIGHT ── */
+  .highlight-box {
+    border: 1px solid var(--team-color);
+    border-radius: 6px;
+    background: rgba(5,2,3,0.82);
+    box-shadow:
+      0 0 48px color-mix(in srgb, var(--team-color) 20%, transparent),
+      inset 0 0 24px color-mix(in srgb, var(--team-color) 8%, transparent);
+    padding: 1rem 1.2rem;
+    margin: 1.2rem 0;
+  }
+  .highlight-box .big {
+    font-family: 'Black Ops One', 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.04em;
+    color: var(--team-color);
+    text-shadow:
+      0 0 28px rgba(0,0,0,0.85),
+      0 2px 6px rgba(0,0,0,0.95);
+    -webkit-text-stroke: 0.4px rgba(0,0,0,0.55);
+  }
+  .highlight-box .sub {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.4);
+    margin-top: 0.3rem;
+  }
+
+  /* ── TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  th {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.2em;
+    background: rgba(0,0,0,0.48);
+    color: rgba(255,255,255,0.4);
+    text-align: left;
+    padding: 0.5rem 0.8rem;
+    font-weight: 400;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  td {
+    padding: 0.55rem 0.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.82);
+  }
+  td:last-child {
+    font-family: 'Black Ops One', 'Bebas Neue', sans-serif;
+    color: var(--team-color);
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 10px color-mix(in srgb, var(--team-color) 40%, transparent);
+  }
+
+  /* ── LIST ── */
+  ul { padding-left: 1.1rem; }
+  ul li { margin-bottom: 0.5rem; color: rgba(255,255,255,0.82); }
+
+  /* ── ACTION BLOCKS ── */
+  .action-block {
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    background: rgba(0,0,0,0.42);
+    padding: 1rem 1.2rem;
+    margin-bottom: 0.8rem;
+    transition: border-color 0.18s;
+  }
+  .action-block:hover {
+    border-color: color-mix(in srgb, var(--team-color) 40%, transparent);
+  }
+  .action-block h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.88rem;
+    letter-spacing: 0.28em;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 0.7rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.85);
+  }
+  .tag {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    background: var(--team-color);
+    color: #160804;
+    border-radius: 3px;
+    padding: 2px 7px 3px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-eyebrow">TEAM 01 — 内部資料</div>
+    <h1>CRIMSON<br>勝敗設計メモ</h1>
+    <div class="header-rule"></div>
+    <div class="header-sub">2026-07-01</div>
+  </header>
+
+  <section>
+    <h2>うちの強み</h2>
+    <p>設計者が自チームにいるため、<strong>投票システムを完全熟知している</strong>ことが最大のアドバンテージ。</p>
+  </section>
+
+  <section>
+    <h2>スコア計算</h2>
+    <div class="formula">
+      チーム総合スコア ＝ <em>投票ポイント合計</em> ＋ <em>個人賞加点</em> ＋ <em>ライブスコア</em>
+    </div>
+
+    <p>本投票中の 1 票は最大 <strong>5,000pt</strong>。<br>
+    貫通BONUS が成立すると、同じ投票にさらに <strong>+5,000pt</strong> が入る。<br>
+    個人賞は 1 部門獲得ごとに、受賞者所属チームへ <strong>+50,000pt</strong> が入る。</p>
+
+    <div class="highlight-box">
+      <div class="big">BONUS込みの 1 票 ＝ 最大 10,000pt</div>
+      <div class="sub">ライブスコア換算で 10K 分に相当</div>
+    </div>
+
+    <table>
+      <tr><th>条件</th><th>ポイント</th></tr>
+      <tr><td>BONUS込み投票 10 票</td><td>100,000pt</td></tr>
+      <tr><td>個人賞 1 部門獲得</td><td>50,000pt</td></tr>
+      <tr><td>ライブスコア換算</td><td>100K 分相当</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>勝ち筋の結論</h2>
+    <p><strong>本投票 × BONUS 達成 × 個人賞獲得</strong> がこのイベントの最重要ファクター。<br>
+    ライブスコア（ギフト応援）も加算されるが、投票・BONUS・個人賞を最優先で狙う。</p>
+  </section>
+
+  <section>
+    <h2>重点戦略：初見流入を増やす</h2>
+    <p>ライバー側で重要な 2 点：</p>
+    <ul>
+      <li>開会式から本投票終了まで、リスナーを枠に残す</li>
+      <li>初見流入を最大化する</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>具体的なアクション</h2>
+
+    <div class="action-block">
+      <h3><span class="tag">X</span> 拡散</h3>
+      <ul>
+        <li>俺（まぐろふぉん）が告知・拡散を最大限頑張る</li>
+        <li>拡散タスクは依頼したタイミングで動いてもらえると助かる</li>
+      </ul>
+    </div>
+
+    <div class="action-block">
+      <h3><span class="tag">横連携</span> 仲のいいライバーへの宣伝</h3>
+      <ul>
+        <li>失礼のない程度でイベントを宣伝する</li>
+        <li>可能であれば、そのライバーのリスナーにも参加を促してもらう</li>
+      </ul>
+    </div>
+
+    <div class="action-block">
+      <h3><span class="tag">枠内</span> リスナーへの呼びかけ</h3>
+      <ul>
+        <li>「<strong>当日は開会式から参加して、全ライバーの枠を回ってほしい</strong>」という点を各自の枠で強調して伝える</li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

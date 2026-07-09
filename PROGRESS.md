@@ -4,9 +4,32 @@
 
 サイトは情報を段階的に増やしていく方針。現在 **一時的に非表示** にしているブロックと、再表示の手順は以下。`battlefes.html` / `public/index.html` の両方に同じ印（`<!-- 段階公開: ... -->` コメント）を入れてあるので、`hidden` 属性を外すだけで戻せる。
 
+関係者資料 `public/materials/index.html` のSNS文言カードは、6/13・6/20・6/27を配布済みに更新済み。
+
+2026-07-07: SNS投稿戦略を変更。理由: Xのアルゴリズム上、複数アカウントの分散投稿よりも1ポストにエンゲージを集中させるほうが有利なため、以後の投稿は運営アカウント1名のみが行い、各ライバーはいいね・リポスト・引用で支援する方式に切り替え。運営アカウントは青バッジ取得済みで長文投稿が可能。これに伴い7/1の「全メンバー・スケジュール解禁」単独投稿は見送り、内容を7月の統合長文ポストに吸収。統合ポスト（投稿日 7/11）完成・本番反映済み。確定文言は資料の「統合告知（運営長文ポスト）」カード（7/11）に掲載。投稿用画像は**3枚構成**（日付マークなし・この順で添付）: ①`sns-6-13.png`（キービジュアル・既存）／②`sns-unified-hero.png`（全メンバー＋タイムテーブル、7/1デザイン踏襲）／③`sns-unified-value.png`（1票＝最大約3,700円分／100票＝37万円分／課金力じゃなく応援の数、の価値訴求・新規デザイン）。②③の生成元は `promo/sns-unified.html` ＋ `node promo/shot-sns-unified.mjs`。設計仕様と失敗の経緯は `docs/sns-unified-post-spec.md`。方針: 投稿済み画像のデザイン流用禁止／情報は集約し画像は3枚まで／「審査員なし」は書かない（ColorSingで審査員は元々いない）／対外コピーに名前以外の絵文字禁止。貫通BONUS告知は別日の単独投稿に分離（日程・7/17前日・7/18当日カードの扱いは未決）。対外コピーには名前以外の絵文字を入れない（ブランド方針）。
+
+2026-07-09: 投票システム改定。個人賞3部門（MVP / エンタメ / モーメント）の各1位メンバー所属チームへ、部門ごとに **50,000pt** を総合スコアへ加点する実装を追加。総合スコアは `投票ポイント合計 + 個人賞加点 + ライブスコア`。個人賞は投票時に必須選択のため、投票が入れば3部門すべてで受賞者が出る。同票時は既存トップ判定と同じく票数降順・同票なら候補ID昇順で1名を受賞者扱い。管理画面の総合表・トップ判定・合計表示に反映済み。検証: `node scripts/local-api-regression.mjs` / `node scripts/local-frontend-smoke.mjs` PASS。
+
+2026-07-09: 管理画面のテストモードに「締切後表示」切替を追加。`/api/admin/vote-status` が D1 `system_state.admin_vote_status_override` を `closed` / 解除で保存し、`/api/admin/results` 系の管理画面表示だけを締切後扱いにする。公開 `/api/results` と `/api/votes` の投票受付判定には反映しない。公開フロントの結果ランキングは `2026-07-18T23:00:00+09:00` 以降のみ表示。検証: `node scripts/local-api-regression.mjs` / `node scripts/local-frontend-smoke.mjs` PASS。
+
+2026-07-09: 管理画面の総合表示を修正。WINNER表示、全体集計、チーム別内訳を別ブロックに分離し、全チーム合計が優勝チーム単体の数値に見えないようにした。合計ラベルも「全チーム投票ポイント」「全チーム個人賞加点」「全チームライブスコア」「全チーム総合スコア」へ変更。
+
+2026-07-09: 管理画面の総合表示を読み上げ運用順へ調整。全体集計とチーム別内訳の得点項目を `ライブスコア → 個人賞加点 → 投票ポイント → 総合スコア` の順に変更。
+
+2026-07-09: 公開フロントのセクション見出し演出を調整。`.section-title` のみ、既存の行マスクから1文字ずつ下から生えるマスクリビールへ変更。文字出現後にグロウ/影を遅れてフェードイン。SPで文字マスク内の `text-shadow` が角張って切れるため、セクションタイトルの効果は親要素の `drop-shadow` に統一。対象は `イベントについて` / `参加チーム` / `タイムスケジュール` / `リスナー投票`。本文・ラベル・投票UIには適用しない。sticky 表示は ROUND ナビと干渉するため不採用。`prefers-reduced-motion` では即表示・グロウ最終状態。
+
+2026-07-06: モダンデザイン改修を本番デプロイ（deployment 4d08594c / Production / master）。内容: (1)スクロール連続結合の視差（`.hero-bg` ±7.6%・`.team-card::before` ±14%、rAF+lerp 単一ループ+IntersectionObserver、`--p` 変数） (2)役割別リビール＋リトリガー（見出し=行マスク `line-reveal`、カード=clip-path 初回のみ・再入時フェード、divider=scaleX、スケジュール行=バッチ内相対スタガー上限0.3s） (3)チームカード1カラム大判化（アバターは全員156px統一、SPは clamp で縮小） (4)静と動: PC でチームカードのスタッキング（`.teams-grid > .team-card { position: sticky; top: 100px }`、次のカードが前のカードに重なる）＋ schedule の ROUND ラベル sticky。不採用: 左レール見出し sticky（センター構図と衝突）、teams カウンター（浮いて見える）、フッターロゴ（ヘッダーと重複）。注意: `prefers-reduced-motion: reduce`（Windows「アニメーション効果」オフ）では基本リビールとヒーロー視差は無効、チームカード背景パララックスは2026-07-09の修正以降も動的維持。sticky スタッキングは動く。指示書は `docs/modern-design-spec.md` / `docs/modern-design-spec-phase2.md`。
+
+2026-07-01: 特設サイトとGOLDENチームリンクのiran痔画像参照を7月用 `public/assets/members/golden-iran-july.jpg` に差し替え済み。
+
+2026-07-01: 投票システムをテストモード/Playwright/API回帰で検証。共有IPで別ブラウザが重複扱いになり得るfingerprintをブラウザID併用へ改善し、コメントフィルタ表示も修正済み。投票ポイント・BONUS・ライブスコア計算は推しボーナスが減らない前提で確認済み。
+
+2026-06-27: 投票ルール公開に合わせて、`battlefes.html` / `public/index.html` の `#about` 内ルールオブエンゲージメントを表示状態へ変更済み。
+
+2026-06-22: 関係者資料・チームリンク用のなぽる画像を `public/assets/members/nova-naporu.jpg` に差し替え。`public/clip/b95ta/index.html` と `promo/sns-strategy.html` のなぽる画像は拡大表示を外し、7/1投稿用画像 `public/assets/promo/sns-7-01.png` も再生成済み。
+
 | 非表示中のブロック | 場所 | 再表示の手順 |
 |---|---|---|
-| ルールオブエンゲージメント | `#about` 内 `<div class="about-rules" hidden>` | `hidden` を外す |
 | タイムテーブル | `<section id="schedule" hidden>` ＋ 直前の `<div class="divider" hidden>` | 両方の `hidden` を外す |
 | ナビ「スケジュール」リンク | `.nav-drawer` の `<a href="#schedule" ... hidden>` | タイムテーブル再表示に合わせて `hidden` を外す |
 
@@ -20,12 +43,11 @@
 
 情報解禁前のため、ここに反映したメンバーは **特設サイト本体 `public/index.html` / `battlefes.html` には掲載しない**。ColorSing URL が未共有の枠は名前・アイコンのみ表示し、`URL LATER` の非リンク扱いにする。
 
-| チーム | 枠 | 現在の表示 | URL |
-|---|---:|---|---|
-| CRIMSON | 2 | んごご | 未設定 |
-| CRIMSON | 3 | PK | 未設定 |
-| GOLDEN | 2 | あわ | 未設定 |
-| NOVA | 2 | なぽる | 設定済み |
+| チーム | 反映状況 | 現在の表示 |
+|---|---|---|
+| CRIMSON | 3名設定済み | まぐろふぉん / んごご / PK |
+| NOVA | 3名設定済み | りんか / なぽる / 犬飼音子(ねこ) |
+| GOLDEN | 3名設定済み | iran痔 / あわ / 潮てら |
 
 ### チーム紹介セクション（`#teams` / `public/index.html` 657-695行 付近）
 
@@ -33,7 +55,7 @@
 |---|---|---|---|
 | 各チームのジャンル | `.team-genre.placeholder` | `Coming soon` | 例: 旧案では `POWER / J-POP` / `HARMONY / BALLAD` / `ALL-ROUND` |
 | 各メンバータグ（3チーム × 3名 = 9個） | `<a class="member-tag placeholder">` | `Coming soon` | 確定したら `placeholder` クラスを外し、テキストを実名に。`href` を ColorSing プロフィールURLに設定 |
-| 各チーム説明文 | `<p class="team-desc placeholder">` | `コンセプト・出演者は順次公開予定です` | コンセプト確定後、`placeholder` クラスを外し本文を入れる。旧案は下記控えを参照 |
+| 各チーム説明文 | `<p class="team-desc">` | 反映済み | CRIMSON / NOVA / GOLDEN の確定コンセプトを掲載済み |
 
 ### 投票セクション（`#vote` / JS の `teams` 配列）
 
@@ -83,6 +105,15 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
 ## フロントエンド
 
 ### デザイン
+
+- `✓` スマホでチームカード周辺が点滅する問題を再修正（2026-07-09）
+  - 原因1: `team-card` の再入時フェードがスクロール境界で `visible` / `reveal-replayed` を付け外しし、カードが一瞬 opacity 0 になる場合があった
+  - 原因2: 端末判定が外れる環境では `--p` の毎フレーム更新で `.team-card::before` の背景レイヤーが再ラスタライズされやすかった
+  - 原因3: 初回表示の `clip-path` ワイプ開始時に、2MB級チーム背景PNGとメンバー画像を同じフレームで合成し、表示瞬間に一度だけ点滅する場合があった
+  - 原因4: `prefers-reduced-motion: reduce` では `.team-card::before` を固定transformにしていたため、端末設定によってチームカード背景パララックスが完全静的になった
+  - 対策: スマホ/タッチ/狭幅ではチームカードのリビールは一度表示したら固定し、背景パララックス自体は維持。`--p` 書き込みをしきい値で間引き、背景transformを `scale3d + translate3d` にしてレイヤー化を安定させる。初回表示は重い `clip-path` ワイプではなくフェードアップにし、表示前にチーム背景とメンバー画像を `decode()` する
+  - 対策追記: reduced-motion でもヒーローやリビール抑制は維持しつつ、チームカード背景の `--p` 更新と `.team-card::before` パララックスは止めない
+  - 検証: スマホ相当Playwrightで通常設定/reduced-motionとも `--p` が動くこと、`reveal-replayed` が0件、カードが表示されたままになること、初回表示時の `clip-path` が `inset(0px)` 固定で opacity/transform のみ変化することを確認。PC幅では `.teams-grid > .team-card` の sticky stacking（1枚目と2枚目が `top:100px` で重なり、後続カードが前面に来る）も確認。`scripts/local-frontend-smoke.mjs` に回帰テスト追加
 
 - `✓` 全体カラーテーマ
   - 夏フェス、夜、暖色系
@@ -177,7 +208,7 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
   - `枠内月間推しPt ÷ (1 + 推しボーナス実％ / 100)` で実ライブスコアを算出し、D1 に保存
   - 枠内月間推しPtとライブスコアは100単位に丸める
 - `✓` 管理画面での総合スコア計算
-  - `投票ポイント合計 + ライブスコア`
+  - `投票ポイント合計 + 個人賞加点 + ライブスコア`
 - `⬜` スコア表示用エンドポイント
 
 ---
@@ -247,8 +278,9 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
 ## スコア仕様メモ
 
 ```text
-最終ポイント = 投票数 × 2000pt + ライブスコア
+最終ポイント = 投票ポイント合計 + 個人賞加点 + ライブスコア
 ```
 
 - 投票はリスナー1人1票
+- 個人賞は3部門それぞれの1位メンバー所属チームへ50,000pt加点
 - 集計の正本はバックエンドで管理

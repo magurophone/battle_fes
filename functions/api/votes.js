@@ -1,6 +1,7 @@
 import {
   getVoteWindowStatus,
   isVoteSubmissionAllowed,
+  calcIndividualAwardBonuses,
   readAllResults,
   recordBulkVotes,
 } from "./_lib/vote-store.js";
@@ -100,7 +101,7 @@ export async function onRequestPost(context) {
   const status = getVoteWindowStatus();
   const testSubmissionAllowed =
     status === "waiting" && isAdminAuthorized(context.request, context.env);
-  if (!isVoteSubmissionAllowed() && !testSubmissionAllowed) {
+  if (!isVoteSubmissionAllowed(status) && !testSubmissionAllowed) {
     return json(
       {
         ok: false,
@@ -118,6 +119,13 @@ export async function onRequestPost(context) {
   // タイムスタンプはサーバー時刻に固定（クライアント入力は信用しない）
   payload.timestamp = new Date().toISOString();
 
+  // 重複投票の指紋は IP + UserAgent + Accept-Language の組み合わせ。
+  // - localStorage 由来の clientId は含めない。含めるとプライベートブラウザで
+  //   毎回新しい clientId が振られ、同一端末から何度でも投票できてしまうため。
+  // - clientId を外すことで、同一端末のシークレットウィンドウは IP/UA/言語が
+  //   一致し重複としてブロックされる（悪意ある複数投票を抑止）。
+  // - 一方でモバイルキャリア NAT のように IP を共有していても、他人は端末・
+  //   ブラウザ・言語設定が異なり指紋が変わるため、正当な投票は弾かれにくい。
   const ip =
     context.request.headers.get("CF-Connecting-IP") ||
     context.request.headers.get("x-forwarded-for") ||
@@ -138,6 +146,7 @@ export async function onRequestPost(context) {
   );
 
   if (!writeResult.ok && writeResult.duplicate) {
+    const currentResults = await readAllResults(context.env);
     return json(
       {
         ok: false,
@@ -145,7 +154,8 @@ export async function onRequestPost(context) {
         duplicate: true,
         conflicts: writeResult.conflicts,
         existing: writeResult.existing,
-        results: await readAllResults(context.env),
+        individualAwardBonuses: calcIndividualAwardBonuses(currentResults),
+        results: currentResults,
       },
       { status: 409 }
     );
@@ -154,6 +164,7 @@ export async function onRequestPost(context) {
   return json({
     ok: true,
     duplicate: false,
+    individualAwardBonuses: calcIndividualAwardBonuses(writeResult.results),
     results: writeResult.results,
     // 実加算されたか（env 一致 かつ 本投票期間内）。本番フローでは burst 発動条件。
     bonusGranted: Boolean(writeResult.bonusGranted),

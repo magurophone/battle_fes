@@ -1,5 +1,9 @@
 import { requireAdmin } from "../_lib/admin-auth.js";
-import { buildAdminSnapshot, getVoteWindowStatus } from "../_lib/vote-store.js";
+import {
+  buildAdminSnapshot,
+  getAdminEffectiveVoteWindowStatus,
+  getAdminVoteStatusOverride,
+} from "../_lib/vote-store.js";
 import { CATEGORIES, MEMBERS, TEAMS } from "../_lib/vote-categories.js";
 
 function json(data, init = {}) {
@@ -27,10 +31,15 @@ export async function onRequestGet(context) {
   const unauthorized = requireAdmin(context.request, context.env);
   if (unauthorized) return unauthorized;
 
-  const snapshot = await buildAdminSnapshot(context.env);
+  const [snapshot, status, voteStatusOverride] = await Promise.all([
+    buildAdminSnapshot(context.env),
+    getAdminEffectiveVoteWindowStatus(context.env),
+    getAdminVoteStatusOverride(context.env),
+  ]);
   return json({
     ok: true,
-    status: getVoteWindowStatus(),
+    status,
+    adminVoteStatusOverride: voteStatusOverride || null,
     config: snapshotConfig(),
     ...snapshot,
   });

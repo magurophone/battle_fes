@@ -555,6 +555,73 @@
     letter-spacing: 0;
   }
 
+  .sns-img-download {
+    margin-top: 12px;
+  }
+
+  .sns-img-download-label {
+    font-size: 11px;
+    color: var(--faint);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  .sns-img-thumb {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 8px;
+  }
+
+  .sns-img-placeholder {
+    width: 100%;
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px dashed rgba(255,255,255,0.12);
+    border-radius: 6px;
+    color: var(--faint);
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .download-img-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(56, 212, 255, 0.1);
+    border: 1px solid rgba(56, 212, 255, 0.35);
+    border-radius: 4px;
+    color: var(--teal);
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s ease, border-color .15s ease;
+  }
+
+  .download-img-btn:hover,
+  .download-img-btn:focus-visible {
+    background: rgba(56, 212, 255, 0.18);
+    border-color: rgba(56, 212, 255, 0.65);
+  }
+
+  .sns-copy-notice {
+    margin: 0 0 8px;
+    padding: 6px 10px;
+    border-left: 3px solid var(--gold);
+    background: rgba(255, 215, 0, 0.08);
+    color: var(--gold);
+    font-size: 13px;
+    border-radius: 0 4px 4px 0;
+  }
+
   .sns-copy-text {
     margin: 0;
     min-height: 96px;
@@ -638,56 +705,177 @@
       <h3 class="subsection-title subsection-title-sns">運営配布SNS文言</h3>
 
       <section class="sns-copy-bank" id="sns-copy">
-        <p>SNS告知文は運営側で作成します。運営から文言が入ったら該当日のカードからコピーし、文末に各ライバー自身の言葉を入れて投稿してください。</p>
+        <p>SNS告知投稿は運営アカウントが行います。ポストが公開されたら、各ライバーはいいね・リポスト・引用でエンゲージをお願いします。</p>
         <div class="sns-copy-grid">
           <article class="sns-copy-card">
             <div class="sns-copy-meta">
               <span class="sns-copy-date">6/13</span>
-              <span class="sns-copy-status">運営配布前</span>
+              <span class="sns-copy-status">配布済み</span>
               <button class="copy-sns-btn" type="button" data-copy-sns aria-label="6/13のSNS文言をコピー">コピー</button>
             </div>
             <h3>特設サイト公開・イベント告知開始</h3>
-            <p class="sns-copy-text">ここに運営配布文言を掲載します。</p>
+            <p class="sns-copy-notice">各チームリーダーによる投稿済み。</p>
+            <p class="sns-copy-text">【告知】
+200日間、磨き続けた構想が形に…
+
+ColorSing リレーイベントの概念を覆す
+
+一人一人の投票が勝敗を分ける
+
+チーム対抗バトルフェス❗️
+𝐜𝐨𝐦𝐢𝐧𝐠 𝐬𝐨𝐨𝐧…
+
+https://battle-fes.pages.dev</p>
+            <div class="sns-img-download">
+              <p class="sns-img-download-label">投稿用画像</p>
+              <img class="sns-img-thumb" src="../assets/promo/sns-6-13.png" alt="6/13投稿用画像">
+              <a class="download-img-btn" href="../assets/promo/sns-6-13.png" download="battle-fes-sns-6-13.png">⬇ 画像をダウンロード</a>
+            </div>
           </article>
 
           <article class="sns-copy-card">
             <div class="sns-copy-meta">
               <span class="sns-copy-date">6/20</span>
-              <span class="sns-copy-status">運営配布前</span>
+              <span class="sns-copy-status">配布済み</span>
               <button class="copy-sns-btn" type="button" data-copy-sns aria-label="6/20のSNS文言をコピー">コピー</button>
             </div>
             <h3>チームコンセプト解禁</h3>
-            <p class="sns-copy-text">ここに運営配布文言を掲載します。</p>
+            <p class="sns-copy-notice">各チームリーダーによる投稿済み。</p>
+            <p class="sns-copy-text">【チームコンセプト解禁】
+
+CRIMSON - 歌で、殴る
+NOVA - 星が、歌う
+GOLDEN - 夏の水族館
+
+3つの色、3つの物語、3つの戦い方。
+
+チーム対抗バトルフェスを彩るコンセプト文を公開しました。
+あなたは、どのチームを推す？
+
+https://battle-fes.pages.dev</p>
+            <div class="sns-img-download">
+              <p class="sns-img-download-label">投稿用画像</p>
+              <img class="sns-img-thumb" src="../assets/promo/sns-6-20.png" alt="6/20投稿用画像">
+              <a class="download-img-btn" href="../assets/promo/sns-6-20.png" download="battle-fes-sns-6-20.png">⬇ 画像をダウンロード</a>
+            </div>
           </article>
 
           <article class="sns-copy-card">
             <div class="sns-copy-meta">
               <span class="sns-copy-date">6/27</span>
-              <span class="sns-copy-status">運営配布前</span>
+              <span class="sns-copy-status">配布済み</span>
               <button class="copy-sns-btn" type="button" data-copy-sns aria-label="6/27のSNS文言をコピー">コピー</button>
             </div>
             <h3>投票ルール解禁</h3>
-            <p class="sns-copy-text">ここに運営配布文言を掲載します。</p>
+            <p class="sns-copy-notice">各チームリーダーによる投稿済み。</p>
+            <p class="sns-copy-text">【投票ルール解禁】
+
+あなたの1票が命運を握る！？
+
+投票締め切りに近づくほど、
+あなたの一票は強くなる。
+
+さらに本投票中、一定条件達成で
+BONUSが発生…？
+
+https://battle-fes.pages.dev</p>
+            <div class="sns-img-download">
+              <p class="sns-img-download-label">投稿用画像</p>
+              <img class="sns-img-thumb" src="../assets/promo/sns-6-27.png" alt="6/27投稿用画像">
+              <a class="download-img-btn" href="../assets/promo/sns-6-27.png" download="battle-fes-sns-6-27.png">⬇ 画像をダウンロード</a>
+            </div>
           </article>
 
           <article class="sns-copy-card">
             <div class="sns-copy-meta">
               <span class="sns-copy-date">7/1</span>
-              <span class="sns-copy-status">運営配布前</span>
+              <span class="sns-copy-status">投稿見送り（戦略変更）</span>
               <button class="copy-sns-btn" type="button" data-copy-sns aria-label="7/1のSNS文言をコピー">コピー</button>
             </div>
             <h3>全メンバー・スケジュール解禁</h3>
-            <p class="sns-copy-text">ここに運営配布文言を掲載します。</p>
+            <p class="sns-copy-notice">戦略変更のため単独投稿は見送り。内容は7月の運営長文ポストに統合します。</p>
+            <p class="sns-copy-text">【全演者・スケジュール解禁】
+
+9人3チーム　一夜限りの頂上決戦。
+
+▼演者
+CRIMSON：まぐろふぉん / んごご🍋‍🟩 / PK
+NOVA　   ：りんか🔔 / なぽる / 犬飼音子(ねこ)
+GOLDEN   ：iran👳🏾‍♂️痔 / 🐻‍❄️あわ🥚 / 潮てら🐳💛
+
+▼日程
+7/18（土）19:45〜
+詳細・タイムテーブルはこちら
+https://battle-fes.pages.dev</p>
+            <div class="sns-img-download">
+              <p class="sns-img-download-label">投稿用画像</p>
+              <img class="sns-img-thumb" src="../assets/promo/sns-7-01.png" alt="7/1投稿用画像">
+              <a class="download-img-btn" href="../assets/promo/sns-7-01.png" download="battle-fes-sns-7-01.png">⬇ 画像をダウンロード</a>
+            </div>
           </article>
 
           <article class="sns-copy-card">
             <div class="sns-copy-meta">
               <span class="sns-copy-date">7/11</span>
-              <span class="sns-copy-status">運営配布前</span>
-              <button class="copy-sns-btn" type="button" data-copy-sns aria-label="7/11のSNS文言をコピー">コピー</button>
+              <span class="sns-copy-status">文言確定</span>
+              <button class="copy-sns-btn" type="button" data-copy-sns aria-label="7/11統合告知のSNS文言をコピー">コピー</button>
             </div>
-            <h3>貫通BONUS事前予告</h3>
-            <p class="sns-copy-text">ここに運営配布文言を掲載します。</p>
+            <h3>統合告知（運営長文ポスト）</h3>
+            <p class="sns-copy-notice">投稿は運営アカウントが行います。ポストが公開されたら、いいね・リポスト・引用でエンゲージをお願いします。</p>
+            <p class="sns-copy-text">【7/18（土）夜、歌のバトルフィールドが展開される！】
+
+歌配信アプリColorSingで、9人のライバーが3チームに分かれて激突する一夜限りの音楽フェス「BATTLE FES 2026」開催決定！
+≪圧倒的に比重の重いリスナー投票≫＋≪ColorSing内ライブスコア≫で勝敗が決するイベントです。
+
+歌のパフォーマンスをぶつけ合い、最強チームを決定する新感覚リレー配信。
+歌でぶつかる一夜を、ぜひ見届けてください。
+
+━━━イベント詳細━━━
+日時：2026/7/18（土）19:45〜22:45
+場所：ColorSing（各出演者の配信枠）
+投票：20:45受付開始 ／ 本投票：22:15〜22:30
+
+━━━簡易ルール━━━
+①本投票期間（22:15～22:30）に投票してください。
+1投票あたりライブスコア5,000ポイント分として換算します。
+※20:45～投票可能ですが、本投票期間前の投票はポイント比率が下がるので注意！
+
+②お一人様、1回のみ投票可能です。
+システムにより、多重投票はできない仕様です。
+
+③当日開会式で、勝敗を揺るがすシークレットBONUSを発表します！
+皆さんの投票ポイントが、なんと2倍（ライブスコア10,000ポイント分）に…！？
+開会式での情報をお見逃しなく！
+
+━━━出演チーム━━━
+▼TEAM01　CRIMSON
+まぐろふぉん（リーダー） / んごご🍋‍🟩 / PK
+
+▼TEAM02　NOVA
+りんか🔔（リーダー） / なぽる / 犬飼音子(ねこ)
+
+▼TEAM03　GOLDEN
+iran👳🏾‍♂️痔（リーダー） / 🐻‍❄️あわ🥚 / 潮てら🐳💛
+
+当日参加メンバーのフォローまたはクリップ留めをよろしくお願いします！
+
+━━━特設サイト━━━
+タイムテーブルとルール詳細は特設サイトへ
+https://battle-fes.pages.dev/
+
+一夜限りの頂上決戦。
+その結末は、あなたの1票が決める。
+
+#BATTLEFES2026 #ColorSing</p>
+            <div class="sns-img-download">
+              <p class="sns-img-download-label">投稿用画像（3枚添付・この順で）</p>
+              <img class="sns-img-thumb" src="../assets/promo/sns-6-13.png" alt="統合告知 画像1 キービジュアル">
+              <a class="download-img-btn" href="../assets/promo/sns-6-13.png" download="battle-fes-unified-1.png">画像1をダウンロード</a>
+              <img class="sns-img-thumb" src="../assets/promo/sns-unified-hero.png" alt="統合告知 画像2 全メンバー・スケジュール">
+              <a class="download-img-btn" href="../assets/promo/sns-unified-hero.png" download="battle-fes-unified-2.png">画像2をダウンロード</a>
+              <img class="sns-img-thumb" src="../assets/promo/sns-unified-value.png" alt="統合告知 画像3 貫通BONUS">
+              <a class="download-img-btn" href="../assets/promo/sns-unified-value.png" download="battle-fes-unified-3.png">画像3をダウンロード</a>
+            </div>
           </article>
 
           <article class="sns-copy-card">
@@ -697,7 +885,13 @@
               <button class="copy-sns-btn" type="button" data-copy-sns aria-label="7/17のSNS文言をコピー">コピー</button>
             </div>
             <h3>前日リマインド</h3>
+            <p class="sns-copy-notice">投稿は運営アカウントが行います。ポストが公開されたら、いいね・リポスト・引用でエンゲージをお願いします。</p>
             <p class="sns-copy-text">ここに運営配布文言を掲載します。</p>
+            <div class="sns-img-download">
+              <p class="sns-img-download-label">投稿用画像</p>
+              <img class="sns-img-thumb" src="../assets/promo/sns-7-17.png" alt="7/17投稿用画像">
+              <a class="download-img-btn" href="../assets/promo/sns-7-17.png" download="battle-fes-sns-7-17.png">⬇ 画像をダウンロード</a>
+            </div>
           </article>
 
           <article class="sns-copy-card">
@@ -707,7 +901,13 @@
               <button class="copy-sns-btn" type="button" data-copy-sns aria-label="7/18のSNS文言をコピー">コピー</button>
             </div>
             <h3>当日案内</h3>
+            <p class="sns-copy-notice">投稿は運営アカウントが行います。ポストが公開されたら、いいね・リポスト・引用でエンゲージをお願いします。</p>
             <p class="sns-copy-text">ここに運営配布文言を掲載します。</p>
+            <div class="sns-img-download">
+              <p class="sns-img-download-label">投稿用画像</p>
+              <img class="sns-img-thumb" src="../assets/promo/sns-7-18.png" alt="7/18投稿用画像">
+              <a class="download-img-btn" href="../assets/promo/sns-7-18.png" download="battle-fes-sns-7-18.png">⬇ 画像をダウンロード</a>
+            </div>
           </article>
         </div>
       </section>

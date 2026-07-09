@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>BATTLE FES 2026 SNS Strategy Visuals</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Ops+One&family=Cinzel:wght@600;800&family=Dela+Gothic+One&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700;800;900&family=Noto+Serif+JP:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060a1c;
+    --bg2: #100713;
+    --accent: #ff7c1e;
+    --red: #ff4455;
+    --gold: #ffe040;
+    --teal: #38d4ff;
+    --ink: #fff8ee;
+    --muted: #c6a982;
+    --line: rgba(255, 176, 82, 0.28);
+    --crimson: #ff2d78;
+    --nova: #7c3aff;
+    --golden: #ffd700;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    width: 1600px;
+    height: 900px;
+    margin: 0;
+    overflow: hidden;
+    background: #050407;
+  }
+  body {
+    color: var(--ink);
+    font-family: "Noto Sans JP", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+
+  .poster {
+    position: relative;
+    width: 1600px;
+    height: 900px;
+    overflow: hidden;
+    isolation: isolate;
+    background:
+      radial-gradient(900px 520px at 78% 18%, rgba(255, 124, 30, 0.18), transparent 62%),
+      radial-gradient(900px 500px at 12% 82%, rgba(124, 58, 255, 0.16), transparent 58%),
+      linear-gradient(145deg, #060a1c 0%, #100713 52%, #1b0707 100%);
+  }
+  .poster::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-size: 40px 40px, 40px 40px;
+    opacity: 0.5;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .poster::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 48%, transparent 48%, rgba(0,0,0,0.50) 100%),
+      url("/assets/textures/grain-fine-dark.png");
+    opacity: 0.32;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 9;
+  }
+
+  .scene {
+    position: absolute;
+    inset: 0;
+    display: none;
+    z-index: 2;
+  }
+  body[data-scene="6-20"] .scene-teams,
+  body[data-scene="6-27"] .scene-vote,
+  body[data-scene="7-01"] .scene-lineup,
+  body[data-scene="7-11"] .scene-bonus,
+  body[data-scene="7-17"] .scene-eve,
+  body[data-scene="7-18"] .scene-today { display: block; }
+
+  .brand {
+    position: absolute;
+    left: 56px;
+    top: 34px;
+    z-index: 12;
+    display: block;
+    color: rgba(255,248,238,0.92);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.75);
+  }
+  .brand img {
+    display: block;
+    width: auto;
+    height: 58px;
+    filter: drop-shadow(0 4px 14px rgba(0,0,0,0.78));
+  }
+  .brand strong {
+    font-family: "Black Ops One", "Bebas Neue", sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+  }
+  .brand span {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+  }
+  .date-mark {
+    position: absolute;
+    right: 56px;
+    top: 44px;
+    z-index: 12;
+    padding: 12px 18px;
+    border: 1px solid var(--line);
+    background: rgba(8, 4, 3, 0.72);
+    color: var(--gold);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    box-shadow: 0 0 30px rgba(255,124,30,0.16);
+  }
+  .team-strip {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    z-index: 13;
+  }
+  .team-strip i:nth-child(1) { background: var(--crimson); box-shadow: 0 -4px 28px rgba(255,45,120,0.6); }
+  .team-strip i:nth-child(2) { background: var(--nova); box-shadow: 0 -4px 28px rgba(124,58,255,0.6); }
+  .team-strip i:nth-child(3) { background: var(--golden); box-shadow: 0 -4px 28px rgba(255,215,0,0.6); }
+
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    color: var(--gold);
+    text-transform: uppercase;
+    text-shadow: 0 0 22px rgba(255,224,64,0.35);
+  }
+  .jp-head {
+    font-family: "Noto Sans JP", sans-serif;
+    font-weight: 900;
+    letter-spacing: 0.015em;
+    line-height: 1.18;
+    color: var(--ink);
+    text-shadow:
+      0 5px 18px rgba(0,0,0,0.82),
+      0 0 28px rgba(255,124,30,0.16);
+  }
+  .latin-head {
+    font-family: "Black Ops One", "Bebas Neue", sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    line-height: 0.95;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow:
+      -2px 0 0 rgba(255,80,30,0.72),
+       2px 0 0 rgba(56,212,255,0.40),
+      0 8px 26px rgba(0,0,0,0.85);
+  }
+  .subcopy {
+    margin: 0;
+    color: rgba(255,225,190,0.86);
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1.55;
+    text-shadow: 0 4px 18px rgba(0,0,0,0.85);
+  }
+
+  /* 6/20: teams */
+  .scene-teams {
+    background:
+      radial-gradient(500px 360px at 50% 46%, rgba(255,224,64,0.18), transparent 68%),
+      linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.46));
+  }
+  .team-panels {
+    position: absolute;
+    inset: 112px 60px 90px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    transform: perspective(1200px) rotateX(0deg);
+  }
+  .team-panel {
+    position: relative;
+    min-width: 0;
+    border: 1px solid color-mix(in srgb, var(--team-color) 62%, rgba(255,255,255,0.18));
+    border-radius: 8px;
+    overflow: hidden;
+    background: #050203;
+    box-shadow:
+      inset 0 0 0 1px rgba(0,0,0,0.6),
+      0 28px 62px rgba(0,0,0,0.48),
+      0 0 58px color-mix(in srgb, var(--team-color) 28%, transparent);
+  }
+  .team-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--team-bg);
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.04);
+    opacity: 0.9;
+  }
+  .team-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(5,2,3,0.04), rgba(5,2,3,0.42) 48%, rgba(5,2,3,0.94) 100%),
+      radial-gradient(ellipse at 50% 38%, transparent, rgba(0,0,0,0.45));
+  }
+  .team-panel:nth-child(1) { transform: translateY(42px) skewY(-1.3deg); }
+  .team-panel:nth-child(2) { transform: translateY(0); }
+  .team-panel:nth-child(3) { transform: translateY(42px) skewY(1.3deg); }
+  .team-panel-content {
+    position: absolute;
+    left: 34px;
+    right: 34px;
+    bottom: 34px;
+    z-index: 2;
+  }
+  .team-panel small {
+    display: block;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 20px;
+    color: rgba(255,255,255,0.68);
+    letter-spacing: 0.42em;
+    margin-bottom: 10px;
+  }
+  .team-panel h3 {
+    margin: 0;
+    font-family: "Black Ops One", "Bebas Neue", sans-serif;
+    font-size: 56px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: var(--team-color);
+    text-shadow: 0 4px 14px rgba(0,0,0,0.95);
+  }
+  .team-panel .unlock-line {
+    width: 80px;
+    height: 4px;
+    margin-top: 16px;
+    background: var(--team-color);
+    box-shadow: 0 0 18px var(--team-color);
+  }
+  .teams-title {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    top: 50%;
+    width: 920px;
+    transform: translate(-50%, -45%);
+    text-align: center;
+    padding: 34px 52px 40px;
+    background:
+      linear-gradient(135deg, rgba(5,2,3,0.72), rgba(10,16,40,0.62)),
+      url("/assets/textures/marble-dark.png") center/cover no-repeat;
+    border: 1px solid rgba(255,200,120,0.38);
+    box-shadow:
+      inset 0 0 0 5px rgba(0,0,0,0.52),
+      inset 0 0 0 6px rgba(190,140,70,0.38),
+      0 30px 100px rgba(0,0,0,0.72);
+  }
+  .teams-title .latin-head { font-size: 76px; }
+  .teams-title .jp-head {
+    margin: 18px 0 0;
+    font-size: 60px;
+  }
+  .teams-title .subcopy {
+    margin-top: 18px;
+    font-size: 29px;
+    color: rgba(255,225,190,0.78);
+  }
+
+  /* 6/27: vote rules */
+  .scene-vote {
+    background:
+      radial-gradient(720px 560px at 50% 48%, rgba(255,160,30,0.22), transparent 68%),
+      linear-gradient(180deg, rgba(4,2,2,0.45), rgba(0,0,0,0.65));
+  }
+  .scene-vote::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 48%;
+    width: 1120px;
+    height: 1120px;
+    transform: translate(-50%, -50%);
+    background:
+      radial-gradient(circle at center, rgba(255,210,100,0.52) 0%, rgba(255,120,30,0.32) 34%, transparent 70%),
+      url("/assets/effects/sunburst.png") center/contain no-repeat;
+    opacity: 0.52;
+    mix-blend-mode: screen;
+  }
+  .rules-board {
+    position: absolute;
+    inset: 118px 90px 92px;
+    display: grid;
+    grid-template-columns: 1.02fr 0.98fr;
+    gap: 46px;
+    align-items: center;
+    padding: 54px 62px;
+    background:
+      linear-gradient(180deg, rgba(8,3,2,0.92), rgba(20,8,4,0.94)),
+      url("/assets/textures/slate-dark.png") center/cover no-repeat;
+    border: 1px solid rgba(255,180,80,0.24);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.06),
+      0 30px 88px rgba(0,0,0,0.68);
+    overflow: hidden;
+  }
+  .rules-board::after {
+    content: "";
+    position: absolute;
+    left: -12%;
+    right: -12%;
+    top: 0;
+    height: 5px;
+    background: linear-gradient(90deg, transparent, rgba(255,140,40,0.95), transparent);
+  }
+  .rules-copy { position: relative; z-index: 2; }
+  .rules-copy .latin-head { font-size: 74px; }
+  .rules-copy .jp-head {
+    margin: 22px 0 22px;
+    font-size: 72px;
+  }
+  .rule-points {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 30px;
+  }
+  .rule-chip {
+    padding: 16px 14px;
+    border: 1px solid rgba(255,180,80,0.25);
+    background: rgba(0,0,0,0.34);
+  }
+  .rule-chip b {
+    display: block;
+    font-family: "Black Ops One", sans-serif;
+    font-size: 40px;
+    font-weight: 400;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .rule-chip span {
+    display: block;
+    margin-top: 8px;
+    color: rgba(255,225,190,0.76);
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  .vote-graph-card {
+    position: relative;
+    z-index: 2;
+    padding: 34px 36px 30px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.74), rgba(20,8,4,0.88));
+    border: 1px solid rgba(255,180,80,0.36);
+    box-shadow: inset 0 1px 0 rgba(255,210,140,0.1);
+  }
+  .graph-title {
+    text-align: center;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    color: rgba(255,220,160,0.82);
+    margin-bottom: 22px;
+  }
+  .vote-graph {
+    display: block;
+    width: 100%;
+    height: 278px;
+  }
+  .meter {
+    margin-top: 26px;
+    padding: 16px;
+    background: rgba(0,0,0,0.48);
+    border: 1px solid rgba(255,180,80,0.28);
+  }
+  .meter-cells {
+    display: grid;
+    grid-template-columns: repeat(30, 1fr);
+    gap: 3px;
+    height: 38px;
+  }
+  .meter-cells i {
+    border-radius: 2px;
+    background: linear-gradient(180deg, #fffbe2 0%, #ffc544 38%, #ff6b1a 75%, #9b1908 100%);
+    box-shadow: 0 0 10px rgba(255,140,40,0.62);
+  }
+  .meter-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-family: "JetBrains Mono", monospace;
+    color: rgba(255,220,160,0.78);
+    font-size: 15px;
+  }
+
+  /* 7/1: lineup */
+  .scene-lineup {
+    background:
+      radial-gradient(640px 420px at 24% 56%, rgba(56,212,255,0.14), transparent 68%),
+      radial-gradient(620px 420px at 82% 50%, rgba(255,224,64,0.14), transparent 66%),
+      linear-gradient(140deg, rgba(6,10,28,0.92), rgba(24,6,8,0.88));
+  }
+  .lineup-layout {
+    position: absolute;
+    inset: 112px 70px 84px;
+    display: grid;
+    grid-template-columns: 720px 1fr;
+    gap: 38px;
+    align-items: center;
+  }
+  .member-wall {
+    display: grid;
+    gap: 14px;
+    transform: rotate(-0.8deg);
+    position: relative;
+  }
+  .team-line {
+    position: relative;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 14px;
+    padding: 14px;
+    min-height: 194px;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--team-color) 68%, rgba(255,255,255,0.14));
+    background:
+      linear-gradient(90deg, rgba(0,0,0,0.86), rgba(0,0,0,0.50) 46%, rgba(0,0,0,0.80)),
+      var(--team-bg) center/cover no-repeat;
+    box-shadow: 0 18px 44px rgba(0,0,0,0.46), 0 0 24px color-mix(in srgb, var(--team-color) 24%, transparent);
+  }
+  .team-line::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, color-mix(in srgb, var(--team-color) 30%, transparent), transparent 35%),
+      radial-gradient(320px 160px at 18% 50%, color-mix(in srgb, var(--team-color) 28%, transparent), transparent 72%);
+    opacity: 0.85;
+  }
+  .team-line-title {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 14px 0 4px;
+    border-right: 1px solid color-mix(in srgb, var(--team-color) 56%, rgba(255,255,255,0.14));
+  }
+  .team-line-title span {
+    color: rgba(255,235,190,0.78);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+  }
+  .team-line-title strong {
+    display: block;
+    max-width: 100%;
+    color: var(--team-color);
+    font-family: "Black Ops One", system-ui;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 0.92;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    text-shadow: 0 0 16px color-mix(in srgb, var(--team-color) 42%, transparent), 0 3px 10px rgba(0,0,0,0.8);
+  }
+  .team-members {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .member-tile {
+    position: relative;
+    height: 166px;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--team-color) 58%, rgba(255,255,255,0.18));
+    background: rgba(0,0,0,0.65);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.42);
+    z-index: 1;
+  }
+  .member-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(1.04) contrast(1.06);
+  }
+  .member-tile::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.04) 28%, rgba(0,0,0,0.58) 74%, rgba(0,0,0,0.92) 100%),
+      linear-gradient(90deg, color-mix(in srgb, var(--team-color) 16%, transparent), transparent 42%);
+  }
+  .member-name {
+    position: absolute;
+    left: 7px;
+    right: 7px;
+    bottom: 7px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 3px 5px 4px;
+    background: rgba(8, 5, 4, 0.72);
+    border: 1px solid color-mix(in srgb, var(--team-color) 34%, rgba(255,255,255,0.16));
+    color: var(--ink);
+    font-size: 17px;
+    font-weight: 900;
+    line-height: 1.08;
+    text-align: center;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+    white-space: normal;
+    overflow: hidden;
+  }
+  .wall-badge {
+    position: absolute;
+    left: 20px;
+    bottom: 18px;
+    z-index: 4;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding: 12px 20px 10px;
+    background: rgba(10, 8, 8, 0.82);
+    border: 1px solid rgba(241, 203, 94, 0.55);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.42);
+  }
+  .wall-badge strong {
+    font-family: "Black Ops One", system-ui;
+    font-size: 58px;
+    line-height: 0.88;
+    color: var(--gold);
+  }
+  .wall-badge span {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 32px;
+    letter-spacing: 0.16em;
+    color: #fff2d0;
+  }
+  .team-label-sm {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    z-index: 2;
+    padding: 4px 8px;
+    background: var(--team-color);
+    color: #120503;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.12em;
+  }
+  .lineup-copy {
+    position: relative;
+    padding: 34px 48px 32px;
+    background:
+      linear-gradient(150deg, rgba(255,255,255,0.05), rgba(255,255,255,0.012)),
+      rgba(10, 5, 3, 0.70);
+    border: 1px solid rgba(255,180,80,0.26);
+    box-shadow: 0 26px 80px rgba(0,0,0,0.52);
+  }
+  .lineup-copy .latin-head { font-size: 70px; }
+  .lineup-copy .jp-head {
+    margin: 16px 0 18px;
+    font-size: 58px;
+  }
+  .lineup-copy .subcopy {
+    font-size: 30px;
+    line-height: 1.48;
+  }
+  .copy-unit {
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .mini-schedule {
+    display: grid;
+    gap: 8px;
+    margin-top: 18px;
+  }
+  .mini-row {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 16px;
+    align-items: center;
+    padding: 10px 14px;
+    border-left: 4px solid rgba(255,180,80,0.5);
+    background: rgba(0,0,0,0.32);
+  }
+  .mini-row strong {
+    color: var(--gold);
+    font-family: "Black Ops One", sans-serif;
+    font-size: 26px;
+    font-weight: 400;
+  }
+  .mini-row span {
+    font-size: 18px;
+    font-weight: 800;
+    color: rgba(255,235,205,0.86);
+  }
+
+  /* 7/11: bonus */
+  .scene-bonus {
+    background:
+      radial-gradient(520px 360px at 50% 50%, rgba(255,224,64,0.18), transparent 72%),
+      radial-gradient(800px 580px at 50% 45%, rgba(255,80,30,0.18), transparent 70%),
+      linear-gradient(180deg, rgba(5,3,2,0.96), rgba(16,6,4,0.94));
+  }
+  .scene-bonus::before {
+    content: "";
+    position: absolute;
+    inset: -120px;
+    background: url("/assets/effects/godrays.png") center/contain no-repeat;
+    opacity: 0.22;
+    mix-blend-mode: screen;
+  }
+  .classified-bars {
+    position: absolute;
+    inset: 118px 80px 100px;
+    border: 1px solid rgba(255,80,30,0.28);
+    background:
+      repeating-linear-gradient(135deg, rgba(255,80,30,0.06) 0, rgba(255,80,30,0.06) 20px, transparent 20px, transparent 40px),
+      rgba(0,0,0,0.26);
+  }
+  .bonus-plate {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 900px;
+    transform: translate(-50%, -48%);
+    padding: 48px 64px 52px;
+    text-align: center;
+    background:
+      radial-gradient(ellipse at 50% 25%, rgba(80,42,18,0.58), transparent 70%),
+      linear-gradient(rgba(20,10,6,0.86), rgba(8,4,3,0.97)),
+      url("/assets/textures/marble-dark.png") center/cover no-repeat;
+    border: 1px solid rgba(190,140,70,0.66);
+    box-shadow:
+      inset 0 0 0 6px rgba(0,0,0,0.56),
+      inset 0 0 0 7px rgba(190,140,70,0.46),
+      inset 0 1px 0 rgba(255,225,170,0.14),
+      0 34px 110px rgba(0,0,0,0.86),
+      0 0 120px rgba(180,90,30,0.24);
+  }
+  .bonus-plate::before {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border: 1px solid rgba(190,140,70,0.32);
+  }
+  .bonus-plate .eyebrow {
+    color: rgba(220,180,120,0.92);
+    letter-spacing: 0.45em;
+  }
+  .bonus-word {
+    margin: 26px 0 16px;
+    font-family: "Cinzel", serif;
+    font-size: 86px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: rgba(245,225,180,0.98);
+    text-shadow: 0 0 30px rgba(190,140,70,0.55), 0 4px 10px rgba(0,0,0,0.85);
+  }
+  .bonus-word span {
+    font-family: "Noto Serif JP", serif;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    margin-right: 0.18em;
+  }
+  .secret-code {
+    margin: 10px auto 24px;
+    width: 560px;
+    height: 82px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255,224,64,0.44);
+    background: rgba(0,0,0,0.46);
+    font-family: "Black Ops One", sans-serif;
+    font-size: 50px;
+    letter-spacing: 0.18em;
+    color: rgba(255,224,64,0.92);
+    text-shadow: 0 0 28px rgba(255,224,64,0.36);
+  }
+  .bonus-plate .subcopy {
+    max-width: 840px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 30px;
+  }
+  .bonus-note {
+    margin-top: 20px;
+    color: rgba(255,210,170,0.68);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+  }
+
+  /* 7/17: eve */
+  .scene-eve {
+    background:
+      radial-gradient(520px 420px at 18% 52%, rgba(255,45,120,0.17), transparent 70%),
+      radial-gradient(560px 420px at 50% 52%, rgba(124,58,255,0.16), transparent 70%),
+      radial-gradient(560px 420px at 82% 52%, rgba(255,215,0,0.15), transparent 70%),
+      linear-gradient(180deg, #050713, #13040a);
+  }
+  .eve-grid {
+    position: absolute;
+    inset: 120px 80px 86px;
+    display: grid;
+    grid-template-columns: 0.82fr 1.18fr;
+    gap: 52px;
+    align-items: center;
+  }
+  .tminus {
+    position: relative;
+    min-height: 560px;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(ellipse at 50% 32%, rgba(80,42,18,0.55), transparent 70%),
+      linear-gradient(rgba(20,10,6,0.82), rgba(8,4,3,0.96)),
+      url("/assets/textures/marble-dark.png") center/cover no-repeat;
+    border: 1px solid rgba(190,140,70,0.58);
+    box-shadow:
+      inset 0 0 0 5px rgba(0,0,0,0.55),
+      inset 0 0 0 6px rgba(190,140,70,0.42),
+      0 28px 88px rgba(0,0,0,0.66);
+  }
+  .tminus-inner { text-align: center; }
+  .tminus .eyebrow { letter-spacing: 0.36em; }
+  .tminus-number {
+    margin: 18px 0 16px;
+    font-family: "Cinzel", serif;
+    font-size: 220px;
+    line-height: 0.84;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    background: linear-gradient(180deg, #f8e7b4 0%, #d9a55a 38%, #765018 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.72));
+  }
+  .tminus-label {
+    font-family: "Black Ops One", sans-serif;
+    font-size: 54px;
+    letter-spacing: 0.08em;
+    color: rgba(255,245,220,0.95);
+  }
+  .eve-copy .latin-head { font-size: 92px; }
+  .eve-copy .jp-head {
+    margin: 18px 0 18px;
+    font-size: 82px;
+  }
+  .prepare-list {
+    margin-top: 34px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .prepare-item {
+    min-height: 138px;
+    padding: 20px 18px;
+    background: rgba(0,0,0,0.34);
+    border: 1px solid rgba(255,180,80,0.23);
+    border-top: 4px solid var(--item-color);
+  }
+  .prepare-item b {
+    display: block;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 34px;
+    letter-spacing: 0.08em;
+    color: var(--item-color);
+  }
+  .prepare-item span {
+    display: block;
+    margin-top: 10px;
+    color: rgba(255,225,190,0.82);
+    font-size: 21px;
+    font-weight: 800;
+    line-height: 1.45;
+  }
+
+  /* 7/18: today */
+  .scene-today {
+    background:
+      radial-gradient(760px 480px at 50% 44%, rgba(255,224,64,0.18), transparent 70%),
+      linear-gradient(150deg, rgba(8,5,4,0.98), rgba(8,12,30,0.94));
+  }
+  .today-layout {
+    position: absolute;
+    inset: 116px 76px 82px;
+    display: grid;
+    grid-template-columns: 1fr 580px;
+    gap: 54px;
+    align-items: center;
+  }
+  .today-main {
+    position: relative;
+    padding: 48px 52px 54px;
+    background:
+      linear-gradient(150deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012)),
+      rgba(0,0,0,0.34);
+    border: 1px solid rgba(255,180,80,0.25);
+  }
+  .today-main .latin-head {
+    font-size: 112px;
+    color: var(--gold);
+  }
+  .today-main .jp-head {
+    margin-top: 18px;
+    font-size: 84px;
+  }
+  .start-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 20px;
+    margin-top: 34px;
+    padding: 20px 34px;
+    border: 2px solid rgba(255,180,80,0.7);
+    background:
+      radial-gradient(ellipse at 50% 100%, rgba(255,90,30,0.5), transparent 78%),
+      url("/assets/textures/marble-dark.png") center/cover no-repeat;
+    box-shadow: 0 0 46px rgba(255,124,30,0.30);
+  }
+  .start-chip strong {
+    font-family: "Black Ops One", sans-serif;
+    font-size: 58px;
+    font-weight: 400;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+  }
+  .start-chip span {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 38px;
+    letter-spacing: 0.18em;
+    color: rgba(255,248,238,0.94);
+  }
+  .today-rail {
+    display: grid;
+    gap: 15px;
+    padding: 34px 32px;
+    background:
+      linear-gradient(180deg, rgba(20,8,4,0.88), rgba(8,3,2,0.96)),
+      url("/assets/textures/slate-dark.png") center/cover no-repeat;
+    border: 1px solid rgba(255,180,80,0.25);
+    box-shadow: 0 26px 76px rgba(0,0,0,0.54);
+  }
+  .rail-row {
+    display: grid;
+    grid-template-columns: 112px 1fr;
+    gap: 18px;
+    align-items: center;
+    padding: 17px 18px;
+    background: rgba(0,0,0,0.36);
+    border-left: 4px solid var(--row-color, rgba(255,180,80,0.45));
+  }
+  .rail-row time {
+    color: rgba(255,220,150,0.96);
+    font-family: "Black Ops One", sans-serif;
+    font-size: 34px;
+    line-height: 1;
+  }
+  .rail-row b {
+    display: block;
+    color: var(--ink);
+    font-size: 23px;
+    line-height: 1.25;
+  }
+  .rail-row span {
+    display: block;
+    margin-top: 4px;
+    color: rgba(255,210,170,0.66);
+    font-size: 15px;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body data-scene="6-20">
+<div class="poster">
+  <div class="brand"><img src="/assets/logos/logo-B-trim.png" alt="BATTLE FES 2026"></div>
+  <div class="date-mark" data-date>06.20 SAT</div>
+
+  <section class="scene scene-teams">
+    <div class="team-panels">
+      <article class="team-panel" style="--team-color: var(--crimson); --team-bg: url('/assets/teams/crimson.png');">
+        <div class="team-panel-content"><small>TEAM 01</small><h3>CRIMSON</h3><div class="unlock-line"></div></div>
+      </article>
+      <article class="team-panel" style="--team-color: var(--nova); --team-bg: url('/assets/teams/nova.png');">
+        <div class="team-panel-content"><small>TEAM 02</small><h3>NOVA</h3><div class="unlock-line"></div></div>
+      </article>
+      <article class="team-panel" style="--team-color: var(--golden); --team-bg: url('/assets/teams/golden.png');">
+        <div class="team-panel-content"><small>TEAM 03</small><h3>GOLDEN</h3><div class="unlock-line"></div></div>
+      </article>
+    </div>
+    <div class="teams-title">
+      <div class="eyebrow">SECOND DROP</div>
+      <div class="latin-head">TEAM CONCEPT</div>
+      <h1 class="jp-head">チームコンセプト解禁</h1>
+      <p class="subcopy">三つの色、三つの戦い方。BATTLE FES が動き出す。</p>
+    </div>
+  </section>
+
+  <section class="scene scene-vote">
+    <div class="rules-board">
+      <div class="rules-copy">
+        <div class="eyebrow">THIRD DROP</div>
+        <div class="latin-head">VOTE RULES</div>
+        <h1 class="jp-head">投票ルール解禁</h1>
+        <p class="subcopy">22:15、1票が最大火力になる。</p>
+        <div class="rule-points">
+          <div class="rule-chip"><b>1</b><span>リスナー<br>1人1票</span></div>
+          <div class="rule-chip"><b>100</b><span>受付開始<br>100PT</span></div>
+          <div class="rule-chip"><b>5000</b><span>本投票<br>MAX PT</span></div>
+        </div>
+      </div>
+      <div class="vote-graph-card">
+        <div class="graph-title">VOTE POWER CURVE</div>
+        <svg class="vote-graph" viewBox="0 0 560 278" preserveAspectRatio="none" role="img" aria-label="投票ポイント推移">
+          <defs>
+            <linearGradient id="curveFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#ff8c34" stop-opacity="0.62"/>
+              <stop offset="1" stop-color="#ff3014" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="curveLine" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0" stop-color="#ffd980"/>
+              <stop offset="0.82" stop-color="#ff5a14"/>
+              <stop offset="1" stop-color="#ff3014"/>
+            </linearGradient>
+          </defs>
+          <g stroke="rgba(255,180,80,0.15)" stroke-width="1" stroke-dasharray="3 8">
+            <line x1="0" y1="40" x2="560" y2="40"/>
+            <line x1="0" y1="108" x2="560" y2="108"/>
+            <line x1="0" y1="176" x2="560" y2="176"/>
+            <line x1="0" y1="240" x2="560" y2="240"/>
+          </g>
+          <rect x="475" y="28" width="85" height="212" fill="rgba(255,48,20,0.14)"/>
+          <line x1="475" y1="26" x2="475" y2="252" stroke="rgba(255,255,255,0.28)" stroke-width="1.5" stroke-dasharray="6 8"/>
+          <path d="M 0,240 L 475,38 L 560,38 L 560,278 L 0,278 Z" fill="url(#curveFill)"/>
+          <path d="M 0,240 L 475,38 L 560,38" fill="none" stroke="url(#curveLine)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="0" cy="240" r="9" fill="#ffd980" stroke="#fff" stroke-width="2"/>
+          <circle cx="475" cy="38" r="11" fill="#ff5a14" stroke="#fff" stroke-width="2"/>
+          <g font-family="JetBrains Mono, monospace" font-size="19" font-weight="700">
+            <text x="12" y="224" fill="#ffe2b0">100PT</text>
+            <text x="468" y="25" text-anchor="end" fill="#ffd700">5000PT</text>
+            <text x="517" y="130" text-anchor="middle" fill="#ff6b1a">FINAL</text>
+          </g>
+          <g font-family="JetBrains Mono, monospace" font-size="17">
+            <text x="4" y="270" fill="rgba(255,210,150,0.72)">20:45</text>
+            <text x="475" y="270" text-anchor="middle" fill="rgba(255,210,150,0.72)">22:15</text>
+            <text x="558" y="270" text-anchor="end" fill="rgba(255,210,150,0.72)">22:30</text>
+          </g>
+        </svg>
+        <div class="meter">
+          <div class="meter-cells">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <div class="meter-labels"><span>OPEN</span><span>MAX固定 22:15-22:30</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene scene-lineup">
+    <div class="lineup-layout">
+      <div class="member-wall">
+        <section class="team-line" style="--team-color: var(--crimson); --team-bg: url('/assets/teams/crimson.png');">
+          <div class="team-line-title"><span>TEAM 01</span><strong>CRIMSON</strong></div>
+          <div class="team-members">
+            <div class="member-tile"><img src="/assets/members/crimson-leader.png" style="transform:scale(1.18);" alt=""><span class="member-name">まぐろふぉん</span></div>
+            <div class="member-tile"><img src="/assets/members/crimson-ngogo.jpg" alt=""><span class="member-name">んごご&#x1F34B;&#x200D;&#x1F7E9;</span></div>
+            <div class="member-tile"><img src="/assets/members/crimson-pk.jpeg" alt=""><span class="member-name">PK</span></div>
+          </div>
+        </section>
+        <section class="team-line" style="--team-color: var(--nova); --team-bg: url('/assets/teams/nova.png');">
+          <div class="team-line-title"><span>TEAM 02</span><strong>NOVA</strong></div>
+          <div class="team-members">
+            <div class="member-tile"><img src="/assets/members/nova-leader.jpg" alt=""><span class="member-name">りんか&#x1F514;</span></div>
+            <div class="member-tile"><img src="/assets/members/nova-naporu.jpg" style="object-fit:contain;" alt=""><span class="member-name">なぽる</span></div>
+            <div class="member-tile"><img src="/assets/members/nova-neko.jpg" alt=""><span class="member-name">犬飼音子(ねこ)</span></div>
+          </div>
+        </section>
+        <section class="team-line" style="--team-color: var(--golden); --team-bg: url('/assets/teams/golden.png');">
+          <div class="team-line-title"><span>TEAM 03</span><strong>GOLDEN</strong></div>
+          <div class="team-members">
+            <div class="member-tile"><img src="/assets/members/golden-iran-july.jpg" alt=""><span class="member-name">iran&#x1F473;&#x1F3FE;&#x200D;&#x2642;&#xFE0F;痔</span></div>
+            <div class="member-tile"><img src="/assets/members/golden-awa.jpg" alt=""><span class="member-name">&#x1F43B;&#x200D;&#x2744;&#xFE0F;あわ&#x1F95A;</span></div>
+            <div class="member-tile"><img src="/assets/members/golden-tera.jpg" alt=""><span class="member-name">潮てら&#x1F433;&#x1F49B;</span></div>
+          </div>
+        </section>
+      </div>
+      <div class="lineup-copy">
+        <div class="eyebrow">FOURTH DROP</div>
+        <div class="latin-head">FULL ROSTER<br>&amp; TIME TABLE</div>
+        <h1 class="jp-head">全メンバー<br>スケジュール解禁</h1>
+        <p class="subcopy"><span class="copy-unit">特設サイトから出演者アイコンをタップ。</span><span class="copy-unit">全出演者クリップを推奨。</span></p>
+        <div class="mini-schedule">
+          <div class="mini-row"><strong>19:45</strong><span>開会式・チーム紹介</span></div>
+          <div class="mini-row"><strong>20:00</strong><span>9人のリレーライブ開始</span></div>
+          <div class="mini-row"><strong>22:15</strong><span>本投票フェーズへ</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene scene-bonus">
+    <div class="classified-bars"></div>
+    <div class="bonus-plate">
+      <div class="eyebrow">CLASSIFIED NOTICE</div>
+      <div class="bonus-word"><span>貫通</span>BONUS</div>
+      <div class="secret-code">+ ????</div>
+      <h1 class="jp-head" style="font-size:58px; margin:0 0 14px;">開会式で重要発表</h1>
+      <p class="subcopy">推し枠だけじゃもったいない。勝敗を動かす鍵がある。</p>
+      <div class="bonus-note">DETAILS WILL BE REVEALED ON 07.18 OPENING</div>
+    </div>
+  </section>
+
+  <section class="scene scene-eve">
+    <div class="eve-grid">
+      <div class="tminus">
+        <div class="tminus-inner">
+          <div class="eyebrow">COUNTDOWN</div>
+          <div class="tminus-number">1</div>
+          <div class="tminus-label">DAY LEFT</div>
+        </div>
+      </div>
+      <div class="eve-copy">
+        <div class="eyebrow">FINAL REMINDER</div>
+        <div class="latin-head">READY<br>TO BATTLE</div>
+        <h1 class="jp-head">明日、開戦。</h1>
+        <p class="subcopy">開会式から参加すると、イベント全貌が見える。</p>
+        <div class="prepare-list">
+          <div class="prepare-item" style="--item-color: var(--crimson);"><b>CLIP</b><span>出演者を<br>事前にクリップ</span></div>
+          <div class="prepare-item" style="--item-color: var(--nova);"><b>OPENING</b><span>19:45開会式で<br>ルール確認</span></div>
+          <div class="prepare-item" style="--item-color: var(--golden);"><b>VOTE</b><span>投票時間と<br>本投票を確認</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene scene-today">
+    <div class="today-layout">
+      <div class="today-main">
+        <div class="eyebrow">EVENT DAY</div>
+        <div class="latin-head">TODAY</div>
+        <h1 class="jp-head">本日開催</h1>
+        <p class="subcopy subcopy-pending" aria-hidden="true"></p>
+        <div class="start-chip"><strong>19:45</strong><span>START</span></div>
+      </div>
+      <div class="today-rail">
+        <div class="rail-row" style="--row-color: var(--gold);"><time>19:45</time><div><b>開会式</b><span>ルール説明・チーム紹介</span></div></div>
+        <div class="rail-row" style="--row-color: var(--teal);"><time>20:45</time><div><b>投票受付開始</b><span>特設サイトから参加</span></div></div>
+        <div class="rail-row" style="--row-color: var(--accent);"><time>22:15</time><div><b>本投票</b><span>1票の重さが最大へ</span></div></div>
+        <div class="rail-row" style="--row-color: var(--red);"><time>22:30</time><div><b>結果発表</b><span>MVP・優勝チーム発表</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="team-strip" aria-hidden="true"><i></i><i></i><i></i></div>
+</div>
+
+<script>
+  const scenes = {
+    "6-20": "06.20 SAT",
+    "6-27": "06.27 SAT",
+    "7-01": "07.01 WED",
+    "7-11": "07.11 SAT",
+    "7-17": "07.17 FRI",
+    "7-18": "07.18 SAT"
+  };
+  const scene = new URLSearchParams(location.search).get("scene") || "6-20";
+  document.body.dataset.scene = scenes[scene] ? scene : "6-20";
+  document.querySelector("[data-date]").textContent = scenes[document.body.dataset.scene];
+</script>
+</body>
+</html>

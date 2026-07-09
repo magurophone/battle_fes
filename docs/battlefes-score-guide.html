@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BATTLE FES スコア説明資料（全体共有用）</title>
+<style>
+  @font-face {
+    font-family: "Black Ops One";
+    src: url("../public/assets/fonts/BlackOpsOne-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  :root {
+    --crimson: #ff2d78;
+    --nova: #00d5ff;
+    --golden: #ffc83d;
+    --paper: #f6f2e7;
+    --ink: #f7f3ea;
+    --muted: rgba(247, 243, 234, 0.66);
+    --line: rgba(247, 243, 234, 0.14);
+    --panel: rgba(255, 255, 255, 0.055);
+    --bg: #070706;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    min-height: 100%;
+    background: var(--bg);
+  }
+
+  body {
+    min-height: 100svh;
+    background:
+      linear-gradient(120deg, rgba(255, 45, 120, 0.12), transparent 34%),
+      linear-gradient(240deg, rgba(0, 213, 255, 0.12), transparent 38%),
+      linear-gradient(180deg, rgba(255, 200, 61, 0.08), transparent 44%),
+      var(--bg);
+    color: var(--ink);
+    font-family: "Noto Sans JP", "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    font-size: 15px;
+    line-height: 1.78;
+    letter-spacing: 0;
+    padding: 42px 18px;
+  }
+
+  .sheet {
+    width: min(760px, 100%);
+    margin: 0 auto;
+  }
+
+  header {
+    position: relative;
+    padding: 0 0 32px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 30px;
+  }
+
+  .color-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: min(260px, 68vw);
+    height: 5px;
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 22px;
+    box-shadow: 0 0 24px rgba(255, 255, 255, 0.12);
+  }
+
+  .color-strip span:nth-child(1) { background: var(--crimson); }
+  .color-strip span:nth-child(2) { background: var(--nova); }
+  .color-strip span:nth-child(3) { background: var(--golden); }
+
+  .eyebrow {
+    color: var(--muted);
+    font-family: "Black Ops One", Impact, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-family: "Black Ops One", Impact, sans-serif;
+    font-size: clamp(42px, 8vw, 70px);
+    font-weight: 400;
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: var(--paper);
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.8);
+  }
+
+  .subtitle {
+    margin-top: 14px;
+    color: var(--paper);
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.28;
+  }
+
+  .date {
+    margin-top: 14px;
+    color: rgba(247, 243, 234, 0.46);
+    font-family: "Black Ops One", Impact, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+  }
+
+  section {
+    margin-bottom: 30px;
+  }
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--paper);
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1.35;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 14px;
+  }
+
+  h2::before {
+    content: "";
+    flex: 0 0 auto;
+    width: 8px;
+    height: 22px;
+    border-radius: 99px;
+    background: linear-gradient(180deg, var(--crimson), var(--nova) 56%, var(--golden));
+  }
+
+  p {
+    color: rgba(247, 243, 234, 0.86);
+    margin-bottom: 10px;
+  }
+
+  strong {
+    color: #fff;
+    font-weight: 900;
+  }
+
+  .formula {
+    margin: 16px 0 18px;
+    border: 1px solid rgba(247, 243, 234, 0.2);
+    background: rgba(0, 0, 0, 0.42);
+    border-radius: 8px;
+    padding: 16px 18px;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.55;
+  }
+
+  .formula span {
+    color: #fff;
+    background: linear-gradient(90deg, var(--crimson), var(--nova), var(--golden));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .component-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .component {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel);
+    padding: 15px;
+    min-height: 154px;
+  }
+
+  .component h3 {
+    font-size: 15px;
+    font-weight: 900;
+    margin-bottom: 9px;
+  }
+
+  .component p {
+    color: rgba(247, 243, 234, 0.74);
+    font-size: 13px;
+    line-height: 1.68;
+    margin: 0;
+  }
+
+  .metric {
+    display: block;
+    margin-bottom: 7px;
+    font-family: "Black Ops One", Impact, sans-serif;
+    font-size: 23px;
+    line-height: 1.1;
+    color: #fff;
+  }
+
+  .component:nth-child(1) .metric { color: var(--crimson); }
+  .component:nth-child(2) .metric { color: var(--golden); }
+  .component:nth-child(3) .metric { color: var(--nova); }
+
+  .highlight {
+    border: 1px solid rgba(255, 200, 61, 0.56);
+    background:
+      linear-gradient(90deg, rgba(255, 45, 120, 0.11), transparent 42%),
+      rgba(0, 0, 0, 0.48);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-top: 14px;
+  }
+
+  .highlight .big {
+    font-family: "Black Ops One", Impact, sans-serif;
+    color: var(--golden);
+    font-size: 27px;
+    line-height: 1.16;
+    letter-spacing: 0.02em;
+  }
+
+  .highlight .sub {
+    color: rgba(247, 243, 234, 0.6);
+    font-size: 13px;
+    margin-top: 6px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: rgba(0, 0, 0, 0.28);
+  }
+
+  th,
+  td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(247, 243, 234, 0.09);
+  }
+
+  tr:last-child td { border-bottom: 0; }
+
+  th {
+    color: rgba(247, 243, 234, 0.6);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+  }
+
+  td {
+    color: rgba(247, 243, 234, 0.84);
+    font-weight: 700;
+  }
+
+  td:last-child {
+    color: #fff;
+  }
+
+  .notes {
+    display: grid;
+    gap: 10px;
+  }
+
+  .note {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 10px;
+    align-items: start;
+    color: rgba(247, 243, 234, 0.86);
+  }
+
+  .num {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: rgba(247, 243, 234, 0.1);
+    color: var(--paper);
+    font-family: "Black Ops One", Impact, sans-serif;
+    font-size: 13px;
+  }
+
+  @media (max-width: 700px) {
+    body { padding: 30px 14px; }
+    .component-grid { grid-template-columns: 1fr; }
+    .subtitle { font-size: 22px; }
+    .formula { font-size: 16px; }
+    th, td { padding: 10px 11px; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 12mm; }
+    html,
+    body {
+      background: #070706 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body { padding: 0; font-size: 13px; }
+    .sheet { width: 100%; }
+    section { break-inside: avoid; margin-bottom: 22px; }
+    .component { min-height: 132px; }
+  }
+</style>
+</head>
+<body>
+  <main class="sheet">
+    <header>
+      <div class="color-strip" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="eyebrow">BATTLE FES — ALL TEAMS</div>
+      <h1>SCORE<br>GUIDE</h1>
+      <div class="subtitle">スコア説明資料（全体共有用）</div>
+      <div class="date">2026-07-02</div>
+    </header>
+
+    <section>
+      <h2>スコアの見方</h2>
+      <p>BATTLE FES の総合スコアは、投票ポイント（貫通BONUS込み）・個人賞加点・ライブスコアの 3 軸で決まります。</p>
+    </section>
+
+    <section>
+      <h2>総合スコア</h2>
+      <div class="formula">
+        チーム総合スコア ＝ <span>投票ポイント合計</span> ＋ <span>個人賞加点</span> ＋ <span>ライブスコア</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>各要素</h2>
+      <div class="component-grid">
+        <article class="component">
+          <h3>投票ポイント</h3>
+          <span class="metric">5,000pt</span>
+          <p>本投票中の 1 票は最大 5,000pt。チームの総合スコアに加算される。</p>
+        </article>
+        <article class="component">
+          <h3>貫通BONUS</h3>
+          <span class="metric">+5,000pt</span>
+          <p>条件成立時、同じ投票にさらに +5,000pt が加算される。</p>
+        </article>
+        <article class="component">
+          <h3>個人賞加点</h3>
+          <span class="metric">+50,000pt</span>
+          <p>各個人賞の1位メンバー所属チームに、部門ごとに +50,000pt が加算される。</p>
+        </article>
+        <article class="component">
+          <h3>ライブスコア</h3>
+          <span class="metric">別軸加点</span>
+          <p>各枠のライブスコアも総合スコアに加算される。</p>
+        </article>
+      </div>
+
+      <div class="highlight">
+        <div class="big">BONUS込みの 1 票 ＝ 最大 10,000pt</div>
+        <div class="sub">ライブスコア換算で 10K 分に相当</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>試算</h2>
+      <table>
+        <tr><th>条件</th><th>総合スコアへの影響</th></tr>
+        <tr><td>通常投票 10 票</td><td>最大 50,000pt</td></tr>
+        <tr><td>BONUS込み投票 10 票</td><td>最大 100,000pt</td></tr>
+        <tr><td>個人賞 1 部門獲得</td><td>50,000pt</td></tr>
+        <tr><td>ライブスコア換算</td><td>100K 分相当</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>重要ポイント</h2>
+      <div class="notes">
+        <div class="note"><span class="num">1</span><p>本投票と貫通BONUSは、1 票あたりのスコア影響が大きい。</p></div>
+        <div class="note"><span class="num">2</span><p>個人賞は、各部門の受賞者所属チームに固定 50,000pt が入る。</p></div>
+        <div class="note"><span class="num">3</span><p>集計を見る際は、投票ポイント / 個人賞加点 / ライブスコアの 3 つを分けて確認すると分かりやすい。</p></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

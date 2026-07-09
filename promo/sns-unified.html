@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>BATTLE FES 2026 統合告知ポスト用ビジュアル</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Ops+One&family=Cinzel:wght@600;800&family=Dela+Gothic+One&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700;800;900&family=Noto+Serif+JP:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060a1c;
+    --bg2: #100713;
+    --accent: #ff7c1e;
+    --red: #ff4455;
+    --gold: #ffe040;
+    --teal: #38d4ff;
+    --ink: #fff8ee;
+    --muted: #c6a982;
+    --line: rgba(255, 176, 82, 0.28);
+    --crimson: #ff2d78;
+    --nova: #7c3aff;
+    --golden: #ffd700;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    width: 1600px;
+    height: 900px;
+    margin: 0;
+    overflow: hidden;
+    background: #050407;
+  }
+  body {
+    color: var(--ink);
+    font-family: "Noto Sans JP", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+
+  .poster {
+    position: relative;
+    width: 1600px;
+    height: 900px;
+    overflow: hidden;
+    isolation: isolate;
+    background:
+      radial-gradient(900px 520px at 78% 18%, rgba(255, 124, 30, 0.18), transparent 62%),
+      radial-gradient(900px 500px at 12% 82%, rgba(124, 58, 255, 0.16), transparent 58%),
+      linear-gradient(145deg, #060a1c 0%, #100713 52%, #1b0707 100%);
+  }
+  .poster::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-size: 40px 40px, 40px 40px;
+    opacity: 0.5;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .poster::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 48%, transparent 48%, rgba(0,0,0,0.50) 100%),
+      url("/assets/textures/grain-fine-dark.png");
+    opacity: 0.32;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 9;
+  }
+
+  .scene {
+    position: absolute;
+    inset: 0;
+    display: none;
+    z-index: 2;
+  }
+  body[data-scene="hero"] .scene-lineup { display: block; }
+  body[data-scene="value"] .scene-value { display: block; }
+
+  .brand {
+    position: absolute;
+    left: 56px;
+    top: 34px;
+    z-index: 12;
+    display: block;
+    color: rgba(255,248,238,0.92);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.75);
+  }
+  .brand img {
+    display: block;
+    width: auto;
+    height: 58px;
+    filter: drop-shadow(0 4px 14px rgba(0,0,0,0.78));
+  }
+  .brand strong {
+    font-family: "Black Ops One", "Bebas Neue", sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+  }
+  .brand span {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+  }
+  .date-mark {
+    position: absolute;
+    right: 56px;
+    top: 44px;
+    z-index: 12;
+    padding: 12px 18px;
+    border: 1px solid var(--line);
+    background: rgba(8, 4, 3, 0.72);
+    color: var(--gold);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    box-shadow: 0 0 30px rgba(255,124,30,0.16);
+  }
+  .team-strip {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    z-index: 13;
+  }
+  .team-strip i:nth-child(1) { background: var(--crimson); box-shadow: 0 -4px 28px rgba(255,45,120,0.6); }
+  .team-strip i:nth-child(2) { background: var(--nova); box-shadow: 0 -4px 28px rgba(124,58,255,0.6); }
+  .team-strip i:nth-child(3) { background: var(--golden); box-shadow: 0 -4px 28px rgba(255,215,0,0.6); }
+
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    color: var(--gold);
+    text-transform: uppercase;
+    text-shadow: 0 0 22px rgba(255,224,64,0.35);
+  }
+  .jp-head {
+    font-family: "Noto Sans JP", sans-serif;
+    font-weight: 900;
+    letter-spacing: 0.015em;
+    line-height: 1.18;
+    color: var(--ink);
+    text-shadow:
+      0 5px 18px rgba(0,0,0,0.82),
+      0 0 28px rgba(255,124,30,0.16);
+  }
+  .latin-head {
+    font-family: "Black Ops One", "Bebas Neue", sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    line-height: 0.95;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow:
+      -2px 0 0 rgba(255,80,30,0.72),
+       2px 0 0 rgba(56,212,255,0.40),
+      0 8px 26px rgba(0,0,0,0.85);
+  }
+  .subcopy {
+    margin: 0;
+    color: rgba(255,225,190,0.86);
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1.55;
+    text-shadow: 0 4px 18px rgba(0,0,0,0.85);
+  }
+
+  /* 7/1: lineup */
+  .scene-lineup {
+    background:
+      radial-gradient(640px 420px at 24% 56%, rgba(56,212,255,0.14), transparent 68%),
+      radial-gradient(620px 420px at 82% 50%, rgba(255,224,64,0.14), transparent 66%),
+      linear-gradient(140deg, rgba(6,10,28,0.92), rgba(24,6,8,0.88));
+  }
+  .lineup-layout {
+    position: absolute;
+    inset: 112px 70px 84px;
+    display: grid;
+    grid-template-columns: 720px 1fr;
+    gap: 38px;
+    align-items: center;
+  }
+  .member-wall {
+    display: grid;
+    gap: 14px;
+    transform: rotate(-0.8deg);
+    position: relative;
+  }
+  .team-line {
+    position: relative;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 14px;
+    padding: 14px;
+    min-height: 194px;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--team-color) 68%, rgba(255,255,255,0.14));
+    background:
+      linear-gradient(90deg, rgba(0,0,0,0.86), rgba(0,0,0,0.50) 46%, rgba(0,0,0,0.80)),
+      var(--team-bg) center/cover no-repeat;
+    box-shadow: 0 18px 44px rgba(0,0,0,0.46), 0 0 24px color-mix(in srgb, var(--team-color) 24%, transparent);
+  }
+  .team-line::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, color-mix(in srgb, var(--team-color) 30%, transparent), transparent 35%),
+      radial-gradient(320px 160px at 18% 50%, color-mix(in srgb, var(--team-color) 28%, transparent), transparent 72%);
+    opacity: 0.85;
+  }
+  .team-line-title {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px;
+    padding: 0 14px 0 4px;
+    border-right: 1px solid color-mix(in srgb, var(--team-color) 56%, rgba(255,255,255,0.14));
+  }
+  .team-line-title span {
+    color: rgba(255,235,190,0.78);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+  }
+  .team-line-title strong {
+    display: block;
+    max-width: 100%;
+    color: var(--team-color);
+    font-family: "Black Ops One", system-ui;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 0.92;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    text-shadow: 0 0 16px color-mix(in srgb, var(--team-color) 42%, transparent), 0 3px 10px rgba(0,0,0,0.8);
+  }
+  .team-members {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .member-tile {
+    position: relative;
+    height: 166px;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--team-color) 58%, rgba(255,255,255,0.18));
+    background: rgba(0,0,0,0.65);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.42);
+    z-index: 1;
+  }
+  .member-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(1.04) contrast(1.06);
+  }
+  .member-tile::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.04) 28%, rgba(0,0,0,0.58) 74%, rgba(0,0,0,0.92) 100%),
+      linear-gradient(90deg, color-mix(in srgb, var(--team-color) 16%, transparent), transparent 42%);
+  }
+  .member-name {
+    position: absolute;
+    left: 7px;
+    right: 7px;
+    bottom: 7px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 3px 5px 4px;
+    background: rgba(8, 5, 4, 0.72);
+    border: 1px solid color-mix(in srgb, var(--team-color) 34%, rgba(255,255,255,0.16));
+    color: var(--ink);
+    font-size: 17px;
+    font-weight: 900;
+    line-height: 1.08;
+    text-align: center;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+    white-space: normal;
+    overflow: hidden;
+  }
+  .wall-badge {
+    position: absolute;
+    left: 20px;
+    bottom: 18px;
+    z-index: 4;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding: 12px 20px 10px;
+    background: rgba(10, 8, 8, 0.82);
+    border: 1px solid rgba(241, 203, 94, 0.55);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.42);
+  }
+  .wall-badge strong {
+    font-family: "Black Ops One", system-ui;
+    font-size: 58px;
+    line-height: 0.88;
+    color: var(--gold);
+  }
+  .wall-badge span {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 32px;
+    letter-spacing: 0.16em;
+    color: #fff2d0;
+  }
+  .team-label-sm {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    z-index: 2;
+    padding: 4px 8px;
+    background: var(--team-color);
+    color: #120503;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.12em;
+  }
+  .lineup-copy {
+    position: relative;
+    padding: 34px 48px 32px;
+    background:
+      linear-gradient(150deg, rgba(255,255,255,0.05), rgba(255,255,255,0.012)),
+      rgba(10, 5, 3, 0.70);
+    border: 1px solid rgba(255,180,80,0.26);
+    box-shadow: 0 26px 80px rgba(0,0,0,0.52);
+  }
+  .lineup-copy .latin-head { font-size: 70px; }
+  .lineup-copy .jp-head {
+    margin: 16px 0 18px;
+    font-size: 58px;
+  }
+  .lineup-copy .subcopy {
+    font-size: 30px;
+    line-height: 1.48;
+  }
+  .copy-unit {
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .mini-schedule {
+    display: grid;
+    gap: 8px;
+    margin-top: 18px;
+  }
+  .mini-row {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 16px;
+    align-items: center;
+    padding: 10px 14px;
+    border-left: 4px solid rgba(255,180,80,0.5);
+    background: rgba(0,0,0,0.32);
+  }
+  .mini-row strong {
+    color: var(--gold);
+    font-family: "Black Ops One", sans-serif;
+    font-size: 26px;
+    font-weight: 400;
+  }
+  .mini-row span {
+    font-size: 18px;
+    font-weight: 800;
+    color: rgba(255,235,205,0.86);
+  }
+
+  /* 7/11: value */
+  .scene-value {
+    background:
+      radial-gradient(760px 480px at 50% 42%, rgba(255,124,30,0.18), transparent 70%),
+      linear-gradient(160deg, rgba(24,6,8,0.92), rgba(6,10,28,0.9));
+  }
+  .value-stage {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(1080px, calc(100% - 180px));
+    max-height: calc(100% - 112px);
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+  }
+  .value-stage .eyebrow {
+    margin: 0;
+  }
+  .value-lead {
+    margin: 0;
+    font-size: 40px;
+    font-weight: 800;
+    color: rgba(255,225,190,0.9);
+    line-height: 1.25;
+    text-shadow: 0 4px 18px rgba(0,0,0,0.85);
+  }
+  .value-hero {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0 auto;
+    padding: 15px 44px 17px;
+    background:
+      radial-gradient(ellipse at 50% 100%, rgba(255,124,30,0.4), transparent 75%),
+      url("/assets/textures/marble-dark.png") center/cover no-repeat;
+    border: 2px solid rgba(255,180,80,0.72);
+    box-shadow:
+      0 0 60px rgba(255,124,30,0.3),
+      inset 0 0 0 5px rgba(0,0,0,0.5);
+  }
+  .yen {
+    font-family: "Black Ops One", "Bebas Neue", sans-serif;
+    font-size: 64px;
+    color: var(--gold);
+  }
+  .value-hero strong {
+    font-family: "Black Ops One", "Bebas Neue", sans-serif;
+    font-size: 150px;
+    line-height: 0.9;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+    text-shadow:
+      0 0 40px rgba(255,124,30,0.5),
+      0 6px 14px rgba(0,0,0,0.8);
+  }
+  .per {
+    font-family: "Noto Sans JP", sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+    color: rgba(255,248,238,0.92);
+  }
+  .value-scale {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 900;
+    color: rgba(255,248,238,0.94);
+    line-height: 1.25;
+    text-shadow: 0 4px 18px rgba(0,0,0,0.78);
+  }
+  .value-msg {
+    font-family: "Noto Sans JP", sans-serif;
+    margin: 0;
+    font-size: 40px;
+    font-weight: 900;
+    line-height: 1.35;
+    letter-spacing: 0.015em;
+    color: var(--ink);
+    text-shadow:
+      0 5px 18px rgba(0,0,0,0.82),
+      0 0 28px rgba(255,124,30,0.16);
+  }
+  .value-bonus {
+    position: relative;
+    padding: 64px 60px 58px;
+    width: min(100%, 1040px);
+    background:
+      repeating-linear-gradient(135deg, rgba(255,120,40,0.06) 0, rgba(255,120,40,0.06) 14px, transparent 14px, transparent 28px),
+      linear-gradient(rgba(20,10,6,0.78), rgba(8,4,3,0.9));
+    border: 1px solid rgba(190,140,70,0.62);
+    box-shadow:
+      inset 0 0 0 5px rgba(0,0,0,0.5),
+      0 0 50px rgba(180,90,30,0.2);
+  }
+  .value-bonus::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -15px;
+    width: 180px;
+    height: 2px;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, transparent, rgba(255,180,80,0.72), transparent);
+  }
+  .vb-kicker {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 30px;
+    letter-spacing: 0.28em;
+    color: rgba(220,180,120,0.92);
+  }
+  .vb-main {
+    display: inline-flex;
+    align-items: center;
+    gap: 32px;
+    margin: 30px 0 26px;
+  }
+  .vb-main strong {
+    font-family: "Noto Serif JP", serif;
+    font-weight: 900;
+    font-size: 112px;
+    line-height: 1.02;
+    letter-spacing: 0.08em;
+    color: rgba(245,225,180,0.98);
+    text-shadow: 0 0 26px rgba(190,140,70,0.5);
+  }
+  .vb-mark {
+    font-family: "Black Ops One", "Bebas Neue", sans-serif;
+    font-size: 64px;
+    color: var(--gold);
+    padding: 10px 30px;
+    border: 2px solid rgba(255,224,64,0.5);
+    background: rgba(0,0,0,0.45);
+    font-weight: 400;
+    line-height: 1;
+  }
+  .vb-sub {
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1.35;
+    color: rgba(255,225,190,0.85);
+  }
+  .value-chips {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    margin-top: 40px;
+  }
+  .vc-chip {
+    padding: 10px 22px;
+    border: 1px solid rgba(255,180,80,0.35);
+    background: rgba(0,0,0,0.4);
+    font-size: 20px;
+    font-weight: 800;
+    color: rgba(255,235,205,0.9);
+  }
+  .vc-chip.vc-url {
+    color: var(--teal);
+  }
+
+</style>
+</head>
+<body data-scene="hero">
+<div class="poster">
+  <div class="brand"><img src="/assets/logos/logo-B-trim.png" alt="BATTLE FES 2026"></div>
+
+  <section class="scene scene-lineup">
+    <div class="lineup-layout">
+      <div class="member-wall">
+        <section class="team-line" style="--team-color: var(--crimson); --team-bg: url('/assets/teams/crimson.png');">
+          <div class="team-line-title"><span>TEAM 01</span><strong>CRIMSON</strong></div>
+          <div class="team-members">
+            <div class="member-tile"><img src="/assets/members/crimson-leader.png" style="transform:scale(1.18);" alt=""><span class="member-name">まぐろふぉん</span></div>
+            <div class="member-tile"><img src="/assets/members/crimson-ngogo.jpg" alt=""><span class="member-name">んごご&#x1F34B;&#x200D;&#x1F7E9;</span></div>
+            <div class="member-tile"><img src="/assets/members/crimson-pk.jpeg" alt=""><span class="member-name">PK</span></div>
+          </div>
+        </section>
+        <section class="team-line" style="--team-color: var(--nova); --team-bg: url('/assets/teams/nova.png');">
+          <div class="team-line-title"><span>TEAM 02</span><strong>NOVA</strong></div>
+          <div class="team-members">
+            <div class="member-tile"><img src="/assets/members/nova-leader.jpg" alt=""><span class="member-name">りんか&#x1F514;</span></div>
+            <div class="member-tile"><img src="/assets/members/nova-naporu.jpg" style="object-fit:contain;" alt=""><span class="member-name">なぽる</span></div>
+            <div class="member-tile"><img src="/assets/members/nova-neko.jpg" alt=""><span class="member-name">犬飼音子(ねこ)</span></div>
+          </div>
+        </section>
+        <section class="team-line" style="--team-color: var(--golden); --team-bg: url('/assets/teams/golden.png');">
+          <div class="team-line-title"><span>TEAM 03</span><strong>GOLDEN</strong></div>
+          <div class="team-members">
+            <div class="member-tile"><img src="/assets/members/golden-iran-july.jpg" alt=""><span class="member-name">iran&#x1F473;&#x1F3FE;&#x200D;&#x2642;&#xFE0F;痔</span></div>
+            <div class="member-tile"><img src="/assets/members/golden-awa.jpg" alt=""><span class="member-name">&#x1F43B;&#x200D;&#x2744;&#xFE0F;あわ&#x1F95A;</span></div>
+            <div class="member-tile"><img src="/assets/members/golden-tera.jpg" alt=""><span class="member-name">潮てら&#x1F433;&#x1F49B;</span></div>
+          </div>
+        </section>
+      </div>
+      <div class="lineup-copy">
+        <div class="eyebrow">FOURTH DROP</div>
+        <div class="latin-head">FULL ROSTER<br>&amp; TIME TABLE</div>
+        <h1 class="jp-head">全メンバー<br>スケジュール解禁</h1>
+        <p class="subcopy"><span class="copy-unit">特設サイトから出演者アイコンをタップ。</span><span class="copy-unit">全出演者クリップを推奨。</span></p>
+        <div class="mini-schedule">
+          <div class="mini-row"><strong>19:45</strong><span>開会式・チーム紹介</span></div>
+          <div class="mini-row"><strong>20:00</strong><span>9人のリレーライブ開始</span></div>
+          <div class="mini-row"><strong>22:15</strong><span>本投票フェーズへ</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene scene-value">
+    <div class="value-stage">
+      <div class="value-bonus">
+        <div class="vb-kicker">“最大”を解き放つ鍵</div>
+        <div class="vb-main"><strong>貫通BONUS</strong><span class="vb-mark">+5000PT</span></div>
+        <div class="vb-sub">獲得方法は当日、開会式で解禁。</div>
+      </div>
+      <div class="value-chips">
+        <div class="vc-chip">1人1票・無料</div>
+        <div class="vc-chip">スマホから</div>
+        <div class="vc-chip vc-url">battle-fes.pages.dev</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="team-strip" aria-hidden="true"><i></i><i></i><i></i></div>
+</div>
+
+<script>
+  const validScenes = ["hero", "value"];
+  const scene = new URLSearchParams(location.search).get("scene") || "hero";
+  document.body.dataset.scene = validScenes.includes(scene) ? scene : "hero";
+</script>
+</body>
+</html>

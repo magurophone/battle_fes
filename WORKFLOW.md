@@ -117,10 +117,10 @@ Confirm the latest deployment is `Production / master`, then confirm the deploye
 
 ## Last Completed Materials-Only Update
 
-- Date: 2026-06-09 JST
+- Date: 2026-06-12 JST
 - Team: NOVA
 - Page: `public/clip/b95ta/index.html`
-- Added: `なぽる`
-- ColorSing URL: `https://web.colorsing.com/share/user?user_id=97fff16b-5d16-4aed-ba37-6ab15df2ac61`
-- Image: `public/assets/members/nova-naporu.jpg`
-- Deployed to Production / master.
+- Added: `犬飼音子(ねこ)`
+- ColorSing URL: `https://web.colorsing.com/share/user?user_id=ddba533b-8d21-4733-8cda-6764a6148fec`
+- Image: `public/assets/members/nova-neko.jpg`
+- Deployment status: not deployed in this update.

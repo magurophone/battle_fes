@@ -22,6 +22,9 @@ const VP_MIN = 100;
 const VP_MAX = 5000;
 // 貫通 BONUS: 本投票時間中に正解キーワードを入力した投票に付与される追加ポイント
 const BONUS_POINT = 5000;
+// 個人賞: 各部門の1位メンバー所属チームへ付与する加点
+const INDIVIDUAL_AWARD_BONUS_POINT = 50000;
+const ADMIN_VOTE_STATUS_OVERRIDE_KEY = "admin_vote_status_override";
 
 function getDb(source) {
   if (!source || typeof source !== "object") {
@@ -102,11 +105,30 @@ function normalizeScoreInput(value, fallback = 0) {
   return fallback;
 }
 
-function calcLiveScore(oshiBonusPercent, monthlyOshiPointInFrame) {
-  const addPercent = normalizeScoreInput(oshiBonusPercent, 0);
-  const monthlyPoint = roundToHundred(normalizeScoreInput(monthlyOshiPointInFrame, 0));
-  if (monthlyPoint <= 0) return 0;
-  return roundToHundred(monthlyPoint / (1 + addPercent / 100));
+function calcLiveScoreFromDelta(delta, bonusPercent) {
+  if (delta <= 0) return 0;
+  return Math.ceil(delta / (1 + bonusPercent / 100) / 100) * 100;
+}
+
+function calcLiveScoreRange(oshiBonusBefore, oshiBonusAfter, liveScoreBefore, liveScoreAfter) {
+  const bonusBefore = normalizeScoreInput(oshiBonusBefore, 0);
+  const bonusAfter = normalizeScoreInput(oshiBonusAfter, 0);
+  const before = roundToHundred(normalizeScoreInput(liveScoreBefore, 0));
+  const after = roundToHundred(normalizeScoreInput(liveScoreAfter, 0));
+  const delta = after - before;
+  if (delta <= 0) return { min: 0, max: 0, single: true, value: 0 };
+  const hiBonus = Math.max(bonusBefore, bonusAfter);
+  const loBonus = Math.min(bonusBefore, bonusAfter);
+  const min = calcLiveScoreFromDelta(delta, hiBonus);
+  const max = calcLiveScoreFromDelta(delta, loBonus);
+  const single = bonusBefore === bonusAfter;
+  const mid = Math.ceil((min + max) / 200) * 100;
+  return { min, max, mid, single, value: single ? min : mid };
+}
+
+function calcLiveScore(oshiBonusBefore, oshiBonusAfter, liveScoreBefore, liveScoreAfter) {
+  const range = calcLiveScoreRange(oshiBonusBefore, oshiBonusAfter, liveScoreBefore, liveScoreAfter);
+  return range.value;
 }
 
 function createLiveScoreSourceMap(raw) {
@@ -145,25 +167,30 @@ function normalizeLiveScores(raw = {}) {
 
   for (const member of MEMBERS) {
     const source = sourceMap.get(Number(member.id)) || {};
-    const oshiBonusPercent = normalizeScoreInput(
-      source.oshiBonusPercent ??
-        source.bonusPercent ??
-        source.oshiBonusRatePercent,
+    const oshiBonusBefore = normalizeScoreInput(
+      source.oshiBonusBefore ?? source.oshiBonusPercent ?? source.bonusPercent ?? source.oshiBonusRatePercent,
       0
     );
-    const monthlyOshiPointInFrame = roundToHundred(normalizeScoreInput(
-      source.monthlyOshiPointInFrame ??
-        source.monthlyOshiPoint ??
-        source.monthlyPoint,
+    const oshiBonusAfter = normalizeScoreInput(source.oshiBonusAfter, 0) || oshiBonusBefore;
+    const liveScoreBefore = roundToHundred(normalizeScoreInput(
+      source.liveScoreBefore ?? source.monthlyOshiPointInFrame ?? 0,
       0
     ));
-    const liveScore = calcLiveScore(oshiBonusPercent, monthlyOshiPointInFrame);
+    const liveScoreAfter = roundToHundred(normalizeScoreInput(source.liveScoreAfter, 0));
+    const range = calcLiveScoreRange(oshiBonusBefore, oshiBonusAfter, liveScoreBefore, liveScoreAfter);
+    const confirmedScore = normalizeScoreInput(source.liveScoreConfirmed, -1);
+    const liveScore = confirmedScore >= 0 ? confirmedScore : range.value;
 
     memberScores[member.id] = {
       memberId: member.id,
       teamId: member.teamId,
-      oshiBonusPercent,
-      monthlyOshiPointInFrame,
+      oshiBonusBefore,
+      oshiBonusAfter,
+      liveScoreBefore,
+      liveScoreAfter,
+      liveScoreMin: range.min,
+      liveScoreMax: range.max,
+      liveScoreConfirmed: confirmedScore >= 0 ? confirmedScore : null,
       liveScore,
     };
     teamScores[member.teamId] = (teamScores[member.teamId] || 0) + liveScore;
@@ -194,6 +221,54 @@ function createEmptyResultsForCategory(category) {
     bonusCount: 0,
     updatedAt: null,
   };
+}
+
+function createEmptyIndividualAwardBonuses() {
+  return {
+    pointPerAward: INDIVIDUAL_AWARD_BONUS_POINT,
+    teamScores: Object.fromEntries(TEAMS.map((team) => [team.id, 0])),
+    totalPoints: 0,
+    awards: [],
+  };
+}
+
+function calcIndividualAwardBonuses(results = {}) {
+  const bonuses = createEmptyIndividualAwardBonuses();
+
+  for (const category of CATEGORIES) {
+    if (category.type !== "individual") continue;
+    const result = results[category.id] || {};
+    const counts = result.counts || {};
+    const winner = category.candidateIds
+      .map((id) => {
+        const key = String(id);
+        return {
+          id: Number(id),
+          votes: normalizeStoredPoint(counts[id] ?? counts[key], 0),
+        };
+      })
+      .filter((entry) => entry.votes > 0)
+      .sort((a, b) => b.votes - a.votes || a.id - b.id)[0];
+
+    if (!winner) continue;
+    const member = MEMBERS.find((entry) => Number(entry.id) === winner.id);
+    if (!member) continue;
+
+    const teamId = Number(member.teamId);
+    bonuses.teamScores[teamId] = (bonuses.teamScores[teamId] || 0) + INDIVIDUAL_AWARD_BONUS_POINT;
+    bonuses.totalPoints += INDIVIDUAL_AWARD_BONUS_POINT;
+    bonuses.awards.push({
+      categoryId: category.id,
+      categoryLabel: category.label,
+      memberId: Number(member.id),
+      memberName: member.name,
+      teamId,
+      bonusPoint: INDIVIDUAL_AWARD_BONUS_POINT,
+      votes: winner.votes,
+    });
+  }
+
+  return bonuses;
 }
 
 function latestTimestamp(left, right) {
@@ -433,8 +508,10 @@ async function readLiveScores(store) {
     SELECT
       member_id AS memberId,
       team_id AS teamId,
-      oshi_bonus_percent AS oshiBonusPercent,
-      monthly_oshi_point_in_frame AS monthlyOshiPointInFrame,
+      oshi_bonus_percent_before AS oshiBonusBefore,
+      oshi_bonus_percent_after AS oshiBonusAfter,
+      live_score_before AS liveScoreBefore,
+      live_score_after AS liveScoreAfter,
       live_score AS liveScore,
       updated_at AS updatedAt
     FROM live_scores
@@ -456,22 +533,28 @@ async function saveLiveScores(store, payload) {
       INSERT INTO live_scores (
         member_id,
         team_id,
-        oshi_bonus_percent,
-        monthly_oshi_point_in_frame,
+        oshi_bonus_percent_before,
+        oshi_bonus_percent_after,
+        live_score_before,
+        live_score_after,
         live_score,
         updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(member_id) DO UPDATE SET
         team_id = excluded.team_id,
-        oshi_bonus_percent = excluded.oshi_bonus_percent,
-        monthly_oshi_point_in_frame = excluded.monthly_oshi_point_in_frame,
+        oshi_bonus_percent_before = excluded.oshi_bonus_percent_before,
+        oshi_bonus_percent_after = excluded.oshi_bonus_percent_after,
+        live_score_before = excluded.live_score_before,
+        live_score_after = excluded.live_score_after,
         live_score = excluded.live_score,
         updated_at = excluded.updated_at
     `).bind(
       Number(entry.memberId),
       Number(entry.teamId),
-      Number(entry.oshiBonusPercent),
-      Number(entry.monthlyOshiPointInFrame),
+      Number(entry.oshiBonusBefore),
+      Number(entry.oshiBonusAfter),
+      Number(entry.liveScoreBefore),
+      Number(entry.liveScoreAfter),
       Number(entry.liveScore),
       now
     )
@@ -572,7 +655,64 @@ async function buildAdminSnapshot(store) {
   return {
     categories: snapshot.categories,
     eventImpressions: snapshot.eventImpressions,
+    individualAwardBonuses: calcIndividualAwardBonuses(snapshot.results),
     liveScores: await readLiveScores(store),
+  };
+}
+
+function normalizeVoteStatusOverride(value) {
+  return value === "closed" ? "closed" : "";
+}
+
+async function getAdminVoteStatusOverride(store) {
+  const db = getDb(store);
+  const row = await db.prepare(`
+    SELECT value
+    FROM system_state
+    WHERE key = ?
+  `).bind(ADMIN_VOTE_STATUS_OVERRIDE_KEY).first();
+  return normalizeVoteStatusOverride(row && row.value);
+}
+
+async function setAdminVoteStatusOverride(store, value) {
+  const db = getDb(store);
+  const override = normalizeVoteStatusOverride(value);
+  const now = new Date().toISOString();
+  const statements = [];
+
+  if (override) {
+    statements.push(
+      db.prepare(`
+        INSERT INTO system_state (key, value, updated_at)
+        VALUES (?, ?, ?)
+        ON CONFLICT(key) DO UPDATE SET
+          value = excluded.value,
+          updated_at = excluded.updated_at
+      `).bind(ADMIN_VOTE_STATUS_OVERRIDE_KEY, override, now)
+    );
+  } else {
+    statements.push(
+      db.prepare("DELETE FROM system_state WHERE key = ?")
+        .bind(ADMIN_VOTE_STATUS_OVERRIDE_KEY)
+    );
+  }
+
+  statements.push(
+    db.prepare(`
+      INSERT INTO admin_audit_logs (action, detail_json, created_at)
+      VALUES (?, ?, ?)
+    `).bind(
+      "admin_vote_status_override.set",
+      JSON.stringify({ value: override || null }),
+      now
+    )
+  );
+
+  await db.batch(statements);
+  return {
+    status: override || getVoteWindowStatus(),
+    adminVoteStatusOverride: override || null,
+    updatedAt: now,
   };
 }
 
@@ -613,8 +753,13 @@ function getVoteWindowStatus() {
   return "open";
 }
 
-function isVoteSubmissionAllowed() {
-  return getVoteWindowStatus() === "open";
+async function getAdminEffectiveVoteWindowStatus(store) {
+  const override = await getAdminVoteStatusOverride(store);
+  return override || getVoteWindowStatus();
+}
+
+function isVoteSubmissionAllowed(status = getVoteWindowStatus()) {
+  return status === "open";
 }
 
 export {
@@ -627,10 +772,15 @@ export {
   VP_MIN,
   VP_MAX,
   BONUS_POINT,
+  INDIVIDUAL_AWARD_BONUS_POINT,
   buildAdminSnapshot,
+  calcIndividualAwardBonuses,
   calcVotePoint,
   calcLiveScore,
+  calcLiveScoreRange,
   createEmptyResultsForCategory,
+  getAdminEffectiveVoteWindowStatus,
+  getAdminVoteStatusOverride,
   getVoteWindowStatus,
   isMainVotingPeriod,
   isVoteSubmissionAllowed,
@@ -642,4 +792,5 @@ export {
   recordBulkVotes,
   resetAllVotes,
   saveLiveScores,
+  setAdminVoteStatusOverride,
 };
