@@ -1203,7 +1203,7 @@
   }
   .teams-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
   /* 静と動の対比: PC ではチームカードが top で止まり、次のカードがポスターの重ね貼りのように上へスライドする */
-  @media (min-width: 1000px) {
+  @media (min-width: 769px) and (hover: hover) and (pointer: fine) {
     .teams-grid { gap: 4rem; }
     .teams-grid > .team-card { position: sticky; top: 100px; }
   }

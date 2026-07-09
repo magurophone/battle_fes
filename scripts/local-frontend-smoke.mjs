@@ -515,8 +515,8 @@ async function runPublicMobileTeamCardSmoke(browser, baseUrl) {
   await runPublicMobileTeamCardScenario(browser, baseUrl, "reduce");
 }
 
-async function runPublicDesktopTeamStackSmoke(browser, baseUrl) {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+async function runPublicDesktopTeamStackScenario(browser, baseUrl, width) {
+  const context = await browser.newContext({ viewport: { width, height: 800 } });
   await context.addInitScript(() => {
     localStorage.setItem("battlefes_test_mode", "1");
   });
@@ -538,14 +538,14 @@ async function runPublicDesktopTeamStackSmoke(browser, baseUrl) {
   await page.waitForTimeout(300);
 
   const desktopStyles = await page.evaluate(() => ({
-    min1000: window.matchMedia("(min-width: 1000px)").matches,
+    stackQuery: window.matchMedia("(min-width: 769px) and (hover: hover) and (pointer: fine)").matches,
     gridColumns: getComputedStyle(document.querySelector(".teams-grid")).gridTemplateColumns,
     cards: Array.from(document.querySelectorAll(".teams-grid > .team-card")).map((card) => ({
       position: getComputedStyle(card).position,
       top: getComputedStyle(card).top,
     })),
   }));
-  assert.equal(desktopStyles.min1000, true);
+  assert.equal(desktopStyles.stackQuery, true);
   assert.ok(!desktopStyles.gridColumns.includes(" "));
   assert.ok(desktopStyles.cards.every((card) => card.position === "sticky"));
   assert.ok(desktopStyles.cards.every((card) => card.top === "100px"));
@@ -576,6 +576,11 @@ async function runPublicDesktopTeamStackSmoke(browser, baseUrl) {
   );
   assert.ok(stacked, JSON.stringify(samples));
   await context.close();
+}
+
+async function runPublicDesktopTeamStackSmoke(browser, baseUrl) {
+  await runPublicDesktopTeamStackScenario(browser, baseUrl, 1280);
+  await runPublicDesktopTeamStackScenario(browser, baseUrl, 900);
 }
 
 async function runAdminSmoke(browser, baseUrl) {

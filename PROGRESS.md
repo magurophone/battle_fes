@@ -18,6 +18,8 @@
 
 2026-07-09: 公開フロントのセクション見出し演出を調整。`.section-title` のみ、既存の行マスクから1文字ずつ下から生えるマスクリビールへ変更。文字出現後にグロウ/影を遅れてフェードイン。SPで文字マスク内の `text-shadow` が角張って切れるため、セクションタイトルの効果は親要素の `drop-shadow` に統一。対象は `イベントについて` / `参加チーム` / `タイムスケジュール` / `リスナー投票`。本文・ラベル・投票UIには適用しない。sticky 表示は ROUND ナビと干渉するため不採用。`prefers-reduced-motion` では即表示・グロウ最終状態。
 
+2026-07-09: PCのチームカード stacking 条件を調整。従来の `min-width: 1000px` ではノートPC幅・ブラウザズーム・サイドバー表示時に演出が無効になりやすかったため、タッチ端末を避けつつ `min-width: 769px` + `hover: hover` + `pointer: fine` に変更。`scripts/local-frontend-smoke.mjs` は 1280px と 900px の両方で sticky stacking を検証する。
+
 2026-07-06: モダンデザイン改修を本番デプロイ（deployment 4d08594c / Production / master）。内容: (1)スクロール連続結合の視差（`.hero-bg` ±7.6%・`.team-card::before` ±14%、rAF+lerp 単一ループ+IntersectionObserver、`--p` 変数） (2)役割別リビール＋リトリガー（見出し=行マスク `line-reveal`、カード=clip-path 初回のみ・再入時フェード、divider=scaleX、スケジュール行=バッチ内相対スタガー上限0.3s） (3)チームカード1カラム大判化（アバターは全員156px統一、SPは clamp で縮小） (4)静と動: PC でチームカードのスタッキング（`.teams-grid > .team-card { position: sticky; top: 100px }`、次のカードが前のカードに重なる）＋ schedule の ROUND ラベル sticky。不採用: 左レール見出し sticky（センター構図と衝突）、teams カウンター（浮いて見える）、フッターロゴ（ヘッダーと重複）。注意: `prefers-reduced-motion: reduce`（Windows「アニメーション効果」オフ）では基本リビールとヒーロー視差は無効、チームカード背景パララックスは2026-07-09の修正以降も動的維持。sticky スタッキングは動く。指示書は `docs/modern-design-spec.md` / `docs/modern-design-spec-phase2.md`。
 
 2026-07-01: 特設サイトとGOLDENチームリンクのiran痔画像参照を7月用 `public/assets/members/golden-iran-july.jpg` に差し替え済み。
