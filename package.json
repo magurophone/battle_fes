@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "build:site-team-media": "node scripts/build-site-team-media.mjs"
+  },
   "devDependencies": {
     "sharp": "^0.35.2"
   }

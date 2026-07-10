@@ -3,3 +3,6 @@
 
 /clip/*
   X-Robots-Tag: noindex, nofollow, noarchive
+
+/assets/site-team-v1/*
+  Cache-Control: public, max-age=31536000, immutable

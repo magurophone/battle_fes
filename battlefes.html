@@ -368,6 +368,9 @@
     isolation: isolate;
     overflow: hidden;
     background: #050203;
+    background:
+      radial-gradient(circle at 70% 18%, color-mix(in srgb, var(--team-color, #ff7c1e) 22%, transparent), transparent 58%),
+      linear-gradient(160deg, #12060a 0%, #050203 68%);
     border-radius: 4px;
   }
   .vote-countdown::before {
@@ -2326,12 +2329,12 @@
   .team-card.reveal.visible { clip-path: inset(0 0 0 0); }
   @media (hover: none), (pointer: coarse), (max-width: 900px) {
     .team-card.reveal {
-      opacity: 0;
+      opacity: 1;
       clip-path: inset(0 0 0 0);
-      transform: translate3d(0, 18px, 0);
-      transition: opacity 0.42s var(--reveal-ease), transform 0.42s var(--reveal-ease), border-color 0.4s, box-shadow 0.4s;
-      transition-delay: var(--reveal-delay), var(--reveal-delay), 0s, 0s;
-      will-change: opacity, transform;
+      transform: translate3d(0, 0, 0);
+      transition: border-color 0.4s, box-shadow 0.4s;
+      transition-delay: 0s;
+      will-change: auto;
     }
     .team-card.reveal.visible {
       opacity: 1;
@@ -2669,21 +2672,21 @@
   </div>
   <div class="teams-grid">
 
-    <div class="team-card reveal reveal-delay-1" style="--team-color: #ff2d78; --team-bg: url('/assets/teams/crimson.png');">
+    <div class="team-card reveal reveal-delay-1" style="--team-color: #ff2d78; --team-bg: url('/assets/site-team-v1/crimson-bg.webp');">
       <div class="team-num">TEAM 01</div>
       <div class="team-name">CRIMSON</div>
       <div class="team-roster">
         <a class="roster-leader roster-link" href="https://web.colorsing.com/share/user?user_id=9f416ebb-bc97-4d24-8c38-9550c5040aa5" target="_blank" rel="noopener noreferrer" aria-label="まぐろふぉんのColorSingプロフィールを開く">
-          <div class="avatar avatar-lg"><img src="/assets/members/crimson-leader.png" alt="まぐろふぉん" style="transform: scale(1.4);"><span class="leader-badge">LEADER</span></div>
+          <div class="avatar avatar-lg"><img src="/assets/site-team-v1/crimson-leader.webp" alt="まぐろふぉん" width="512" height="512" loading="lazy" decoding="async" style="transform: scale(1.4);"><span class="leader-badge">LEADER</span></div>
           <span class="roster-name">まぐろふぉん</span>
         </a>
         <div class="roster-members">
           <a class="roster-member roster-link" href="https://web.colorsing.com/share/user?user_id=eb86400d-5683-4ff6-aab1-9ea35c9236a9" target="_blank" rel="noopener noreferrer" aria-label="んごご&#x1F34B;&#x200D;&#x1F7E9;のColorSingプロフィールを開く">
-            <div class="avatar avatar-sm"><img src="/assets/members/crimson-ngogo.jpg" alt="んごご&#x1F34B;&#x200D;&#x1F7E9;"></div>
+            <div class="avatar avatar-sm"><img src="/assets/site-team-v1/crimson-ngogo.webp" alt="んごご&#x1F34B;&#x200D;&#x1F7E9;" width="512" height="512" loading="lazy" decoding="async"></div>
             <span class="roster-name">んごご&#x1F34B;&#x200D;&#x1F7E9;</span>
           </a>
           <a class="roster-member roster-link" href="https://web.colorsing.com/share/user?user_id=31996c5c-b889-4501-a227-ceebab10757a" target="_blank" rel="noopener noreferrer" aria-label="PKのColorSingプロフィールを開く">
-            <div class="avatar avatar-sm"><img src="/assets/members/crimson-pk.jpeg" alt="PK"></div>
+            <div class="avatar avatar-sm"><img src="/assets/site-team-v1/crimson-pk.webp" alt="PK" width="512" height="512" loading="lazy" decoding="async"></div>
             <span class="roster-name">PK</span>
           </a>
         </div>
@@ -2694,21 +2697,21 @@
       </div>
     </div>
 
-    <div class="team-card reveal reveal-delay-2" style="--team-color: #7c3aff; --team-bg: url('/assets/teams/nova.png');">
+    <div class="team-card reveal reveal-delay-2" style="--team-color: #7c3aff; --team-bg: url('/assets/site-team-v1/nova-bg.webp');">
       <div class="team-num">TEAM 02</div>
       <div class="team-name">NOVA</div>
       <div class="team-roster">
         <a class="roster-leader roster-link" href="https://web.colorsing.com/share/user?user_id=b685e0ab-d7dc-4077-874d-e9cae3565681" target="_blank" rel="noopener noreferrer" aria-label="りんかのColorSingプロフィールを開く">
-          <div class="avatar avatar-lg"><img src="/assets/members/nova-leader.jpg" alt="りんか🔔"><span class="leader-badge">LEADER</span></div>
+          <div class="avatar avatar-lg"><img src="/assets/site-team-v1/nova-leader.webp" alt="りんか🔔" width="512" height="512" loading="lazy" decoding="async"><span class="leader-badge">LEADER</span></div>
           <span class="roster-name">りんか🔔</span>
         </a>
         <div class="roster-members">
           <a class="roster-member roster-link" href="https://web.colorsing.com/share/user?user_id=97fff16b-5d16-4aed-ba37-6ab15df2ac61" target="_blank" rel="noopener noreferrer" aria-label="なぽるのColorSingプロフィールを開く">
-            <div class="avatar avatar-sm"><img src="/assets/members/nova-naporu.jpg" alt="なぽる" style="object-fit: contain;"></div>
+            <div class="avatar avatar-sm"><img src="/assets/site-team-v1/nova-naporu.webp" alt="なぽる" width="512" height="512" loading="lazy" decoding="async" style="object-fit: contain;"></div>
             <span class="roster-name">なぽる</span>
           </a>
           <a class="roster-member roster-link" href="https://web.colorsing.com/share/user?user_id=ddba533b-8d21-4733-8cda-6764a6148fec" target="_blank" rel="noopener noreferrer" aria-label="犬飼音子(ねこ)のColorSingプロフィールを開く">
-            <div class="avatar avatar-sm"><img src="/assets/members/nova-neko.jpg" alt="犬飼音子(ねこ)"></div>
+            <div class="avatar avatar-sm"><img src="/assets/site-team-v1/nova-neko.webp" alt="犬飼音子(ねこ)" width="512" height="512" loading="lazy" decoding="async"></div>
             <span class="roster-name">犬飼音子(ねこ)</span>
           </a>
         </div>
@@ -2719,21 +2722,21 @@
       </div>
     </div>
 
-    <div class="team-card reveal reveal-delay-3" style="--team-color: #ffd700; --team-bg: url('/assets/teams/golden.png');">
+    <div class="team-card reveal reveal-delay-3" style="--team-color: #ffd700; --team-bg: url('/assets/site-team-v1/golden-bg.webp');">
       <div class="team-num">TEAM 03</div>
       <div class="team-name">GOLDEN</div>
       <div class="team-roster">
         <a class="roster-leader roster-link" href="https://web.colorsing.com/share/user?user_id=e8a92a98-ed80-4ee2-9ccd-a0ed46165226" target="_blank" rel="noopener noreferrer" aria-label="iran&#x1F473;&#x1F3FE;&#x200D;&#x2642;&#xFE0F;痔のColorSingプロフィールを開く">
-          <div class="avatar avatar-lg"><img src="/assets/members/golden-iran-july.jpg" alt="iran&#x1F473;&#x1F3FE;&#x200D;&#x2642;&#xFE0F;痔"><span class="leader-badge">LEADER</span></div>
+          <div class="avatar avatar-lg"><img src="/assets/site-team-v1/golden-iran.webp" alt="iran&#x1F473;&#x1F3FE;&#x200D;&#x2642;&#xFE0F;痔" width="512" height="512" loading="lazy" decoding="async"><span class="leader-badge">LEADER</span></div>
           <span class="roster-name">iran&#x1F473;&#x1F3FE;&#x200D;&#x2642;&#xFE0F;痔</span>
         </a>
         <div class="roster-members">
           <a class="roster-member roster-link" href="https://web.colorsing.com/share/user?user_id=15c5d30b-edf2-4196-bf58-13eb394a5f67" target="_blank" rel="noopener noreferrer" aria-label="&#x1F43B;&#x200D;&#x2744;&#xFE0F;あわ&#x1F95A;のColorSingプロフィールを開く">
-            <div class="avatar avatar-sm"><img src="/assets/members/golden-awa.jpg" alt="&#x1F43B;&#x200D;&#x2744;&#xFE0F;あわ&#x1F95A;"></div>
+            <div class="avatar avatar-sm"><img src="/assets/site-team-v1/golden-awa.webp" alt="&#x1F43B;&#x200D;&#x2744;&#xFE0F;あわ&#x1F95A;" width="512" height="512" loading="lazy" decoding="async"></div>
             <span class="roster-name">&#x1F43B;&#x200D;&#x2744;&#xFE0F;あわ&#x1F95A;</span>
           </a>
           <a class="roster-member roster-link" href="https://web.colorsing.com/share/user?user_id=b48457d7-d593-48d1-b72d-65be42baf9ca" target="_blank" rel="noopener noreferrer" aria-label="潮てら&#x1F433;&#x1F49B;のColorSingプロフィールを開く">
-            <div class="avatar avatar-sm"><img src="/assets/members/golden-tera.jpg" alt="潮てら&#x1F433;&#x1F49B;"></div>
+            <div class="avatar avatar-sm"><img src="/assets/site-team-v1/golden-tera.webp" alt="潮てら&#x1F433;&#x1F49B;" width="512" height="512" loading="lazy" decoding="async"></div>
             <span class="roster-name">潮てら&#x1F433;&#x1F49B;</span>
           </a>
         </div>
@@ -2950,15 +2953,15 @@
 /* ── TEAMS / MEMBERS / CATEGORIES (API config と同期) ── */
 // チームの色・背景は UI 固定値、ID と name は API config が正本。
 const TEAM_DISPLAY = {
-  1: { color: '#ff2d78', bg: '/assets/teams/crimson.png' },
-  2: { color: '#7c3aff', bg: '/assets/teams/nova.png'    },
-  3: { color: '#ffd700', bg: '/assets/teams/golden.png'  },
+  1: { color: '#ff2d78', bg: '/assets/site-team-v1/crimson-bg.webp' },
+  2: { color: '#7c3aff', bg: '/assets/site-team-v1/nova-bg.webp'    },
+  3: { color: '#ffd700', bg: '/assets/site-team-v1/golden-bg.webp'  },
 };
 
 let teams = [
-  { id: 1, name: 'CRIMSON', color: '#ff2d78', bg: '/assets/teams/crimson.png', votes: 0 },
-  { id: 2, name: 'NOVA',    color: '#7c3aff', bg: '/assets/teams/nova.png',    votes: 0 },
-  { id: 3, name: 'GOLDEN',  color: '#ffd700', bg: '/assets/teams/golden.png',  votes: 0 },
+  { id: 1, name: 'CRIMSON', color: '#ff2d78', bg: '/assets/site-team-v1/crimson-bg.webp', votes: 0 },
+  { id: 2, name: 'NOVA',    color: '#7c3aff', bg: '/assets/site-team-v1/nova-bg.webp',    votes: 0 },
+  { id: 3, name: 'GOLDEN',  color: '#ffd700', bg: '/assets/site-team-v1/golden-bg.webp',  votes: 0 },
 ];
 let members = [];      // [{ id, teamId, name }]
 let categories = [];   // [{ id, type, label, candidateType, candidateIds }]
@@ -3689,59 +3692,6 @@ function showRevealTarget(el) {
   queueRevealComplete(el);
 }
 
-function cssUrlToAbsoluteUrl(value) {
-  const match = String(value || '').match(/url\((['"]?)(.*?)\1\)/);
-  if (!match || !match[2]) return '';
-  try {
-    return new URL(match[2], window.location.href).href;
-  } catch {
-    return match[2];
-  }
-}
-
-function decodeImageUrl(src) {
-  if (!src) return Promise.resolve();
-  const img = new Image();
-  img.decoding = 'async';
-  img.src = src;
-  if (typeof img.decode === 'function') {
-    return img.decode().catch(() => {});
-  }
-  return new Promise(resolve => {
-    img.onload = resolve;
-    img.onerror = resolve;
-  });
-}
-
-function warmTeamCardMedia(card) {
-  if (!card || card.dataset.teamMediaReady === 'true') return Promise.resolve();
-  if (card._teamMediaPromise) return card._teamMediaPromise;
-
-  const imageDecodes = Array.from(card.querySelectorAll('img')).map(img => {
-    img.decoding = 'async';
-    if (img.complete && img.naturalWidth > 0 && typeof img.decode === 'function') {
-      return img.decode().catch(() => {});
-    }
-    if (img.complete) return Promise.resolve();
-    return new Promise(resolve => {
-      img.addEventListener('load', resolve, { once: true });
-      img.addEventListener('error', resolve, { once: true });
-    });
-  });
-
-  const bgUrl = cssUrlToAbsoluteUrl(card.style.getPropertyValue('--team-bg') || getComputedStyle(card).getPropertyValue('--team-bg'));
-  if (bgUrl) imageDecodes.push(decodeImageUrl(bgUrl));
-
-  const timeout = new Promise(resolve => window.setTimeout(resolve, 1400));
-  card._teamMediaPromise = Promise.race([
-    Promise.allSettled(imageDecodes),
-    timeout,
-  ]).then(() => {
-    card.dataset.teamMediaReady = 'true';
-  });
-  return card._teamMediaPromise;
-}
-
 function prepareRevealTargets() {
   const targets = [];
 
@@ -3821,36 +3771,29 @@ function initScrollReveal() {
   });
 
   const keepTeamCardsVisible = isTouchLikeDevice();
-  document.querySelectorAll('.teams-grid .team-card.reveal').forEach(card => warmTeamCardMedia(card));
+  const teamCards = Array.from(document.querySelectorAll('.teams-grid .team-card.reveal'));
+  if (keepTeamCardsVisible) {
+    teamCards.forEach(card => card.classList.add('visible', 'reveal-complete'));
+    return;
+  }
+
   const teamCardObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        const revealTeamCard = () => {
-          showRevealTarget(entry.target);
-          if (keepTeamCardsVisible) {
-            entry.target.classList.add('reveal-complete');
-            teamCardObserver.unobserve(entry.target);
-          }
-        };
-        if (keepTeamCardsVisible) {
-          if (entry.target.dataset.teamRevealQueued === 'true') return;
-          entry.target.dataset.teamRevealQueued = 'true';
-          warmTeamCardMedia(entry.target).then(revealTeamCard);
-        } else {
-          revealTeamCard();
-        }
-      } else if (!keepTeamCardsVisible && entry.target.classList.contains('visible')) {
+        showRevealTarget(entry.target);
+      } else if (entry.target.classList.contains('visible')) {
         hideRevealTarget(entry.target);
       }
     });
   }, { threshold: 0 });
 
-  document.querySelectorAll('.teams-grid .team-card.reveal').forEach(card => teamCardObserver.observe(card));
+  teamCards.forEach(card => teamCardObserver.observe(card));
 }
 
 function initScrollParallax() {
   const items = [];
   const reducedMotion = isReducedMotion();
+  const touchLikeDevice = isTouchLikeDevice();
   const hero = document.getElementById('hero');
   const heroBg = document.querySelector('.hero-bg');
 
@@ -3867,7 +3810,6 @@ function initScrollParallax() {
   /* タッチ端末では --p 書き込みを間引き、背景パララックス自体は維持する */
   const activeItems = new Set();
   const itemsByMeasure = new Map();
-  const touchLikeDevice = isTouchLikeDevice();
   const writeThreshold = touchLikeDevice ? 0.006 : 0.0015;
   const easing = touchLikeDevice ? 0.16 : 0.12;
 

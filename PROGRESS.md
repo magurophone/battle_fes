@@ -1,5 +1,9 @@
 # BATTLE FES 2026 実装進捗
 
+2026-07-10: スマホのチーム背景点滅修正版を Cloudflare Pages 本番へ最終デプロイ済み。deployment `82efafa1-034b-494f-9cd1-d26e6190d480`（Production / master）。直前の `b38f80b4-02b3-464c-94ad-964ca5079127` では判断を誤ってスマホ背景視差を停止していたため、同日中に上書きして動的表現を復旧。本番Pixel 5相当でスクロール前後の `--p` 最大変化量 0.4954、全カード opacity 1、reload直後も opacity 1 / clip-path解除済みを確認。本番HTMLで `site-team-v1` 参照と旧 `warmTeamCardMedia` 撤去を確認し、新WebPのHTTP 200・`Cache-Control: public, max-age=31536000, immutable` も確認済み。
+
+2026-07-10: スマホでページ更新時にチーム紹介カードの背景が消える／点滅する問題を再修正。原因は、モバイルCSSがカードを `opacity: 0` で開始し、`warmTeamCardMedia()` が画像未完了でも1.4秒タイムアウトを `teamMediaReady` 扱いにして表示を始めていたこと。低速画像再現ではカード表示開始時点で背景・人物画像が0件完了となる競合を確認した。対策として、スマホ／タッチ／900px以下はカードを初期描画から常時表示し、画像待ちによる表示ゲートを撤去。チームカード背景の `--p` 更新とtransform視差はスマホでも維持し、PCのsticky stackingも維持した。特設サイト専用画像を `public/assets/site-team-v1/` のWebP 12枚へ最適化し、転送合計を約17.5MiBから810,940 bytesへ削減。専用ディレクトリには `_headers` で1年間 immutable cacheを設定し、元画像更新時に再生成できる `npm run build:site-team-media` を追加。`scripts/local-frontend-smoke.mjs` は専用画像を2.2秒遅延させた初期表示＋reload直後でも、全カードが `visible` / opacity 1 / clip-path解除済みであること、スマホで背景視差の `--p` が動き続けることを通常設定・reduced-motionの両方で検証。全フロントスモークPASS、Pixel 5相当の実画面スクリーンショットでも背景・人物トリミングを確認済み。
+
 ## 段階公開（情報を順次出していく運用）
 
 サイトは情報を段階的に増やしていく方針。現在 **一時的に非表示** にしているブロックと、再表示の手順は以下。`battlefes.html` / `public/index.html` の両方に同じ印（`<!-- 段階公開: ... -->` コメント）を入れてあるので、`hidden` 属性を外すだけで戻せる。
@@ -20,7 +24,7 @@
 
 2026-07-09: PCのチームカード stacking 条件を調整。従来の `min-width: 1000px` ではノートPC幅・ブラウザズーム・サイドバー表示時に演出が無効になりやすかったため、タッチ端末を避けつつ `min-width: 769px` + `hover: hover` + `pointer: fine` に変更。`scripts/local-frontend-smoke.mjs` は 1280px と 900px の両方で sticky stacking を検証する。
 
-2026-07-06: モダンデザイン改修を本番デプロイ（deployment 4d08594c / Production / master）。内容: (1)スクロール連続結合の視差（`.hero-bg` ±7.6%・`.team-card::before` ±14%、rAF+lerp 単一ループ+IntersectionObserver、`--p` 変数） (2)役割別リビール＋リトリガー（見出し=行マスク `line-reveal`、カード=clip-path 初回のみ・再入時フェード、divider=scaleX、スケジュール行=バッチ内相対スタガー上限0.3s） (3)チームカード1カラム大判化（アバターは全員156px統一、SPは clamp で縮小） (4)静と動: PC でチームカードのスタッキング（`.teams-grid > .team-card { position: sticky; top: 100px }`、次のカードが前のカードに重なる）＋ schedule の ROUND ラベル sticky。不採用: 左レール見出し sticky（センター構図と衝突）、teams カウンター（浮いて見える）、フッターロゴ（ヘッダーと重複）。注意: `prefers-reduced-motion: reduce`（Windows「アニメーション効果」オフ）では基本リビールとヒーロー視差は無効、チームカード背景パララックスは2026-07-09の修正以降も動的維持。sticky スタッキングは動く。指示書は `docs/modern-design-spec.md` / `docs/modern-design-spec-phase2.md`。
+2026-07-06: モダンデザイン改修を本番デプロイ（deployment 4d08594c / Production / master）。内容: (1)スクロール連続結合の視差（`.hero-bg` ±7.6%・`.team-card::before` ±14%、rAF+lerp 単一ループ+IntersectionObserver、`--p` 変数） (2)役割別リビール＋リトリガー（見出し=行マスク `line-reveal`、カード=clip-path 初回のみ・再入時フェード、divider=scaleX、スケジュール行=バッチ内相対スタガー上限0.3s） (3)チームカード1カラム大判化（アバターは全員156px統一、SPは clamp で縮小） (4)静と動: PC でチームカードのスタッキング（`.teams-grid > .team-card { position: sticky; top: 100px }`、次のカードが前のカードに重なる）＋ schedule の ROUND ラベル sticky。不採用: 左レール見出し sticky（センター構図と衝突）、teams カウンター（浮いて見える）、フッターロゴ（ヘッダーと重複）。注意: `prefers-reduced-motion: reduce`（Windows「アニメーション効果」オフ）では基本リビールとヒーロー視差は無効。チームカード背景パララックスはスマホを含め動的維持。sticky スタッキングは動く。指示書は `docs/modern-design-spec.md` / `docs/modern-design-spec-phase2.md`。
 
 2026-07-01: 特設サイトとGOLDENチームリンクのiran痔画像参照を7月用 `public/assets/members/golden-iran-july.jpg` に差し替え済み。
 
@@ -114,7 +118,7 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
   - 原因3: 初回表示の `clip-path` ワイプ開始時に、2MB級チーム背景PNGとメンバー画像を同じフレームで合成し、表示瞬間に一度だけ点滅する場合があった
   - 原因4: `prefers-reduced-motion: reduce` では `.team-card::before` を固定transformにしていたため、端末設定によってチームカード背景パララックスが完全静的になった
   - 対策: スマホ/タッチ/狭幅ではチームカードのリビールは一度表示したら固定し、背景パララックス自体は維持。`--p` 書き込みをしきい値で間引き、背景transformを `scale3d + translate3d` にしてレイヤー化を安定させる。初回表示は重い `clip-path` ワイプではなくフェードアップにし、表示前にチーム背景とメンバー画像を `decode()` する
-  - 対策追記: reduced-motion でもヒーローやリビール抑制は維持しつつ、チームカード背景の `--p` 更新と `.team-card::before` パララックスは止めない
+  - 2026-07-10追記: 更新時の再発原因は初期非表示と画像待ち競合だったため、それらを撤去。チームカード背景の `--p` 更新と `.team-card::before` パララックスはスマホでも維持
   - 検証: スマホ相当Playwrightで通常設定/reduced-motionとも `--p` が動くこと、`reveal-replayed` が0件、カードが表示されたままになること、初回表示時の `clip-path` が `inset(0px)` 固定で opacity/transform のみ変化することを確認。PC幅では `.teams-grid > .team-card` の sticky stacking（1枚目と2枚目が `top:100px` で重なり、後続カードが前面に来る）も確認。`scripts/local-frontend-smoke.mjs` に回帰テスト追加
 
 - `✓` 全体カラーテーマ

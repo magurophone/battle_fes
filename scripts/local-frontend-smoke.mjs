@@ -442,6 +442,14 @@ async function runPublicMobileTeamCardScenario(browser, baseUrl, reducedMotion) 
       body: JSON.stringify(resultsPayload()),
     });
   });
+  let teamMediaResponses = 0;
+  await page.route("**/assets/site-team-v1/*", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 2200));
+    await route.continue();
+  });
+  page.on("response", (response) => {
+    if (response.url().includes("/assets/site-team-v1/")) teamMediaResponses += 1;
+  });
 
   await page.goto(`${baseUrl}/index.html#teams`, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => typeof isTouchLikeDevice === "function" && document.querySelectorAll(".team-card").length === 3);
@@ -449,6 +457,38 @@ async function runPublicMobileTeamCardScenario(browser, baseUrl, reducedMotion) 
     document.documentElement.style.scrollBehavior = "auto";
     document.body.style.scrollBehavior = "auto";
   });
+  const earlyTeamState = await page.evaluate(() => ({
+    cards: Array.from(document.querySelectorAll(".team-card")).map((card) => ({
+      className: card.className,
+      opacity: getComputedStyle(card).opacity,
+      clipPath: getComputedStyle(card).clipPath,
+      backgroundImage: getComputedStyle(card, "::before").backgroundImage,
+    })),
+  }));
+  assert.equal(teamMediaResponses, 0);
+  assert.ok(earlyTeamState.cards.every((card) => card.className.includes("visible")));
+  assert.ok(earlyTeamState.cards.every((card) => card.opacity === "1"));
+  assert.ok(earlyTeamState.cards.every((card) => card.clipPath === "inset(0px)"));
+  assert.ok(earlyTeamState.cards.every((card) => card.backgroundImage.includes("/assets/site-team-v1/")));
+
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => typeof isTouchLikeDevice === "function" && document.querySelectorAll(".team-card").length === 3);
+  const reloadTeamState = await page.evaluate(() => ({
+    cards: Array.from(document.querySelectorAll(".team-card")).map((card) => ({
+      className: card.className,
+      opacity: getComputedStyle(card).opacity,
+      clipPath: getComputedStyle(card).clipPath,
+    })),
+  }));
+  assert.equal(teamMediaResponses, 0);
+  assert.ok(reloadTeamState.cards.every((card) => card.className.includes("visible")));
+  assert.ok(reloadTeamState.cards.every((card) => card.opacity === "1"));
+  assert.ok(reloadTeamState.cards.every((card) => card.clipPath === "inset(0px)"));
+  await page.evaluate(() => {
+    document.documentElement.style.scrollBehavior = "auto";
+    document.body.style.scrollBehavior = "auto";
+  });
+
   await page.evaluate(() => {
     window.__teamCardSmoke = { styleMutations: 0, replayClassMutations: 0 };
     document.querySelectorAll(".team-card").forEach((card) => {
@@ -490,9 +530,10 @@ async function runPublicMobileTeamCardScenario(browser, baseUrl, reducedMotion) 
     reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     cards: Array.from(document.querySelectorAll(".team-card")).map((card) => ({
       className: card.className,
-      p: Number(card.style.getPropertyValue("--p") || "0"),
+      p: Number(card.style.getPropertyValue("--p") || "0.5"),
       opacity: getComputedStyle(card).opacity,
       clipPath: getComputedStyle(card).clipPath,
+      backgroundTransform: getComputedStyle(card, "::before").transform,
     })),
     smoke: window.__teamCardSmoke,
   }));
@@ -505,6 +546,7 @@ async function runPublicMobileTeamCardScenario(browser, baseUrl, reducedMotion) 
   assert.ok(teamState.cards.every((card) => !card.className.includes("reveal-replayed")));
   assert.ok(teamState.cards.every((card) => card.opacity === "1"));
   assert.ok(teamState.cards.every((card) => card.clipPath === "inset(0px)"));
+  assert.ok(teamState.cards.every((card) => card.backgroundTransform !== "none"));
   assert.ok(teamState.smoke.styleMutations > 0);
   assert.equal(teamState.smoke.replayClassMutations, 0);
   await context.close();
