@@ -22,8 +22,8 @@ const VP_MIN = 100;
 const VP_MAX = 5000;
 // 貫通 BONUS: 本投票時間中に正解キーワードを入力した投票に付与される追加ポイント
 const BONUS_POINT = 5000;
-// 個人賞: 各部門の1位メンバー所属チームへ付与する加点
-const INDIVIDUAL_AWARD_BONUS_POINT = 50000;
+// 個人賞: 各部門60,000pt。同率1位は受賞者数で整数分割し、余りは候補ID順に1ptずつ配る。
+const INDIVIDUAL_AWARD_BONUS_POINT = 60000;
 const ADMIN_VOTE_STATUS_OVERRIDE_KEY = "admin_vote_status_override";
 
 function getDb(source) {
@@ -239,7 +239,7 @@ function calcIndividualAwardBonuses(results = {}) {
     if (category.type !== "individual") continue;
     const result = results[category.id] || {};
     const counts = result.counts || {};
-    const winner = category.candidateIds
+    const candidates = category.candidateIds
       .map((id) => {
         const key = String(id);
         return {
@@ -248,23 +248,39 @@ function calcIndividualAwardBonuses(results = {}) {
         };
       })
       .filter((entry) => entry.votes > 0)
-      .sort((a, b) => b.votes - a.votes || a.id - b.id)[0];
+      .sort((a, b) => b.votes - a.votes || a.id - b.id);
 
-    if (!winner) continue;
-    const member = MEMBERS.find((entry) => Number(entry.id) === winner.id);
-    if (!member) continue;
+    if (!candidates.length) continue;
+    const topVotes = candidates[0].votes;
+    const winners = candidates
+      .filter((entry) => entry.votes === topVotes)
+      .map((winner) => ({
+        ...winner,
+        member: MEMBERS.find((entry) => Number(entry.id) === winner.id),
+      }))
+      .filter((winner) => winner.member)
+      .sort((a, b) => a.id - b.id);
 
-    const teamId = Number(member.teamId);
-    bonuses.teamScores[teamId] = (bonuses.teamScores[teamId] || 0) + INDIVIDUAL_AWARD_BONUS_POINT;
-    bonuses.totalPoints += INDIVIDUAL_AWARD_BONUS_POINT;
-    bonuses.awards.push({
-      categoryId: category.id,
-      categoryLabel: category.label,
-      memberId: Number(member.id),
-      memberName: member.name,
-      teamId,
-      bonusPoint: INDIVIDUAL_AWARD_BONUS_POINT,
-      votes: winner.votes,
+    if (!winners.length) continue;
+    const basePoint = Math.floor(INDIVIDUAL_AWARD_BONUS_POINT / winners.length);
+    const remainder = INDIVIDUAL_AWARD_BONUS_POINT % winners.length;
+
+    winners.forEach((winner, index) => {
+      const member = winner.member;
+      const teamId = Number(member.teamId);
+      const bonusPoint = basePoint + (index < remainder ? 1 : 0);
+      bonuses.teamScores[teamId] = (bonuses.teamScores[teamId] || 0) + bonusPoint;
+      bonuses.totalPoints += bonusPoint;
+      bonuses.awards.push({
+        categoryId: category.id,
+        categoryLabel: category.label,
+        memberId: Number(member.id),
+        memberName: member.name,
+        teamId,
+        bonusPoint,
+        votes: winner.votes,
+        tiedWinnerCount: winners.length,
+      });
     });
   }
 

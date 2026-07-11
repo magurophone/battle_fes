@@ -47,8 +47,8 @@ function adminResults(category) {
     result.totalPoints = 7000;
     result.updatedAt = "2026-07-18T13:20:00.000Z";
   } else if (category.id === "mvp") {
-    result.counts = { ...result.counts, 1: 1, 4: 3 };
-    result.totalVotes = 4;
+    result.counts = { ...result.counts, 1: 1, 4: 3, 7: 3 };
+    result.totalVotes = 7;
     result.updatedAt = "2026-07-18T13:20:00.000Z";
   } else if (category.id === "entertainer") {
     result.counts = { ...result.counts, 5: 2, 7: 1 };
@@ -200,13 +200,14 @@ function adminPayload({ status = "waiting", adminVoteStatusOverride = null } = {
       ])
     ),
     individualAwardBonuses: {
-      pointPerAward: 50000,
-      teamScores: { 1: 0, 2: 100000, 3: 50000 },
-      totalPoints: 150000,
+      pointPerAward: 60000,
+      teamScores: { 1: 0, 2: 90000, 3: 90000 },
+      totalPoints: 180000,
       awards: [
-        { categoryId: "mvp", categoryLabel: "MVP", memberId: 4, memberName: "Member 4", teamId: 2, bonusPoint: 50000, votes: 3 },
-        { categoryId: "entertainer", categoryLabel: "Entertainer", memberId: 5, memberName: "Member 5", teamId: 2, bonusPoint: 50000, votes: 2 },
-        { categoryId: "moment", categoryLabel: "Moment", memberId: 9, memberName: "Member 9", teamId: 3, bonusPoint: 50000, votes: 1 },
+        { categoryId: "mvp", categoryLabel: "MVP", memberId: 4, memberName: "Member 4", teamId: 2, bonusPoint: 30000, votes: 3, tiedWinnerCount: 2 },
+        { categoryId: "mvp", categoryLabel: "MVP", memberId: 7, memberName: "Member 7", teamId: 3, bonusPoint: 30000, votes: 3, tiedWinnerCount: 2 },
+        { categoryId: "entertainer", categoryLabel: "Entertainer", memberId: 5, memberName: "Member 5", teamId: 2, bonusPoint: 60000, votes: 2, tiedWinnerCount: 1 },
+        { categoryId: "moment", categoryLabel: "Moment", memberId: 9, memberName: "Member 9", teamId: 3, bonusPoint: 60000, votes: 1, tiedWinnerCount: 1 },
       ],
     },
     eventImpressions: [
@@ -701,7 +702,7 @@ async function runAdminSmoke(browser, baseUrl) {
   assert.ok(desktopState.overallText.includes("全体集計"));
   assert.ok(desktopState.overallText.includes("チーム別内訳"));
   assert.ok(desktopState.overallText.includes("個人賞加点"));
-  assert.ok(desktopState.overallText.includes("150,000"));
+  assert.ok(desktopState.overallText.includes("180,000"));
   assert.deepEqual(desktopState.aggregateLabels.slice(3), [
     "全チームライブスコア",
     "全チーム個人賞加点",
@@ -737,7 +738,7 @@ async function runAdminSmoke(browser, baseUrl) {
   assert.equal(testClosedState.voteStatusText, "closed");
   assert.equal(testClosedState.leaderLabel, "WINNER");
   assert.ok(testClosedState.leaderName.includes("NOVA"));
-  assert.ok(testClosedState.leaderDetail.includes("101,800"));
+  assert.ok(testClosedState.leaderDetail.includes("91,800"));
 
   await page.locator("#testClosedViewToggleBtn").click();
   await page.waitForFunction(() =>
@@ -884,8 +885,9 @@ async function runAdminMobileLayoutSmoke(browser, baseUrl) {
   assert.equal(individualState.awardTabCount, 3);
   assert.equal(individualState.activeAward, "MVP");
   assert.equal(individualState.categoryBlocks, 1);
-  assert.equal(individualState.leaderLabel, "現在トップ");
+  assert.equal(individualState.leaderLabel, "同率トップ");
   assert.ok(individualState.leaderName.includes("Member 4"));
+  assert.ok(individualState.leaderName.includes("Member 7"));
 
   await page.locator("#individualAwardTabs button").nth(1).click();
   const secondAwardState = await page.evaluate(() => ({

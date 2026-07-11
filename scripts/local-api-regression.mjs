@@ -7,7 +7,11 @@ import { onRequestGet as getAdminResults } from "../functions/api/admin/results.
 import { onRequestPost as postAdminReset } from "../functions/api/admin/reset.js";
 import { onRequestPost as postAdminLiveScores } from "../functions/api/admin/live-scores.js";
 import { onRequestPost as postAdminVoteStatus } from "../functions/api/admin/vote-status.js";
-import { calcLiveScore, calcVotePoint } from "../functions/api/_lib/vote-store.js";
+import {
+  calcIndividualAwardBonuses,
+  calcLiveScore,
+  calcVotePoint,
+} from "../functions/api/_lib/vote-store.js";
 
 const ADMIN_TOKEN = "local-secret";
 const BONUS_KEYWORD = "真夏の夜空に響け！";
@@ -454,6 +458,41 @@ async function testCorePointAndLiveScoreMath() {
   assert.equal(calcLiveScore(10, 20, 0, 1000), 1000);
 }
 
+async function testIndividualAwardTieSplit() {
+  const twoWay = calcIndividualAwardBonuses({
+    mvp: { counts: { 1: 4, 4: 4, 7: 2 } },
+  });
+  assert.equal(twoWay.pointPerAward, 60000);
+  assert.equal(twoWay.totalPoints, 60000);
+  assert.equal(twoWay.teamScores[1], 30000);
+  assert.equal(twoWay.teamScores[2], 30000);
+  assert.equal(twoWay.teamScores[3], 0);
+  assert.deepEqual(twoWay.awards.map((award) => award.memberId), [1, 4]);
+  assert.deepEqual(twoWay.awards.map((award) => award.bonusPoint), [30000, 30000]);
+  assert.ok(twoWay.awards.every((award) => award.tiedWinnerCount === 2));
+
+  const sameTeamTie = calcIndividualAwardBonuses({
+    entertainer: { counts: { 1: 5, 2: 5, 4: 5 } },
+  });
+  assert.equal(sameTeamTie.totalPoints, 60000);
+  assert.equal(sameTeamTie.teamScores[1], 40000);
+  assert.equal(sameTeamTie.teamScores[2], 20000);
+  assert.equal(sameTeamTie.teamScores[3], 0);
+  assert.deepEqual(sameTeamTie.awards.map((award) => award.bonusPoint), [20000, 20000, 20000]);
+
+  const nineWay = calcIndividualAwardBonuses({
+    moment: { counts: Object.fromEntries(Array.from({ length: 9 }, (_, index) => [index + 1, 1])) },
+  });
+  assert.equal(nineWay.totalPoints, 60000);
+  assert.equal(nineWay.teamScores[1], 20001);
+  assert.equal(nineWay.teamScores[2], 20001);
+  assert.equal(nineWay.teamScores[3], 19998);
+  assert.deepEqual(nineWay.awards.map((award) => award.bonusPoint), [
+    6667, 6667, 6667, 6667, 6667, 6667, 6666, 6666, 6666,
+  ]);
+  assert.ok(nineWay.awards.every((award) => award.tiedWinnerCount === 9));
+}
+
 async function vote(env, options = {}) {
   return postVote({
     request: req("/api/votes", {
@@ -477,7 +516,7 @@ async function testPublicResultsInitial() {
     assert.equal(data.status, "waiting");
     assert.equal(data.config.categories.length, 4);
     assert.equal(data.results.team.totalVotes, 0);
-    assert.equal(data.individualAwardBonuses.pointPerAward, 50000);
+    assert.equal(data.individualAwardBonuses.pointPerAward, 60000);
     assert.equal(data.individualAwardBonuses.totalPoints, 0);
   });
 }
@@ -865,7 +904,11 @@ async function testD1VoteAdminAndDuplicate() {
     assert.equal(db.voteSubmissions.length, 1);
     assert.equal(db.votePicks.length, 4);
 
-    const second = await vote(env, { ip: "203.0.113.61", teamId: 3 });
+    const second = await vote(env, {
+      ip: "203.0.113.61",
+      teamId: 3,
+      individualIds: [4, 5, 8],
+    });
     assert.equal(second.status, 200);
 
     const admin = await getAdminResults({
@@ -877,12 +920,13 @@ async function testD1VoteAdminAndDuplicate() {
   assert.equal(adminData.categories.team.results.totalVotes, 2);
   assert.equal(adminData.categories.team.results.counts["2"], 1);
   assert.equal(adminData.categories.team.results.counts["3"], 1);
-  assert.equal(adminData.individualAwardBonuses.pointPerAward, 50000);
-  assert.equal(adminData.individualAwardBonuses.teamScores["1"], 50000);
-  assert.equal(adminData.individualAwardBonuses.teamScores["2"], 50000);
-  assert.equal(adminData.individualAwardBonuses.teamScores["3"], 50000);
-  assert.equal(adminData.individualAwardBonuses.totalPoints, 150000);
-  assert.equal(adminData.individualAwardBonuses.awards.length, 3);
+  assert.equal(adminData.individualAwardBonuses.pointPerAward, 60000);
+  assert.equal(adminData.individualAwardBonuses.teamScores["1"], 30000);
+  assert.equal(adminData.individualAwardBonuses.teamScores["2"], 90000);
+  assert.equal(adminData.individualAwardBonuses.teamScores["3"], 60000);
+  assert.equal(adminData.individualAwardBonuses.totalPoints, 180000);
+  assert.equal(adminData.individualAwardBonuses.awards.length, 6);
+  assert.ok(adminData.individualAwardBonuses.awards.every((award) => award.tiedWinnerCount === 2));
   assert.equal(adminData.categories.team.meta.totalSubmissions, 2);
   assert.equal(adminData.categories.team.uniqueFingerprints, 2);
   assert.equal(adminData.categories.team.voteLog.length, 2);
@@ -951,6 +995,7 @@ async function testD1BonusLiveScoresAndReset() {
 
 const tests = [
   testCorePointAndLiveScoreMath,
+  testIndividualAwardTieSplit,
   testPublicResultsInitial,
   testAdminAuth,
   testAdminVoteStatusOverrideDoesNotAffectPublicVoteGate,

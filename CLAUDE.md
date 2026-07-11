@@ -102,7 +102,8 @@ curl.exe --ssl-no-revoke -L https://battle-fes.pages.dev/clip/b95ta/
 - 管理画面は `/admin/`
 - 管理画面用の集計とコメントログ確認機能あり
 - スコア計算: `投票ポイント合計 + 個人賞加点 + ライブスコア`
-  - 個人賞3部門は各1位メンバー所属チームへ50,000pt加点
+  - 個人賞3部門は部門ごとに60,000pt加点。同率1位は受賞メンバー数で分割し、各所属チームへ合算する
+  - 分割で端数が出る場合は総額60,000ptを維持するため、候補ID順に1ptずつ余りを配る
   - 審査員なし。リスナー投票、個人賞加点、ライブスコアのみで決定
   - ライブスコアは管理画面 `/admin/` から、各メンバーの「推しボーナス実％」と「枠内月間推しPt（）内」を入力して算出・保存する
 - 投票タイマーは `battlefes.html` / `public/index.html` の JS 冒頭 `VOTE_OPEN` / `VOTE_CLOSE` / `VOTE_POINT_MAX` と、`functions/api/_lib/vote-store.js` の同等定数を同期する

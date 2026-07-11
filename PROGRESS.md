@@ -1,5 +1,9 @@
 # BATTLE FES 2026 実装進捗
 
+2026-07-12: 個人賞60,000pt・同率分割対応の検証完了。node scripts/local-api-regression.mjs は15件すべてPASS、node scripts/local-frontend-smoke.mjs も公開投票・PCカードstacking・スマホカード・管理画面・管理画面SPの全項目PASS。
+
+2026-07-12: 個人賞加点を各部門50,000ptから **60,000pt** へ変更。同率1位が複数いる場合は部門の60,000ptを受賞メンバー数で整数分割し、各メンバーの所属チームへ合算する。割り切れない場合は総額を正確に60,000ptへ保つため、候補ID順に1ptずつ余りを配る。APIの individualAwardBonuses.awards は同率受賞者全員を返し、各要素へ tiedWinnerCount と実配分 bonusPoint を格納。管理画面の個人賞トップ表示も1名だけを選ばず、同率受賞者全員と「同率トップ／同率受賞」を表示する。2名・3名・9名同率、同一チーム内同率、D1/API経由の3部門同率を回帰テストへ追加。
+
 2026-07-10: スマホのチーム背景点滅修正版を Cloudflare Pages 本番へ最終デプロイ済み。deployment `82efafa1-034b-494f-9cd1-d26e6190d480`（Production / master）。直前の `b38f80b4-02b3-464c-94ad-964ca5079127` では判断を誤ってスマホ背景視差を停止していたため、同日中に上書きして動的表現を復旧。本番Pixel 5相当でスクロール前後の `--p` 最大変化量 0.4954、全カード opacity 1、reload直後も opacity 1 / clip-path解除済みを確認。本番HTMLで `site-team-v1` 参照と旧 `warmTeamCardMedia` 撤去を確認し、新WebPのHTTP 200・`Cache-Control: public, max-age=31536000, immutable` も確認済み。
 
 2026-07-10: スマホでページ更新時にチーム紹介カードの背景が消える／点滅する問題を再修正。原因は、モバイルCSSがカードを `opacity: 0` で開始し、`warmTeamCardMedia()` が画像未完了でも1.4秒タイムアウトを `teamMediaReady` 扱いにして表示を始めていたこと。低速画像再現ではカード表示開始時点で背景・人物画像が0件完了となる競合を確認した。対策として、スマホ／タッチ／900px以下はカードを初期描画から常時表示し、画像待ちによる表示ゲートを撤去。チームカード背景の `--p` 更新とtransform視差はスマホでも維持し、PCのsticky stackingも維持した。特設サイト専用画像を `public/assets/site-team-v1/` のWebP 12枚へ最適化し、転送合計を約17.5MiBから810,940 bytesへ削減。専用ディレクトリには `_headers` で1年間 immutable cacheを設定し、元画像更新時に再生成できる `npm run build:site-team-media` を追加。`scripts/local-frontend-smoke.mjs` は専用画像を2.2秒遅延させた初期表示＋reload直後でも、全カードが `visible` / opacity 1 / clip-path解除済みであること、スマホで背景視差の `--p` が動き続けることを通常設定・reduced-motionの両方で検証。全フロントスモークPASS、Pixel 5相当の実画面スクリーンショットでも背景・人物トリミングを確認済み。
@@ -288,5 +292,6 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
 ```
 
 - 投票はリスナー1人1票
-- 個人賞は3部門それぞれの1位メンバー所属チームへ50,000pt加点
+- 個人賞は3部門それぞれ60,000pt。同率1位は受賞メンバー数で分割して各所属チームへ合算
+- 端数は候補ID順に1ptずつ配り、各部門の加点総額を必ず60,000ptに保つ
 - 集計の正本はバックエンドで管理

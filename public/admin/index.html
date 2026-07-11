@@ -1316,7 +1316,7 @@
     let voteStatusCache = "waiting";
     let adminVoteStatusOverrideCache = null;
     let liveScoresCache = { memberScores: {}, teamScores: {}, totalLiveScore: 0 };
-    let individualAwardBonusCache = { pointPerAward: 50000, teamScores: {}, totalPoints: 0, awards: [] };
+    let individualAwardBonusCache = { pointPerAward: 60000, teamScores: {}, totalPoints: 0, awards: [] };
     let liveScoresDraft = null;
     let liveScoreActiveTeamId = null;
     let activeIndividualCategoryId = null;
@@ -1952,7 +1952,7 @@
       return voteStatusCache === "closed" ? "WINNER" : "現在トップ";
     }
 
-    function buildLeaderEntry(category, orderedIds, counts, totalVotes, pointsByCandidate, isTeamCategory) {
+    function buildLeaderEntries(category, orderedIds, counts, totalVotes, pointsByCandidate, isTeamCategory) {
       const entries = orderedIds.map((id) => {
         const key = String(id);
         const votes = Number(counts[id] || counts[key] || 0);
@@ -1971,24 +1971,34 @@
       const hasData = isTeamCategory
         ? entries.some((entry) => entry.score > 0 || entry.votes > 0)
         : totalVotes > 0;
-      if (!hasData) return null;
+      if (!hasData) return [];
 
-      return entries
+      const sorted = entries
         .slice()
-        .sort((a, b) => b.score - a.score || b.votes - a.votes || a.id - b.id)[0];
+        .sort((a, b) => b.score - a.score || b.votes - a.votes || a.id - b.id);
+      if (isTeamCategory) return sorted.length ? [sorted[0]] : [];
+      const topScore = sorted.length ? sorted[0].score : 0;
+      return sorted.filter((entry) => entry.score === topScore && entry.votes > 0);
     }
 
     function renderLeaderStrip(category, orderedIds, counts, totalVotes, pointsByCandidate, isTeamCategory) {
-      const leader = buildLeaderEntry(category, orderedIds, counts, totalVotes, pointsByCandidate, isTeamCategory);
+      const leaders = buildLeaderEntries(category, orderedIds, counts, totalVotes, pointsByCandidate, isTeamCategory);
+      const leader = leaders.length ? leaders[0] : null;
+      const isTiedIndividual = !isTeamCategory && leaders.length > 1;
       const detail = leader
         ? isTeamCategory
           ? `総合 ${formatScore(leader.score)}`
-          : `${leader.votes}票 / ${leader.percent}%`
+          : `${leader.votes}票 / ${leader.percent}%${isTiedIndividual ? ` · ${leaders.length}名同率` : ""}`
         : "未集計";
-      const name = leader ? candidateHtml(category, leader.id) : "まだありません";
+      const name = leaders.length
+        ? leaders.map((entry) => candidateHtml(category, entry.id)).join('<span aria-hidden="true"> / </span>')
+        : "まだありません";
+      const kicker = isTiedIndividual
+        ? (voteStatusCache === "closed" ? "同率受賞" : "同率トップ")
+        : resultHeaderLabel();
       return `
         <div class="leader-strip ${escapeHtml(category.type || "")}">
-          <div class="leader-kicker">${resultHeaderLabel()}</div>
+          <div class="leader-kicker">${kicker}</div>
           <div class="leader-name">${name}</div>
           <div class="leader-detail">${escapeHtml(detail)}</div>
         </div>
@@ -2509,7 +2519,7 @@
       voteStatusCache = data.status || "waiting";
       adminVoteStatusOverrideCache = data.adminVoteStatusOverride || null;
       liveScoresCache = data.liveScores || { memberScores: {}, teamScores: {}, totalLiveScore: 0 };
-      individualAwardBonusCache = data.individualAwardBonuses || { pointPerAward: 50000, teamScores: {}, totalPoints: 0, awards: [] };
+      individualAwardBonusCache = data.individualAwardBonuses || { pointPerAward: 60000, teamScores: {}, totalPoints: 0, awards: [] };
 
       document.getElementById("voteStatus").textContent = voteStatusCache || "-";
       renderLiveScorePanel(liveScoresCache);
