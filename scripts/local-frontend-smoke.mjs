@@ -163,6 +163,42 @@ function resultsPayload() {
   };
 }
 
+function finalResultsPayload() {
+  const results = Object.fromEntries(categories.map((category) => [category.id, adminResults(category)]));
+  const awards = [
+    { categoryId: "mvp", categoryLabel: "MVP", memberId: 4, memberName: "なぽる", teamId: 2, bonusPoint: 30000, votes: 3, tiedWinnerCount: 2 },
+    { categoryId: "mvp", categoryLabel: "MVP", memberId: 7, memberName: "🐻‍❄️あわ🥚", teamId: 3, bonusPoint: 30000, votes: 3, tiedWinnerCount: 2 },
+    { categoryId: "entertainer", categoryLabel: "Entertainer", memberId: 5, memberName: "犬飼音子(ねこ)", teamId: 2, bonusPoint: 60000, votes: 2, tiedWinnerCount: 1 },
+    { categoryId: "moment", categoryLabel: "Moment", memberId: 9, memberName: "iran👳🏾‍♂️痔", teamId: 3, bonusPoint: 60000, votes: 1, tiedWinnerCount: 1 },
+  ];
+  const standings = [
+    { rank: 1, teamId: 2, teamName: "NOVA", votes: 43, voteShare: 33.6, votePoints: 81800, awardPoints: 90000, liveScore: 120000, totalScore: 291800 },
+    { rank: 2, teamId: 3, teamName: "GOLDEN", votes: 41, voteShare: 32, votePoints: 71000, awardPoints: 60000, liveScore: 140000, totalScore: 271000 },
+    { rank: 3, teamId: 1, teamName: "CRIMSON", votes: 44, voteShare: 34.4, votePoints: 106000, awardPoints: 30000, liveScore: 90000, totalScore: 226000 },
+  ];
+  return {
+    ok: true,
+    status: "closed",
+    resultsPublishAt: "2026-07-18T23:00:00+09:00",
+    config: { categories, teams, members },
+    individualAwardBonuses: {
+      pointPerAward: 60000,
+      teamScores: { 1: 30000, 2: 90000, 3: 60000 },
+      totalPoints: 180000,
+      awards,
+    },
+    finalResults: {
+      publishedAt: "2026-07-18T23:00:00+09:00",
+      winner: standings[0],
+      standings,
+      awards,
+      pointPerAward: 60000,
+      totals: { votes: 128, votePoints: 258800, awardPoints: 180000, liveScore: 350000, totalScore: 788800 },
+    },
+    results,
+  };
+}
+
 function adminPayload({ status = "waiting", adminVoteStatusOverride = null } = {}) {
   const liveScores = {
     memberScores: Object.fromEntries(
@@ -210,6 +246,7 @@ function adminPayload({ status = "waiting", adminVoteStatusOverride = null } = {
         { categoryId: "moment", categoryLabel: "Moment", memberId: 9, memberName: "Member 9", teamId: 3, bonusPoint: 60000, votes: 1, tiedWinnerCount: 1 },
       ],
     },
+    finalResults: finalResultsPayload().finalResults,
     eventImpressions: [
       {
         voterName: "Listener Z",
@@ -231,6 +268,7 @@ function contentType(filePath) {
     ".jpg": "image/jpeg",
     ".jpeg": "image/jpeg",
     ".webp": "image/webp",
+    ".svg": "image/svg+xml",
     ".woff": "font/woff",
     ".woff2": "font/woff2",
   }[ext] || "application/octet-stream";
@@ -292,6 +330,13 @@ async function runPublicVoteSmoke(browser, baseUrl) {
       status: 200,
       contentType: "application/json; charset=utf-8",
       body: JSON.stringify(resultsPayload()),
+    });
+  });
+  await page.route("**/api/admin/results", (route) => {
+    route.fulfill({
+      status: 200,
+      contentType: "application/json; charset=utf-8",
+      body: JSON.stringify(adminPayload()),
     });
   });
 
@@ -420,6 +465,181 @@ async function runPublicVoteSmoke(browser, baseUrl) {
     { categoryId: "entertainer", candidateId: 4, comment: "Entertainer comment" },
     { categoryId: "moment", candidateId: 7, comment: "Moment comment" },
   ]);
+  assert.deepEqual(errors, []);
+  await context.close();
+}
+
+async function runPublicFinalResultsSmoke(browser, baseUrl, options = {}) {
+  const mobile = options.mobile === true;
+  const context = await browser.newContext({
+    viewport: mobile ? { width: 390, height: 844 } : { width: 1280, height: 900 },
+    deviceScaleFactor: mobile ? 3 : 1,
+    isMobile: mobile,
+    reducedMotion: options.reducedMotion || "no-preference",
+  });
+  await context.addInitScript(() => {
+    globalThis.__battleFesNow = new Date("2026-07-18T22:59:58+09:00").getTime();
+    Date.now = () => globalThis.__battleFesNow;
+    localStorage.removeItem("battlefes_test_mode");
+    localStorage.removeItem("battlefes2026_vote");
+    sessionStorage.clear();
+  });
+  const page = await context.newPage();
+  const errors = [];
+  let resultsRequestCount = 0;
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
+  await page.route("**/api/results", (route) => {
+    resultsRequestCount += 1;
+    route.fulfill({
+      status: 200,
+      contentType: "application/json; charset=utf-8",
+      body: JSON.stringify(finalResultsPayload()),
+    });
+  });
+
+  await page.goto(`${baseUrl}/index.html#vote`, { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() =>
+    !document.getElementById("resultExperience").hidden &&
+    !document.getElementById("resultHolding").hidden &&
+    document.getElementById("finalResultStage").hidden
+  );
+  const holdingState = await page.evaluate(() => ({
+    voteHidden: document.getElementById("voteUI").hidden,
+    holdingText: document.getElementById("resultHolding").textContent,
+    finalHidden: document.getElementById("finalResultStage").hidden,
+  }));
+  assert.equal(holdingState.voteHidden, true);
+  assert.equal(holdingState.finalHidden, true);
+  assert.ok(holdingState.holdingText.includes("最終結果を集計中"));
+
+  await page.evaluate(() => {
+    globalThis.__battleFesNow = new Date("2026-07-18T23:00:00+09:00").getTime();
+  });
+  await page.waitForFunction(() =>
+    !document.getElementById("finalResultStage").hidden &&
+    document.getElementById("finalResultStage").classList.contains("is-visible") &&
+    document.querySelectorAll(".result-standing").length === 3 &&
+    document.querySelectorAll(".result-award-card").length === 3
+  );
+  await page.waitForTimeout(options.reducedMotion === "reduce" ? 100 : 1550);
+
+  const state = await page.evaluate(() => {
+    const share = document.getElementById("resultShareX");
+    const intent = new URL(share.href);
+    const stage = document.getElementById("finalResultStage");
+    const mvpCard = document.querySelectorAll(".result-award-card")[0];
+    return {
+      stageText: stage.textContent,
+      championAlt: document.querySelector(".result-champion-wordmark")?.getAttribute("alt"),
+      championScore: document.querySelector(".result-champion-score")?.textContent.replace(/\s+/g, " ").trim(),
+      championTarget: document.querySelector("[data-result-count]")?.getAttribute("data-result-count"),
+      standings: document.querySelectorAll(".result-standing").length,
+      awards: document.querySelectorAll(".result-award-card").length,
+      mvpRecipients: mvpCard?.querySelectorAll(".result-award-recipient").length,
+      mvpText: mvpCard?.textContent || "",
+      shareHost: intent.host,
+      sharePath: intent.pathname,
+      shareText: intent.searchParams.get("text"),
+      shareTarget: intent.searchParams.get("url"),
+      shareHashtags: intent.searchParams.get("hashtags"),
+      horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      stageOpacity: getComputedStyle(stage).opacity,
+    };
+  });
+  assert.equal(state.championAlt, "NOVA");
+  assert.equal(state.championTarget, "291800");
+  assert.ok(state.championScore.endsWith("PT"));
+  assert.equal(state.standings, 3);
+  assert.equal(state.awards, 3);
+  assert.equal(state.mvpRecipients, 2);
+  assert.ok(state.mvpText.includes("なぽる"));
+  assert.ok(state.mvpText.includes("あわ"));
+  assert.ok(state.mvpText.includes("同率受賞"));
+  assert.ok(state.stageText.includes("ライブスコア"));
+  assert.ok(state.stageText.includes("個人賞加点"));
+  assert.ok(state.stageText.includes("投票ポイント"));
+  assert.equal(state.shareHost, "twitter.com");
+  assert.equal(state.sharePath, "/intent/tweet");
+  assert.ok(state.shareText.includes("総合優勝：NOVA"));
+  assert.ok(state.shareText.includes("MVP：なぽる・🐻‍❄️あわ🥚"));
+  assert.ok(state.shareTarget.endsWith("/index.html#vote"));
+  assert.equal(state.shareHashtags, "BATTLEFES2026,ColorSing");
+  assert.ok(state.horizontalOverflow <= 1);
+  assert.equal(state.stageOpacity, "1");
+  assert.ok(resultsRequestCount >= 1);
+  assert.deepEqual(errors, []);
+  if (process.env.CAPTURE_FINAL_RESULTS === "1") {
+    await page.evaluate(async () => {
+      document.querySelectorAll("nav, #particles").forEach((element) => {
+        element.style.display = "none";
+      });
+      await Promise.all(Array.from(document.images).map((image) => {
+        if (image.complete) return image.decode().catch(() => {});
+        return new Promise((resolve) => {
+          image.addEventListener("load", resolve, { once: true });
+          image.addEventListener("error", resolve, { once: true });
+        });
+      }));
+    });
+    await page.locator("#resultExperience").screenshot({
+      path: mobile
+        ? "output/review/final-results-mobile.png"
+        : "output/review/final-results-desktop.png",
+    });
+  }
+  await context.close();
+}
+
+async function runPublicAdminClosedFinalResultsSmoke(browser, baseUrl) {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  await context.addInitScript((token) => {
+    localStorage.setItem("battlefes_test_mode", "1");
+    localStorage.setItem("battlefes_admin_token", token);
+    localStorage.removeItem("battlefes2026_vote");
+  }, ADMIN_TOKEN);
+  const page = await context.newPage();
+  const errors = [];
+  let adminAuthHeader = "";
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
+  await page.route("**/api/results", (route) => {
+    route.fulfill({
+      status: 200,
+      contentType: "application/json; charset=utf-8",
+      body: JSON.stringify(resultsPayload()),
+    });
+  });
+  await page.route("**/api/admin/results", (route) => {
+    adminAuthHeader = route.request().headers().authorization || "";
+    route.fulfill({
+      status: 200,
+      contentType: "application/json; charset=utf-8",
+      body: JSON.stringify(adminPayload({ status: "closed", adminVoteStatusOverride: "closed" })),
+    });
+  });
+
+  await page.goto(`${baseUrl}/index.html#vote`, { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() =>
+    !document.getElementById("finalResultStage").hidden &&
+    document.getElementById("finalResultStage").classList.contains("is-visible") &&
+    document.getElementById("testModeBadge")?.textContent.includes("RESULT")
+  );
+  const state = await page.evaluate(() => ({
+    voteHidden: document.getElementById("voteUI").hidden,
+    resultVisible: !document.getElementById("resultExperience").hidden,
+    championAlt: document.querySelector(".result-champion-wordmark")?.getAttribute("alt"),
+    badge: document.getElementById("testModeBadge")?.textContent,
+  }));
+  assert.equal(state.voteHidden, true);
+  assert.equal(state.resultVisible, true);
+  assert.equal(state.championAlt, "NOVA");
+  assert.ok(state.badge.includes("RESULT"));
+  assert.equal(adminAuthHeader, `Bearer ${ADMIN_TOKEN}`);
   assert.deepEqual(errors, []);
   await context.close();
 }
@@ -1021,6 +1241,12 @@ const browser = await launchSmokeBrowser();
 try {
   await runPublicVoteSmoke(browser, server.baseUrl);
   console.log("OK public vote smoke");
+  await runPublicFinalResultsSmoke(browser, server.baseUrl);
+  console.log("OK public final results desktop smoke");
+  await runPublicFinalResultsSmoke(browser, server.baseUrl, { mobile: true, reducedMotion: "reduce" });
+  console.log("OK public final results mobile/reduced-motion smoke");
+  await runPublicAdminClosedFinalResultsSmoke(browser, server.baseUrl);
+  console.log("OK public admin closed final-results smoke");
   await runPublicDesktopTeamStackSmoke(browser, server.baseUrl);
   console.log("OK public desktop team stack smoke");
   await runPublicMobileTeamCardSmoke(browser, server.baseUrl);

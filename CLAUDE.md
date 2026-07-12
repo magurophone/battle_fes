@@ -108,6 +108,12 @@ curl.exe --ssl-no-revoke -L https://battle-fes.pages.dev/clip/b95ta/
   - ライブスコアは管理画面 `/admin/` から、各メンバーの「推しボーナス実％」と「枠内月間推しPt（）内」を入力して算出・保存する
 - 投票タイマーは `battlefes.html` / `public/index.html` の JS 冒頭 `VOTE_OPEN` / `VOTE_CLOSE` / `VOTE_POINT_MAX` と、`functions/api/_lib/vote-store.js` の同等定数を同期する
   - 現在は `2026-07-18T20:45:00+09:00` 受付開始、`2026-07-18T22:15:00+09:00` 最大PT到達、`2026-07-18T22:30:00+09:00` 受付終了
+- 公開最終結果は `2026-07-18T23:00:00+09:00` に自動公開する
+  - 22:30〜23:00は一般フロントを集計中表示にし、票数・最終結果を表示しない
+  - `/api/results` の `finalResults` が総合順位・得点内訳・個人賞の公開用正本
+  - 名前・画像・チーム背景・ワードマークは `memberId / memberName / teamId` から自動反映する
+  - 管理画面の「締切後表示 ON」は、同じブラウザのテストモード公開フロントを管理APIの実集計による結果画面へ切り替える
+  - X共有は `public/index.html` / `battlefes.html` の `RESULT_ANNOUNCEMENT_POST_URL` が空なら結果ページを共有し、公式結果ポストURL設定後は引用ポスト導線にする
 
 ## イベント情報（仮）
 

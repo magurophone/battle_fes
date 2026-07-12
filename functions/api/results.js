@@ -1,7 +1,11 @@
 import {
   calcIndividualAwardBonuses,
+  calcPublicFinalResults,
   getVoteWindowStatus,
+  isPublicResultsPublished,
   readAllResults,
+  readLiveScores,
+  RESULTS_PUBLISH_ISO,
 } from "./_lib/vote-store.js";
 import { CATEGORIES, MEMBERS, TEAMS } from "./_lib/vote-categories.js";
 
@@ -14,10 +18,20 @@ function json(data, init = {}) {
 
 export async function onRequestGet(context) {
   const results = await readAllResults(context.env);
+  const status = getVoteWindowStatus();
+  const published = isPublicResultsPublished();
+  const liveScores = published ? await readLiveScores(context.env) : null;
+  const publicResults = published
+    ? results
+    : (status === "closed" ? {} : { team: results.team });
+  const individualAwardBonuses = published
+    ? calcIndividualAwardBonuses(results)
+    : calcIndividualAwardBonuses({});
 
   return json({
     ok: true,
-    status: getVoteWindowStatus(),
+    status,
+    resultsPublishAt: RESULTS_PUBLISH_ISO,
     config: {
       categories: CATEGORIES.map((c) => ({
         id: c.id,
@@ -29,7 +43,8 @@ export async function onRequestGet(context) {
       teams: TEAMS,
       members: MEMBERS,
     },
-    individualAwardBonuses: calcIndividualAwardBonuses(results),
-    results,
+    individualAwardBonuses,
+    finalResults: published ? calcPublicFinalResults(results, liveScores) : null,
+    results: publicResults,
   });
 }

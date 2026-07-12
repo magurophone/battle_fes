@@ -154,8 +154,8 @@ export async function onRequestPost(context) {
         duplicate: true,
         conflicts: writeResult.conflicts,
         existing: writeResult.existing,
-        individualAwardBonuses: calcIndividualAwardBonuses(currentResults),
-        results: currentResults,
+        individualAwardBonuses: calcIndividualAwardBonuses({}),
+        results: { team: currentResults.team },
       },
       { status: 409 }
     );
@@ -164,8 +164,8 @@ export async function onRequestPost(context) {
   return json({
     ok: true,
     duplicate: false,
-    individualAwardBonuses: calcIndividualAwardBonuses(writeResult.results),
-    results: writeResult.results,
+    individualAwardBonuses: calcIndividualAwardBonuses({}),
+    results: { team: writeResult.results.team },
     // 実加算されたか（env 一致 かつ 本投票期間内）。本番フローでは burst 発動条件。
     bonusGranted: Boolean(writeResult.bonusGranted),
     // env 一致のみ（時間判定なし）。テストモード時の burst 演出判定用。

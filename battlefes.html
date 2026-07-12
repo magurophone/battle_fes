@@ -2257,6 +2257,509 @@
   .vote-result-bar { height: 100%; border-radius: 4px; transition: width 1s cubic-bezier(.4,0,.2,1); }
   .vote-result-pct { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: var(--muted); width: 3rem; text-align: right; flex-shrink: 0; }
 
+  /* ── OFFICIAL FINAL RESULTS ── */
+  .result-experience {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    margin-top: 2.5rem;
+    padding: clamp(0.55rem, 2vw, 1.25rem);
+    border: 1px solid rgba(255, 172, 76, 0.12);
+    border-radius: 36px;
+    background:
+      radial-gradient(circle at 50% 8%, rgba(124, 58, 255, 0.2), transparent 28%),
+      radial-gradient(circle at 18% 72%, rgba(255, 45, 120, 0.11), transparent 26%),
+      radial-gradient(circle at 88% 52%, rgba(255, 124, 30, 0.1), transparent 24%),
+      #060c1a;
+    box-shadow: 0 30px 100px rgba(0,0,0,0.28);
+  }
+  .result-holding {
+    position: relative;
+    overflow: hidden;
+    min-height: 320px;
+    display: grid;
+    place-items: center;
+    padding: clamp(2.4rem, 7vw, 5rem) 1.5rem;
+    border: 1px solid rgba(255, 192, 94, 0.28);
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 50% 10%, rgba(255, 124, 30, 0.18), transparent 48%),
+      rgba(6, 12, 26, 0.88);
+    text-align: center;
+  }
+  .result-holding::before,
+  .result-holding::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 280px;
+    aspect-ratio: 1;
+    border: 1px solid rgba(255, 224, 64, 0.22);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: result-holding-orbit 6s linear infinite;
+  }
+  .result-holding::after {
+    width: 210px;
+    border-style: dashed;
+    border-color: rgba(56, 212, 255, 0.2);
+    animation-direction: reverse;
+    animation-duration: 9s;
+  }
+  .result-holding-inner { position: relative; z-index: 1; max-width: 580px; }
+  .result-holding-kicker,
+  .final-result-kicker,
+  .result-section-kicker {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.34em;
+    color: var(--accent);
+  }
+  .result-holding h3 {
+    margin: 0.65rem 0 0.75rem;
+    font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
+    font-size: clamp(1.7rem, 5vw, 2.7rem);
+    letter-spacing: 0.05em;
+  }
+  .result-holding p { color: var(--muted); line-height: 1.8; }
+  .result-holding-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 1.2rem;
+    padding: 0.5rem 0.95rem;
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    background: rgba(6, 12, 26, 0.72);
+  }
+  @keyframes result-holding-orbit {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  .final-result-stage {
+    --winner-color: var(--gold);
+    display: grid;
+    gap: clamp(2.4rem, 6vw, 4.6rem);
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s var(--reveal-ease), transform 0.8s var(--reveal-ease);
+  }
+  .final-result-stage.is-visible { opacity: 1; transform: translateY(0); }
+  .final-result-heading { text-align: center; }
+  .final-result-heading h3 {
+    margin: 0.35rem 0 0;
+    font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
+    font-size: clamp(2rem, 7vw, 4.2rem);
+    line-height: 1.08;
+    letter-spacing: 0.05em;
+    color: transparent;
+    -webkit-text-stroke: 1.5px #ffd47a;
+    filter: drop-shadow(0 0 20px rgba(255, 180, 80, 0.36));
+  }
+  .final-result-heading p {
+    margin-top: 0.9rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+  }
+
+  .result-champion {
+    --result-team-color: var(--gold);
+    --result-team-bg: none;
+    position: relative;
+    min-height: clamp(520px, 70vw, 680px);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    padding: clamp(2.4rem, 7vw, 5.5rem) clamp(1.2rem, 6vw, 4rem);
+    border: 1px solid color-mix(in srgb, var(--result-team-color) 65%, transparent);
+    border-radius: 32px;
+    background: #080d20;
+    box-shadow: 0 28px 90px rgba(0,0,0,0.48), 0 0 45px color-mix(in srgb, var(--result-team-color) 20%, transparent);
+  }
+  .result-champion::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(180deg, rgba(5, 9, 23, 0.25), rgba(5, 9, 23, 0.94) 82%),
+      linear-gradient(90deg, rgba(5, 9, 23, 0.72), transparent 38%, transparent 62%, rgba(5, 9, 23, 0.72)),
+      var(--result-team-bg);
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.04);
+  }
+  .result-champion::after {
+    content: '';
+    position: absolute;
+    inset: 18px;
+    border: 1px solid rgba(255,255,255,0.13);
+    border-radius: 22px;
+    pointer-events: none;
+  }
+  .result-champion-orbit {
+    position: absolute;
+    top: 44%;
+    left: 50%;
+    width: min(64vw, 520px);
+    aspect-ratio: 1;
+    border: 1px solid color-mix(in srgb, var(--result-team-color) 40%, transparent);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 80px color-mix(in srgb, var(--result-team-color) 18%, transparent);
+  }
+  .result-champion-orbit::before,
+  .result-champion-orbit::after {
+    content: '';
+    position: absolute;
+    inset: 9%;
+    border: 1px dashed rgba(255,255,255,0.22);
+    border-radius: inherit;
+    animation: result-champion-spin 18s linear infinite;
+  }
+  .result-champion-orbit::after {
+    inset: 22%;
+    border-style: solid;
+    border-color: color-mix(in srgb, var(--result-team-color) 55%, transparent);
+    animation-direction: reverse;
+    animation-duration: 12s;
+  }
+  @keyframes result-champion-spin { to { transform: rotate(360deg); } }
+  .result-champion-content {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 760px);
+    text-align: center;
+  }
+  .result-champion-crown {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: clamp(1.5rem, 4vw, 2.7rem);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.42em;
+    color: var(--gold);
+  }
+  .result-champion-crown::before,
+  .result-champion-crown::after {
+    content: '';
+    width: clamp(28px, 7vw, 70px);
+    height: 1px;
+    background: currentColor;
+  }
+  .result-champion-wordmark {
+    display: block;
+    width: min(76%, 480px);
+    max-height: 130px;
+    margin: 0 auto 1.4rem;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 28px rgba(0,0,0,0.8)) drop-shadow(0 0 18px var(--result-team-color));
+  }
+  .result-champion-score-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    color: rgba(255,255,255,0.62);
+  }
+  .result-champion-score {
+    margin-top: 0.15rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.6rem, 13vw, 8rem);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: #fff8e8;
+    text-shadow: 0 0 28px color-mix(in srgb, var(--result-team-color) 55%, transparent);
+  }
+  .result-champion-score small {
+    margin-left: 0.2em;
+    font-size: 0.18em;
+    letter-spacing: 0.16em;
+    color: var(--gold);
+  }
+  .result-score-breakdown {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    margin: clamp(1.5rem, 4vw, 2.5rem) auto 0;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.13);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.1);
+  }
+  .result-score-part {
+    padding: 0.9rem 0.7rem;
+    background: rgba(5, 9, 23, 0.72);
+  }
+  .result-score-part span {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+  .result-score-part b {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.15rem, 3.5vw, 1.75rem);
+    letter-spacing: 0.05em;
+  }
+
+  .result-section-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .result-section-head h4 {
+    margin: 0.25rem 0 0;
+    font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    letter-spacing: 0.05em;
+  }
+  .result-section-note { color: var(--muted); font-size: 0.72rem; }
+  .result-standing-list { display: grid; gap: 0.8rem; }
+  .result-standing {
+    --result-team-color: var(--accent);
+    --result-progress: 0;
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 54px minmax(120px, 1.05fr) minmax(250px, 1.6fr) minmax(100px, 0.7fr);
+    align-items: center;
+    gap: 1.1rem;
+    padding: 1.15rem 1.3rem;
+    border: 1px solid rgba(255,255,255,0.11);
+    border-radius: 18px;
+    background: rgba(8, 14, 32, 0.82);
+  }
+  .result-standing::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--result-team-color);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.2s var(--reveal-ease) 0.25s;
+  }
+  .final-result-stage.is-visible .result-standing::after {
+    transform: scaleX(var(--result-progress));
+  }
+  .result-standing-rank {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: var(--result-team-color);
+  }
+  .result-standing-rank small { font-size: 0.38em; letter-spacing: 0.08em; }
+  .result-standing-team strong {
+    display: block;
+    font-family: 'Black Ops One', 'Bebas Neue', sans-serif;
+    font-size: 1.25rem;
+    letter-spacing: 0.08em;
+    color: var(--result-team-color);
+  }
+  .result-standing-team span { font-size: 0.7rem; color: var(--muted); }
+  .result-standing-breakdown {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.55rem;
+  }
+  .result-standing-breakdown span {
+    font-size: 0.62rem;
+    color: var(--muted);
+  }
+  .result-standing-breakdown b {
+    display: block;
+    margin-top: 0.08rem;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+  }
+  .result-standing-total { text-align: right; }
+  .result-standing-total span { display: block; font-size: 0.62rem; color: var(--muted); letter-spacing: 0.08em; }
+  .result-standing-total b { font-family: 'Bebas Neue', sans-serif; font-size: 1.75rem; letter-spacing: 0.04em; }
+
+  .result-award-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .result-award-card {
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+    padding: 1.35rem;
+    border: 1px solid rgba(255, 193, 96, 0.22);
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 100% 0, rgba(255, 124, 30, 0.16), transparent 40%),
+      rgba(8, 14, 32, 0.86);
+  }
+  .result-award-number {
+    position: absolute;
+    top: -0.18em;
+    right: 0.05em;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5.5rem;
+    line-height: 1;
+    color: rgba(255,255,255,0.035);
+  }
+  .result-award-label {
+    position: relative;
+    min-height: 3.3em;
+    padding-right: 2.4rem;
+    font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+  .result-award-label small {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.66rem;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+  }
+  .result-award-recipients { display: grid; gap: 0.65rem; margin-top: 1.15rem; }
+  .result-award-recipient {
+    --result-team-color: var(--gold);
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem;
+    border: 1px solid color-mix(in srgb, var(--result-team-color) 24%, transparent);
+    border-radius: 14px;
+    background: rgba(3, 7, 20, 0.58);
+  }
+  .result-award-avatar {
+    width: 48px;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--result-team-color) 65%, transparent);
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .result-award-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .result-award-name { min-width: 0; }
+  .result-award-name strong {
+    display: block;
+    overflow-wrap: anywhere;
+    font-size: 0.82rem;
+    line-height: 1.35;
+  }
+  .result-award-name span { font-size: 0.62rem; color: var(--result-team-color); letter-spacing: 0.08em; }
+  .result-award-votes { text-align: right; }
+  .result-award-votes b { display: block; font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; }
+  .result-award-votes span { display: block; font-size: 0.56rem; color: var(--muted); }
+  .result-award-tie {
+    margin-top: 0.75rem;
+    font-size: 0.65rem;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+  }
+
+  .result-share {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: clamp(1.4rem, 4vw, 2.2rem);
+    border: 1px solid rgba(255,255,255,0.13);
+    border-radius: 24px;
+    background: rgba(8, 14, 32, 0.86);
+  }
+  .result-share::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--accent), var(--gold));
+  }
+  .result-share-copy strong {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
+    font-size: clamp(1rem, 3vw, 1.35rem);
+  }
+  .result-share-copy p { color: var(--muted); font-size: 0.76rem; line-height: 1.7; }
+  .result-share-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.65rem; }
+  .result-share-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    min-height: 46px;
+    padding: 0.72rem 1.1rem;
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 999px;
+    color: #fff;
+    background: #080808;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .result-share-button.secondary { background: rgba(255,255,255,0.04); color: var(--text); }
+  .result-share-button:hover { transform: translateY(-2px); border-color: var(--gold); }
+  .result-share-button svg { width: 15px; height: 15px; fill: currentColor; }
+  .result-share-status { min-height: 1.3em; margin-top: 0.55rem; color: var(--gold); font-size: 0.68rem; }
+  .result-method {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.68rem;
+    line-height: 1.8;
+  }
+
+  @media (max-width: 820px) {
+    .result-standing {
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      gap: 0.8rem;
+    }
+    .result-standing-breakdown { grid-column: 2 / -1; grid-row: 2; }
+    .result-award-grid { grid-template-columns: 1fr; }
+    .result-award-label { min-height: 0; }
+  }
+  @media (max-width: 600px) {
+    .result-experience { margin-top: 1.6rem; padding: 0.35rem; border-radius: 26px; }
+    .result-holding { min-height: 290px; border-radius: 22px; }
+    .result-champion {
+      min-height: 520px;
+      border-radius: 24px;
+      padding-inline: 1rem;
+    }
+    .result-champion::after { inset: 10px; border-radius: 17px; }
+    .result-champion-orbit { width: 88vw; }
+    .result-champion-wordmark { width: 86%; }
+    .result-score-breakdown { border-radius: 13px; }
+    .result-score-part { padding: 0.75rem 0.35rem; }
+    .result-score-part span { font-size: 0.55rem; letter-spacing: 0.04em; }
+    .result-section-head { align-items: start; flex-direction: column; gap: 0.35rem; }
+    .result-standing {
+      grid-template-columns: 36px minmax(0, 1fr) auto;
+      padding: 1rem 0.85rem;
+    }
+    .result-standing-breakdown { gap: 0.28rem; }
+    .result-standing-breakdown span { font-size: 0.55rem; }
+    .result-standing-breakdown b { font-size: 0.65rem; }
+    .result-standing-total b { font-size: 1.45rem; }
+    .result-award-card { padding: 1.1rem; border-radius: 18px; }
+    .result-share { grid-template-columns: 1fr; gap: 1rem; }
+    .result-share-actions { justify-content: stretch; }
+    .result-share-button { flex: 1 1 145px; }
+  }
+
   footer { border-top: 1px solid var(--border); padding: 3rem 2rem; text-align: center; color: var(--muted); font-size: 0.82rem; line-height: 2; }
   footer strong { color: var(--accent); }
 
@@ -2412,6 +2915,18 @@
       transition-delay: 0s;
       will-change: auto;
     }
+    .result-holding::before,
+    .result-holding::after,
+    .result-champion-orbit::before,
+    .result-champion-orbit::after {
+      animation: none;
+    }
+    .final-result-stage {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .result-standing::after { transition: none; }
   }
 
   .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
@@ -2882,6 +3397,18 @@
       <div id="voteResultRows"></div>
     </div>
   </div>
+
+  <div class="result-experience" id="resultExperience" hidden>
+    <div class="result-holding" id="resultHolding">
+      <div class="result-holding-inner">
+        <div class="result-holding-kicker">FINALIZING RESULTS</div>
+        <h3>最終結果を集計中</h3>
+        <p>ライブスコア、個人賞、投票ポイントを確認しています。<br>確定までそのままお待ちください。</p>
+        <div class="result-holding-time"><span aria-hidden="true">●</span> 23:00 RESULT OPEN</div>
+      </div>
+    </div>
+    <div class="final-result-stage" id="finalResultStage" hidden aria-live="polite"></div>
+  </div>
 </section>
 
 <!-- 個人賞 + イベント感想モーダル（section 外に置く: #vote > * の position 上書きを回避） -->
@@ -2953,10 +3480,25 @@
 /* ── TEAMS / MEMBERS / CATEGORIES (API config と同期) ── */
 // チームの色・背景は UI 固定値、ID と name は API config が正本。
 const TEAM_DISPLAY = {
-  1: { color: '#ff2d78', bg: '/assets/site-team-v1/crimson-bg.webp' },
-  2: { color: '#7c3aff', bg: '/assets/site-team-v1/nova-bg.webp'    },
-  3: { color: '#ffd700', bg: '/assets/site-team-v1/golden-bg.webp'  },
+  1: { color: '#ff2d78', bg: '/assets/site-team-v1/crimson-bg.webp', wordmark: '/assets/teams/wordmarks/crimson.svg' },
+  2: { color: '#7c3aff', bg: '/assets/site-team-v1/nova-bg.webp',    wordmark: '/assets/teams/wordmarks/nova.svg' },
+  3: { color: '#ffd700', bg: '/assets/site-team-v1/golden-bg.webp',  wordmark: '/assets/teams/wordmarks/golden.svg' },
 };
+
+const MEMBER_DISPLAY = {
+  1: '/assets/site-team-v1/crimson-ngogo.webp',
+  2: '/assets/site-team-v1/crimson-pk.webp',
+  3: '/assets/site-team-v1/crimson-leader.webp',
+  4: '/assets/site-team-v1/nova-naporu.webp',
+  5: '/assets/site-team-v1/nova-neko.webp',
+  6: '/assets/site-team-v1/nova-leader.webp',
+  7: '/assets/site-team-v1/golden-awa.webp',
+  8: '/assets/site-team-v1/golden-tera.webp',
+  9: '/assets/site-team-v1/golden-iran.webp',
+};
+
+// 公式結果ポスト公開後にURLを設定すると、Xボタンがそのポストの引用導線になる。
+const RESULT_ANNOUNCEMENT_POST_URL = '';
 
 let teams = [
   { id: 1, name: 'CRIMSON', color: '#ff2d78', bg: '/assets/site-team-v1/crimson-bg.webp', votes: 0 },
@@ -2975,6 +3517,12 @@ let selected = null;
 let voted = false;
 let isSubmitting = false;
 let modalSelections = {}; // { mvp: memberId, entertainer: memberId, moment: memberId }
+let finalResultsCache = null;
+let resultRefreshPromise = null;
+let lastResultPublishedState = null;
+let testClosedResultsActive = false;
+let adminTestResultsPromise = null;
+let lastAdminTestResultsRefresh = -Infinity;
 
 function checkAlreadyVoted() {
   try { return !!localStorage.getItem(VOTE_KEY); } catch(e) { return false; }
@@ -3032,6 +3580,7 @@ function applyApiConfig(config) {
         name: t.name,
         color: display.color || '#fff',
         bg: display.bg || '',
+        wordmark: display.wordmark || '',
         votes: 0,
       };
     });
@@ -3077,9 +3626,9 @@ const RESULTS_PUBLISH_ISO = '2026-07-18T23:00:00+09:00';
 
 function getVoteStatus() {
   if (!VOTE_OPEN || !VOTE_CLOSE) return 'waiting';
-  const now = new Date();
-  if (now < new Date(VOTE_OPEN))  return 'waiting';
-  if (now > new Date(VOTE_CLOSE)) return 'closed';
+  const now = Date.now();
+  if (now < new Date(VOTE_OPEN).getTime())  return 'waiting';
+  if (now > new Date(VOTE_CLOSE).getTime()) return 'closed';
   return 'open';
 }
 
@@ -3161,6 +3710,281 @@ function renderRanking() {
   }).join('');
 }
 
+function formatResultScore(value) {
+  return Math.max(0, Math.round(Number(value) || 0)).toLocaleString('ja-JP');
+}
+
+function resultTeam(teamId) {
+  const id = Number(teamId);
+  const team = teams.find(entry => Number(entry.id) === id) || { id, name: `TEAM ${id}` };
+  const display = TEAM_DISPLAY[id] || {};
+  return {
+    ...team,
+    color: team.color || display.color || '#ffe040',
+    bg: team.bg || display.bg || '',
+    wordmark: team.wordmark || display.wordmark || '',
+  };
+}
+
+function resultBreakdownHtml(entry) {
+  return `
+    <div class="result-score-part">
+      <span>ライブスコア</span>
+      <b>${formatResultScore(entry.liveScore)}</b>
+    </div>
+    <div class="result-score-part">
+      <span>個人賞加点</span>
+      <b>${formatResultScore(entry.awardPoints)}</b>
+    </div>
+    <div class="result-score-part">
+      <span>投票ポイント</span>
+      <b>${formatResultScore(entry.votePoints)}</b>
+    </div>
+  `;
+}
+
+function resultAwardGroups(finalResults) {
+  const awards = Array.isArray(finalResults && finalResults.awards) ? finalResults.awards : [];
+  return getIndividualCategories().map(category => ({
+    category,
+    recipients: awards.filter(award => award.categoryId === category.id),
+  }));
+}
+
+function resultAwardCardHtml(group, index) {
+  const recipients = group.recipients;
+  const rows = recipients.map(award => {
+    const team = resultTeam(award.teamId);
+    const image = MEMBER_DISPLAY[Number(award.memberId)] || '';
+    return `
+      <div class="result-award-recipient" style="--result-team-color:${team.color}">
+        <span class="result-award-avatar">
+          ${image ? `<img src="${image}" alt="" width="96" height="96" loading="eager" decoding="async">` : ''}
+        </span>
+        <span class="result-award-name">
+          <strong>${escapeHtml(award.memberName || `member#${award.memberId}`)}</strong>
+          <span>${escapeHtml(team.name)}</span>
+        </span>
+        <span class="result-award-votes">
+          <b>${formatResultScore(award.votes)}<small>票</small></b>
+          <span>+${formatResultScore(award.bonusPoint)} PT</span>
+        </span>
+      </div>
+    `;
+  }).join('');
+  const tiedCount = recipients.length > 1 ? recipients.length : Number(recipients[0] && recipients[0].tiedWinnerCount) || 1;
+  return `
+    <article class="result-award-card">
+      <span class="result-award-number" aria-hidden="true">0${index + 1}</span>
+      <h5 class="result-award-label">
+        <small>INDIVIDUAL AWARD 0${index + 1}</small>
+        ${escapeHtml(group.category.label)}
+      </h5>
+      <div class="result-award-recipients">
+        ${rows || '<p class="result-section-note">受賞者確定待ち</p>'}
+      </div>
+      ${tiedCount > 1 ? `<p class="result-award-tie">同率受賞 · 60,000ptを${tiedCount}名で分配</p>` : ''}
+    </article>
+  `;
+}
+
+function resultPageUrl() {
+  const url = new URL(window.location.href);
+  url.search = '';
+  url.hash = 'vote';
+  return url.toString();
+}
+
+function awardShareName(recipients) {
+  const names = recipients.map(entry => entry.memberName).filter(Boolean);
+  if (names.length <= 3) return names.join('・');
+  return `${names.slice(0, 2).join('・')}ほか${names.length - 2}名`;
+}
+
+function buildResultShareText(finalResults = finalResultsCache) {
+  if (!finalResults || !finalResults.winner) return 'BATTLE FES 2026 最終結果';
+  const lines = [
+    'BATTLE FES 2026 最終結果',
+    `総合優勝：${finalResults.winner.teamName}`,
+  ];
+  resultAwardGroups(finalResults).forEach(group => {
+    const names = awardShareName(group.recipients);
+    if (names) lines.push(`${group.category.label}：${names}`);
+  });
+  return lines.join('\n');
+}
+
+function buildResultShareUrl(finalResults = finalResultsCache) {
+  const intent = new URL('https://twitter.com/intent/tweet');
+  intent.searchParams.set('text', buildResultShareText(finalResults));
+  intent.searchParams.set('url', RESULT_ANNOUNCEMENT_POST_URL.trim() || resultPageUrl());
+  intent.searchParams.set('hashtags', 'BATTLEFES2026,ColorSing');
+  return intent.toString();
+}
+
+async function copyResultShareText() {
+  const targetUrl = RESULT_ANNOUNCEMENT_POST_URL.trim() || resultPageUrl();
+  const text = `${buildResultShareText()}\n\n${targetUrl}\n#BATTLEFES2026 #ColorSing`;
+  const status = document.getElementById('resultShareStatus');
+  try {
+    await navigator.clipboard.writeText(text);
+    if (status) status.textContent = '結果文をコピーしました';
+  } catch (error) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+    document.body.appendChild(textarea);
+    textarea.select();
+    const copied = document.execCommand('copy');
+    textarea.remove();
+    if (status) status.textContent = copied ? '結果文をコピーしました' : 'コピーできませんでした';
+  }
+}
+
+function animateResultCounters(root) {
+  const counters = Array.from(root.querySelectorAll('[data-result-count]'));
+  if (!counters.length) return;
+  const reduced = isReducedMotion();
+  counters.forEach(counter => {
+    const target = Math.max(0, Math.round(Number(counter.dataset.resultCount) || 0));
+    if (reduced) {
+      counter.textContent = formatResultScore(target);
+      return;
+    }
+    const start = performance.now();
+    const duration = 1400;
+    function tick(now) {
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - progress, 4);
+      counter.textContent = formatResultScore(target * eased);
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+function celebrateFinalResult(teamColor) {
+  if (isReducedMotion()) return;
+  try {
+    if (sessionStorage.getItem('battlefes_result_celebrated') === '1') return;
+    sessionStorage.setItem('battlefes_result_celebrated', '1');
+  } catch (error) {}
+  requestAnimationFrame(() => confettiBurst(teamColor || '#ffe040'));
+}
+
+function renderFinalResults(finalResults = finalResultsCache) {
+  const holding = document.getElementById('resultHolding');
+  const stage = document.getElementById('finalResultStage');
+  if (!holding || !stage) return;
+  if (!finalResults || !finalResults.winner) {
+    setShown(holding, true);
+    setShown(stage, false);
+    return;
+  }
+
+  finalResultsCache = finalResults;
+  const winner = finalResults.winner;
+  const winnerTeam = resultTeam(winner.teamId);
+  const standings = Array.isArray(finalResults.standings) ? finalResults.standings : [];
+  const maxScore = Math.max(1, ...standings.map(entry => Number(entry.totalScore) || 0));
+  const rankingHtml = standings.map(entry => {
+    const team = resultTeam(entry.teamId);
+    const progress = Math.max(0, Math.min(1, (Number(entry.totalScore) || 0) / maxScore));
+    return `
+      <article class="result-standing" style="--result-team-color:${team.color};--result-progress:${progress.toFixed(4)}">
+        <div class="result-standing-rank">${entry.rank}<small>位</small></div>
+        <div class="result-standing-team">
+          <strong>${escapeHtml(entry.teamName || team.name)}</strong>
+          <span>${formatResultScore(entry.votes)}票 · ${Number(entry.voteShare || 0).toLocaleString('ja-JP')}%</span>
+        </div>
+        <div class="result-standing-breakdown">
+          <span>ライブ<b>${formatResultScore(entry.liveScore)}</b></span>
+          <span>個人賞<b>${formatResultScore(entry.awardPoints)}</b></span>
+          <span>投票<b>${formatResultScore(entry.votePoints)}</b></span>
+        </div>
+        <div class="result-standing-total">
+          <span>TOTAL SCORE</span>
+          <b>${formatResultScore(entry.totalScore)}</b>
+        </div>
+      </article>
+    `;
+  }).join('');
+  const awardsHtml = resultAwardGroups(finalResults)
+    .map((group, index) => resultAwardCardHtml(group, index))
+    .join('');
+
+  stage.classList.remove('is-visible');
+  stage.innerHTML = `
+    <header class="final-result-heading">
+      <div class="final-result-kicker">OFFICIAL RESULT · BATTLE FES 2026</div>
+      <h3>最終結果</h3>
+      <p>2026.07.18 · ALL SCORES CONFIRMED</p>
+    </header>
+
+    <article class="result-champion" style="--result-team-color:${winnerTeam.color};--result-team-bg:url('${winnerTeam.bg}')">
+      <div class="result-champion-orbit" aria-hidden="true"></div>
+      <div class="result-champion-content">
+        <div class="result-champion-crown">CHAMPION</div>
+        ${winnerTeam.wordmark
+          ? `<img class="result-champion-wordmark" src="${winnerTeam.wordmark}" alt="${escapeHtml(winner.teamName)}" loading="eager" decoding="async">`
+          : `<h4 class="result-champion-wordmark">${escapeHtml(winner.teamName)}</h4>`}
+        <div class="result-champion-score-label">FINAL SCORE</div>
+        <div class="result-champion-score"><span data-result-count="${Number(winner.totalScore) || 0}">0</span><small>PT</small></div>
+        <div class="result-score-breakdown">${resultBreakdownHtml(winner)}</div>
+      </div>
+    </article>
+
+    <section aria-labelledby="resultRankingHeading">
+      <div class="result-section-head">
+        <div>
+          <div class="result-section-kicker">FINAL STANDINGS</div>
+          <h4 id="resultRankingHeading">総合順位</h4>
+        </div>
+        <p class="result-section-note">ライブスコア ＋ 個人賞加点 ＋ 投票ポイント</p>
+      </div>
+      <div class="result-standing-list">${rankingHtml}</div>
+    </section>
+
+    <section aria-labelledby="resultAwardsHeading">
+      <div class="result-section-head">
+        <div>
+          <div class="result-section-kicker">INDIVIDUAL HONORS</div>
+          <h4 id="resultAwardsHeading">個人賞</h4>
+        </div>
+        <p class="result-section-note">各部門60,000pt · 同率時は均等分配</p>
+      </div>
+      <div class="result-award-grid">${awardsHtml}</div>
+    </section>
+
+    <section class="result-share" aria-labelledby="resultShareHeading">
+      <div class="result-share-copy">
+        <strong id="resultShareHeading">この夜の結果を、Xへ。</strong>
+        <p>優勝チームと個人賞を入力済みの状態で投稿画面を開きます。</p>
+        <div class="result-share-status" id="resultShareStatus" role="status" aria-live="polite"></div>
+      </div>
+      <div class="result-share-actions">
+        <a class="result-share-button" id="resultShareX" data-testid="result-share-x" href="${escapeHtml(buildResultShareUrl(finalResults))}" target="_blank" rel="noopener noreferrer" aria-label="Xで最終結果をシェア">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.657l-5.214-6.817-5.967 6.817H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z"/></svg>
+          Xで結果をシェア
+        </a>
+        <button class="result-share-button secondary" type="button" onclick="copyResultShareText()">結果文をコピー</button>
+      </div>
+    </section>
+
+    <p class="result-method">総合スコアは、ライブスコア・個人賞加点・時間加重された投票ポイントの合計です。</p>
+  `;
+  setShown(holding, false);
+  setShown(stage, true);
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      stage.classList.add('is-visible');
+      animateResultCounters(stage);
+      celebrateFinalResult(winnerTeam.color);
+    });
+  });
+}
+
 function selectTeam(id) {
   if (voted || checkAlreadyVoted() || !isVoteUiInteractive()) return;
   selected = id;
@@ -3195,12 +4019,22 @@ async function loadVoteResults() {
     if (data.results && data.results.team) {
       applyTeamResults(data.results.team);
     }
+    finalResultsCache = data.finalResults || null;
     renderVote();
     renderRanking();
+    if (isPublicResultsPublished()) renderFinalResults(finalResultsCache);
   } catch (error) {
     console.error('[Vote results]', error);
     document.getElementById('voteHint').textContent = '集計の読み込みに失敗しました';
   }
+}
+
+function refreshFinalResults() {
+  if (resultRefreshPromise) return resultRefreshPromise;
+  resultRefreshPromise = loadVoteResults().finally(() => {
+    resultRefreshPromise = null;
+  });
+  return resultRefreshPromise;
 }
 
 /* ── 個人賞モーダル ── */
@@ -3981,8 +4815,13 @@ async function initVoteSection() {
   applyVoteVisibility();
   updateVoteCountdown();
   updateVotePower();
-  await loadVoteResults();
+  await refreshFinalResults();
+  await refreshAdminTestResults();
+  applyVoteVisibility();
   setInterval(() => {
+    if (isTestModeOn() && performance.now() - lastAdminTestResultsRefresh >= 3000) {
+      refreshAdminTestResults();
+    }
     applyVoteVisibility();
     const cd = document.getElementById('voteCountdown');
     if (cd && !cd.hidden) {
@@ -4007,6 +4846,54 @@ function getAdminTestVoteToken() {
   try { return localStorage.getItem(ADMIN_TOKEN_KEY) || ''; } catch (e) { return ''; }
 }
 
+async function loadAdminTestResults() {
+  const token = getAdminTestVoteToken();
+  if (!isTestModeOn() || !token) {
+    testClosedResultsActive = false;
+    applyVoteVisibility();
+    return null;
+  }
+
+  lastAdminTestResultsRefresh = performance.now();
+  try {
+    const response = await fetch('/api/admin/results', {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      testClosedResultsActive = false;
+      applyVoteVisibility();
+      return null;
+    }
+    applyApiConfig(data.config);
+    testClosedResultsActive = data.adminVoteStatusOverride === 'closed';
+    if (testClosedResultsActive) {
+      finalResultsCache = data.finalResults || null;
+      renderFinalResults(finalResultsCache);
+    } else if (!isPublicResultsPublished()) {
+      finalResultsCache = null;
+    }
+    applyVoteVisibility();
+    return data;
+  } catch (error) {
+    testClosedResultsActive = false;
+    applyVoteVisibility();
+    return null;
+  }
+}
+
+function refreshAdminTestResults() {
+  if (adminTestResultsPromise) return adminTestResultsPromise;
+  adminTestResultsPromise = loadAdminTestResults().finally(() => {
+    adminTestResultsPromise = null;
+  });
+  return adminTestResultsPromise;
+}
+
 function isVoteSubmissionAllowedBySchedule() {
   const status = getVoteStatus();
   return status === 'open' || status === 'waiting';
@@ -4021,7 +4908,7 @@ function ensureTestModeBadge() {
       badge.style.cssText = 'position:fixed;top:14px;right:14px;background:#ff9933;color:#fff;font-weight:700;padding:6px 12px;border-radius:999px;font-size:0.78rem;letter-spacing:0.06em;box-shadow:0 4px 12px rgba(0,0,0,0.4);z-index:300;font-family:sans-serif;';
       (document.body || document.documentElement).appendChild(badge);
     }
-    badge.textContent = 'TEST MODE';
+    badge.textContent = testClosedResultsActive ? 'TEST MODE · RESULT' : 'TEST MODE';
   } else if (badge) {
     badge.remove();
   }
@@ -4067,21 +4954,33 @@ function setShown(el, shown) {
 function applyVoteVisibility() {
   const cd = document.getElementById('voteCountdown');
   const ui = document.getElementById('voteUI');
-  if (!cd || !ui) return;
+  const result = document.getElementById('resultExperience');
+  if (!cd || !ui || !result) return;
   const status = getVoteStatus();
+  const published = isPublicResultsPublished();
 
   const nextState = isTestModeOn()
-    ? 'test'
-    : (status === 'waiting' ? 'countdown' : 'vote');
+    ? (testClosedResultsActive ? 'test-result' : 'test')
+    : (published ? 'result' : (status === 'waiting' ? 'countdown' : (status === 'open' ? 'vote' : 'holding')));
 
   ensureTestModeBadge();
   if (lastVoteVisibilityState !== nextState) {
     const showCountdown = nextState === 'countdown';
+    const showVote = nextState === 'vote' || nextState === 'test';
+    const showResult = nextState === 'holding' || nextState === 'result' || nextState === 'test-result';
     setShown(cd, showCountdown);
-    setShown(ui, !showCountdown);
-    if (showCountdown || !isVoteUiInteractive()) closeVoteModal();
+    setShown(ui, showVote);
+    setShown(result, showResult);
+    if (nextState === 'result' || nextState === 'test-result') renderFinalResults(finalResultsCache);
+    if (!showVote || !isVoteUiInteractive()) closeVoteModal();
     lastVoteVisibilityState = nextState;
   }
+  if (lastResultPublishedState !== published) {
+    const wasPublished = lastResultPublishedState;
+    lastResultPublishedState = published;
+    if (published && wasPublished === false) refreshFinalResults();
+  }
+  if (published && !finalResultsCache) refreshFinalResults();
   syncVoteActionState();
 }
 
@@ -4173,6 +5072,7 @@ window.addEventListener('storage', (event) => {
   applyVoteVisibility();
   updateVoteCountdown();
   updateVotePower();
+  refreshAdminTestResults();
 });
 </script>
 </body>

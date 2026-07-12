@@ -15,6 +15,7 @@ const D1_BINDING_NAMES = ["BATTLE_FES_DB", "BATTLE_FES_VOTE_DB", "DB"];
 // 受付開始 100PT → 本投票開始 5000PT、以後は終了まで 5000PT 固定
 const VOTE_OPEN_ISO = "2026-07-18T20:45:00+09:00";
 const VOTE_CLOSE_ISO = "2026-07-18T22:30:00+09:00";
+const RESULTS_PUBLISH_ISO = "2026-07-18T23:00:00+09:00";
 // 本投票時間: 22:15-22:30 の 15 分間 (この時間のみ貫通 BONUS のキーワード入力可能)
 const MAIN_VOTE_OPEN_ISO = "2026-07-18T22:15:00+09:00";
 const VOTE_POINT_MAX_ISO = MAIN_VOTE_OPEN_ISO;
@@ -285,6 +286,62 @@ function calcIndividualAwardBonuses(results = {}) {
   }
 
   return bonuses;
+}
+
+function isPublicResultsPublished(now = Date.now()) {
+  const publishAt = new Date(RESULTS_PUBLISH_ISO).getTime();
+  const current = now instanceof Date ? now.getTime() : Number(now);
+  return Number.isFinite(publishAt) && Number.isFinite(current) && current >= publishAt;
+}
+
+function calcPublicFinalResults(results = {}, liveScores = {}) {
+  const teamResult = results.team || {};
+  const counts = teamResult.counts || {};
+  const points = teamResult.points || {};
+  const awardBonuses = calcIndividualAwardBonuses(results);
+  const liveTeamScores = liveScores.teamScores || {};
+  const totalVotes = Number(teamResult.totalVotes)
+    || Object.values(counts).reduce((sum, value) => sum + normalizeStoredPoint(value, 0), 0);
+
+  const standings = TEAMS.map((team) => {
+    const id = Number(team.id);
+    const key = String(id);
+    const votes = normalizeStoredPoint(counts[id] ?? counts[key], 0);
+    const votePoints = normalizeStoredPoint(points[id] ?? points[key], 0);
+    const awardPoints = normalizeStoredPoint(
+      awardBonuses.teamScores[id] ?? awardBonuses.teamScores[key],
+      0
+    );
+    const liveScore = normalizeStoredPoint(liveTeamScores[id] ?? liveTeamScores[key], 0);
+    return {
+      teamId: id,
+      teamName: team.name,
+      votes,
+      voteShare: totalVotes > 0 ? Math.round((votes / totalVotes) * 1000) / 10 : 0,
+      votePoints,
+      awardPoints,
+      liveScore,
+      totalScore: votePoints + awardPoints + liveScore,
+    };
+  })
+    .sort((a, b) => b.totalScore - a.totalScore || b.votes - a.votes || a.teamId - b.teamId)
+    .map((entry, index) => ({ ...entry, rank: index + 1 }));
+
+  const hasResults = standings.some((entry) => entry.totalScore > 0 || entry.votes > 0);
+  return {
+    publishedAt: RESULTS_PUBLISH_ISO,
+    winner: hasResults ? standings[0] : null,
+    standings,
+    awards: awardBonuses.awards,
+    pointPerAward: awardBonuses.pointPerAward,
+    totals: {
+      votes: totalVotes,
+      votePoints: standings.reduce((sum, entry) => sum + entry.votePoints, 0),
+      awardPoints: standings.reduce((sum, entry) => sum + entry.awardPoints, 0),
+      liveScore: standings.reduce((sum, entry) => sum + entry.liveScore, 0),
+      totalScore: standings.reduce((sum, entry) => sum + entry.totalScore, 0),
+    },
+  };
 }
 
 function latestTimestamp(left, right) {
@@ -668,11 +725,13 @@ async function buildAdminSnapshot(store) {
     timestamp: row.timestamp || null,
   }));
 
+  const liveScores = await readLiveScores(store);
   return {
     categories: snapshot.categories,
     eventImpressions: snapshot.eventImpressions,
     individualAwardBonuses: calcIndividualAwardBonuses(snapshot.results),
-    liveScores: await readLiveScores(store),
+    liveScores,
+    finalResults: calcPublicFinalResults(snapshot.results, liveScores),
   };
 }
 
@@ -783,6 +842,7 @@ export {
   CATEGORY_IDS,
   VOTE_OPEN_ISO,
   VOTE_CLOSE_ISO,
+  RESULTS_PUBLISH_ISO,
   MAIN_VOTE_OPEN_ISO,
   VOTE_POINT_MAX_ISO,
   VP_MIN,
@@ -791,6 +851,7 @@ export {
   INDIVIDUAL_AWARD_BONUS_POINT,
   buildAdminSnapshot,
   calcIndividualAwardBonuses,
+  calcPublicFinalResults,
   calcVotePoint,
   calcLiveScore,
   calcLiveScoreRange,
@@ -799,6 +860,7 @@ export {
   getAdminVoteStatusOverride,
   getVoteWindowStatus,
   isMainVotingPeriod,
+  isPublicResultsPublished,
   isVoteSubmissionAllowed,
   readAllResults,
   readEventImpressions,

@@ -1230,7 +1230,7 @@
 
         <section class="panel testmode row">
           <h2>テストモード</h2>
-          <p class="lead">実投票画面の投票UIにテスト表示を反映します。管理者ログイン済みの同じブラウザでは、投票開始前のテスト送信も許可されます。</p>
+          <p class="lead">実投票画面の投票UIや結果発表後画面にテスト表示を反映します。管理者ログイン済みの同じブラウザでは、投票開始前のテスト送信も許可されます。</p>
           <div class="admin-actions">
             <button type="button" id="testModeToggleBtn" onclick="toggleTestMode()">テストモード OFF</button>
             <button type="button" id="testClosedViewToggleBtn" onclick="toggleTestClosedView()">締切後表示 OFF</button>
@@ -1493,7 +1493,7 @@
 
       if (status) {
         if (closed) {
-          status.textContent = "管理画面は締切後表示です。公開側には反映しません。";
+          status.textContent = "締切後表示です。同じブラウザの公開フロントも最終結果画面になります。";
         } else if (!on) {
           status.textContent = "通常表示です。";
         } else {
@@ -1526,6 +1526,9 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ status: nextStatus }),
         });
+        if (nextStatus === "closed") {
+          localStorage.setItem(TEST_MODE_KEY, "1");
+        }
         renderSnapshot(data);
         setLoggedInUi(true);
         setStatus(nextStatus === "closed" ? "締切後表示を ON にしました" : "締切後表示を OFF にしました");
