@@ -2265,7 +2265,7 @@
     margin-top: 2.5rem;
     padding: clamp(0.55rem, 2vw, 1.25rem);
     border: 1px solid rgba(255, 172, 76, 0.12);
-    border-radius: 36px;
+    border-radius: 4px;
     background:
       radial-gradient(circle at 50% 8%, rgba(124, 58, 255, 0.2), transparent 28%),
       radial-gradient(circle at 18% 72%, rgba(255, 45, 120, 0.11), transparent 26%),
@@ -2281,7 +2281,7 @@
     place-items: center;
     padding: clamp(2.4rem, 7vw, 5rem) 1.5rem;
     border: 1px solid rgba(255, 192, 94, 0.28);
-    border-radius: 28px;
+    border-radius: 4px;
     background:
       radial-gradient(circle at 50% 10%, rgba(255, 124, 30, 0.18), transparent 48%),
       rgba(6, 12, 26, 0.88);
@@ -2383,7 +2383,7 @@
     place-items: center;
     padding: clamp(2.4rem, 7vw, 5.5rem) clamp(1.2rem, 6vw, 4rem);
     border: 1px solid color-mix(in srgb, var(--result-team-color) 65%, transparent);
-    border-radius: 32px;
+    border-radius: 6px;
     background: #080d20;
     box-shadow: 0 28px 90px rgba(0,0,0,0.48), 0 0 45px color-mix(in srgb, var(--result-team-color) 20%, transparent);
   }
@@ -2404,7 +2404,7 @@
     position: absolute;
     inset: 18px;
     border: 1px solid rgba(255,255,255,0.13);
-    border-radius: 22px;
+    border-radius: 2px;
     pointer-events: none;
   }
   .result-champion-orbit {
@@ -2494,7 +2494,7 @@
     margin: clamp(1.5rem, 4vw, 2.5rem) auto 0;
     overflow: hidden;
     border: 1px solid rgba(255,255,255,0.13);
-    border-radius: 16px;
+    border-radius: 3px;
     background: rgba(255,255,255,0.1);
   }
   .result-score-part {
@@ -2540,7 +2540,7 @@
     gap: 1.1rem;
     padding: 1.15rem 1.3rem;
     border: 1px solid rgba(255,255,255,0.11);
-    border-radius: 18px;
+    border-radius: 4px;
     background: rgba(8, 14, 32, 0.82);
   }
   .result-standing::after {
@@ -2603,7 +2603,7 @@
     min-width: 0;
     padding: 1.35rem;
     border: 1px solid rgba(255, 193, 96, 0.22);
-    border-radius: 22px;
+    border-radius: 4px;
     background:
       radial-gradient(circle at 100% 0, rgba(255, 124, 30, 0.16), transparent 40%),
       rgba(8, 14, 32, 0.86);
@@ -2642,7 +2642,7 @@
     gap: 0.75rem;
     padding: 0.7rem;
     border: 1px solid color-mix(in srgb, var(--result-team-color) 24%, transparent);
-    border-radius: 14px;
+    border-radius: 3px;
     background: rgba(3, 7, 20, 0.58);
   }
   .result-award-avatar {
@@ -2650,7 +2650,7 @@
     aspect-ratio: 1;
     overflow: hidden;
     border: 1px solid color-mix(in srgb, var(--result-team-color) 65%, transparent);
-    border-radius: 10px;
+    border-radius: 2px;
     background: rgba(255,255,255,0.06);
   }
   .result-award-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -2681,7 +2681,7 @@
     gap: 1.5rem;
     padding: clamp(1.4rem, 4vw, 2.2rem);
     border: 1px solid rgba(255,255,255,0.13);
-    border-radius: 24px;
+    border-radius: 4px;
     background: rgba(8, 14, 32, 0.86);
   }
   .result-share::before {
@@ -2738,17 +2738,17 @@
     .result-award-label { min-height: 0; }
   }
   @media (max-width: 600px) {
-    .result-experience { margin-top: 1.6rem; padding: 0.35rem; border-radius: 26px; }
-    .result-holding { min-height: 290px; border-radius: 22px; }
+    .result-experience { margin-top: 1.6rem; padding: 0.35rem; border-radius: 4px; }
+    .result-holding { min-height: 290px; border-radius: 4px; }
     .result-champion {
       min-height: 520px;
-      border-radius: 24px;
+      border-radius: 6px;
       padding-inline: 1rem;
     }
-    .result-champion::after { inset: 10px; border-radius: 17px; }
+    .result-champion::after { inset: 10px; border-radius: 2px; }
     .result-champion-orbit { width: 88vw; }
     .result-champion-wordmark { width: 86%; }
-    .result-score-breakdown { border-radius: 13px; }
+    .result-score-breakdown { border-radius: 3px; }
     .result-score-part { padding: 0.75rem 0.35rem; }
     .result-score-part span { font-size: 0.55rem; letter-spacing: 0.04em; }
     .result-section-head { align-items: start; flex-direction: column; gap: 0.35rem; }
@@ -2760,7 +2760,7 @@
     .result-standing-breakdown span { font-size: 0.55rem; }
     .result-standing-breakdown b { font-size: 0.65rem; }
     .result-standing-total b { font-size: 1.45rem; }
-    .result-award-card { padding: 1.1rem; border-radius: 18px; }
+    .result-award-card { padding: 1.1rem; border-radius: 4px; }
     .result-share { grid-template-columns: 1fr; gap: 1rem; }
     .result-share-actions { justify-content: stretch; }
     .result-share-button { flex: 1 1 145px; }

@@ -595,6 +595,11 @@ async function runPublicFinalResultsSmoke(browser, baseUrl, options = {}) {
       standingWidth: document.querySelector(".result-standing").getBoundingClientRect().width,
       awardCardWidth: document.querySelector(".result-award-card").getBoundingClientRect().width,
       awardAvatarRadius: getComputedStyle(document.querySelector(".result-award-avatar")).borderRadius,
+      experienceRadius: getComputedStyle(document.querySelector(".result-experience")).borderRadius,
+      championRadius: getComputedStyle(document.querySelector(".result-champion")).borderRadius,
+      standingRadius: getComputedStyle(document.querySelector(".result-standing")).borderRadius,
+      awardCardRadius: getComputedStyle(document.querySelector(".result-award-card")).borderRadius,
+      shareRadius: getComputedStyle(document.querySelector(".result-share")).borderRadius,
     };
   });
   assert.equal(state.championAlt, "NOVA");
@@ -622,7 +627,12 @@ async function runPublicFinalResultsSmoke(browser, baseUrl, options = {}) {
   if (mobile) assert.ok(Number.parseFloat(state.scoreLabelFontSize) >= 10);
   assert.ok(Math.abs(state.championWidth - state.standingWidth) <= 1);
   assert.ok(Math.abs(state.championWidth - state.awardCardWidth) <= 1);
-  assert.notEqual(state.awardAvatarRadius, "50%");
+  assert.equal(state.awardAvatarRadius, "2px");
+  assert.equal(state.experienceRadius, "4px");
+  assert.equal(state.championRadius, "6px");
+  assert.equal(state.standingRadius, "4px");
+  assert.equal(state.awardCardRadius, "4px");
+  assert.equal(state.shareRadius, "4px");
   assert.ok(resultsRequestCount >= 1);
   assert.deepEqual(errors, []);
   if (process.env.CAPTURE_FINAL_RESULTS === "1") {
