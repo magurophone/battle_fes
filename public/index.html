@@ -2347,18 +2347,24 @@
     opacity: 0;
     transform: translateY(24px);
     transition: opacity 0.8s var(--reveal-ease), transform 0.8s var(--reveal-ease);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
   .final-result-stage.is-visible { opacity: 1; transform: translateY(0); }
   .final-result-heading { text-align: center; }
   .final-result-heading h3 {
     margin: 0.35rem 0 0;
-    font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 900;
     font-size: clamp(2rem, 7vw, 4.2rem);
-    line-height: 1.08;
-    letter-spacing: 0.05em;
+    line-height: 1.2;
+    letter-spacing: 0.08em;
     color: transparent;
-    -webkit-text-stroke: 1.5px #ffd47a;
-    filter: drop-shadow(0 0 20px rgba(255, 180, 80, 0.36));
+    background: linear-gradient(180deg, #fff4d6 0%, #ffd47a 54%, #ffad45 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 3px 16px rgba(255, 180, 80, 0.24));
   }
   .final-result-heading p {
     margin-top: 0.9rem;
@@ -2517,9 +2523,11 @@
   }
   .result-section-head h4 {
     margin: 0.25rem 0 0;
-    font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 900;
     font-size: clamp(1.4rem, 4vw, 2rem);
-    letter-spacing: 0.05em;
+    line-height: 1.35;
+    letter-spacing: 0.08em;
   }
   .result-section-note { color: var(--muted); font-size: 0.72rem; }
   .result-standing-list { display: grid; gap: 0.8rem; }
@@ -2615,7 +2623,8 @@
     position: relative;
     min-height: 3.3em;
     padding-right: 2.4rem;
-    font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 800;
     font-size: 1rem;
     line-height: 1.45;
   }
@@ -2688,7 +2697,8 @@
   .result-share-copy strong {
     display: block;
     margin-bottom: 0.35rem;
-    font-family: 'Dela Gothic One', 'Noto Sans JP', sans-serif;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 800;
     font-size: clamp(1rem, 3vw, 1.35rem);
   }
   .result-share-copy p { color: var(--muted); font-size: 0.76rem; line-height: 1.7; }
@@ -2744,15 +2754,15 @@
     .result-champion-wordmark { width: 86%; }
     .result-score-breakdown { border-radius: 13px; }
     .result-score-part { padding: 0.75rem 0.35rem; }
-    .result-score-part span { font-size: 0.55rem; letter-spacing: 0.04em; }
+    .result-score-part span { font-size: 0.64rem; line-height: 1.45; letter-spacing: 0.02em; }
     .result-section-head { align-items: start; flex-direction: column; gap: 0.35rem; }
     .result-standing {
       grid-template-columns: 36px minmax(0, 1fr) auto;
       padding: 1rem 0.85rem;
     }
     .result-standing-breakdown { gap: 0.28rem; }
-    .result-standing-breakdown span { font-size: 0.55rem; }
-    .result-standing-breakdown b { font-size: 0.65rem; }
+    .result-standing-breakdown span { font-size: 0.62rem; line-height: 1.4; }
+    .result-standing-breakdown b { font-size: 0.72rem; }
     .result-standing-total b { font-size: 1.45rem; }
     .result-award-card { padding: 1.1rem; border-radius: 18px; }
     .result-share { grid-template-columns: 1fr; gap: 1rem; }
@@ -3518,6 +3528,7 @@ let voted = false;
 let isSubmitting = false;
 let modalSelections = {}; // { mvp: memberId, entertainer: memberId, moment: memberId }
 let finalResultsCache = null;
+let renderedFinalResultsSignature = '';
 let resultRefreshPromise = null;
 let lastResultPublishedState = null;
 let testClosedResultsActive = false;
@@ -3864,26 +3875,30 @@ function animateResultCounters(root) {
   });
 }
 
-function celebrateFinalResult(teamColor) {
-  if (isReducedMotion()) return;
-  try {
-    if (sessionStorage.getItem('battlefes_result_celebrated') === '1') return;
-    sessionStorage.setItem('battlefes_result_celebrated', '1');
-  } catch (error) {}
-  requestAnimationFrame(() => confettiBurst(teamColor || '#ffe040'));
-}
-
 function renderFinalResults(finalResults = finalResultsCache) {
   const holding = document.getElementById('resultHolding');
   const stage = document.getElementById('finalResultStage');
   if (!holding || !stage) return;
   if (!finalResults || !finalResults.winner) {
+    renderedFinalResultsSignature = '';
     setShown(holding, true);
     setShown(stage, false);
     return;
   }
 
   finalResultsCache = finalResults;
+  const renderSignature = JSON.stringify({
+    finalResults,
+    teams: teams.map(team => ({ id: team.id, name: team.name })),
+    categories: getIndividualCategories().map(category => ({ id: category.id, label: category.label })),
+  });
+  if (renderSignature === renderedFinalResultsSignature && stage.childElementCount > 0) {
+    setShown(holding, false);
+    setShown(stage, true);
+    stage.classList.add('is-visible');
+    return;
+  }
+  renderedFinalResultsSignature = renderSignature;
   const winner = finalResults.winner;
   const winnerTeam = resultTeam(winner.teamId);
   const standings = Array.isArray(finalResults.standings) ? finalResults.standings : [];
@@ -3980,7 +3995,6 @@ function renderFinalResults(finalResults = finalResultsCache) {
     requestAnimationFrame(() => {
       stage.classList.add('is-visible');
       animateResultCounters(stage);
-      celebrateFinalResult(winnerTeam.color);
     });
   });
 }
@@ -4307,8 +4321,6 @@ async function submitBulkVote() {
       showThankYouOverlay();
     }
 
-    const team = teams.find(t => t.id === selected);
-    if (team) confettiBurst(team.color);
   } catch (error) {
     console.error('[Vote bulk submit]', error);
     document.getElementById('modalHint').textContent =

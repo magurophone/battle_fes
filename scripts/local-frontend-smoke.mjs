@@ -390,6 +390,14 @@ async function runPublicVoteSmoke(browser, baseUrl) {
   await page.waitForFunction(() => typeof submitBulkVote === "function" && typeof getAdminTestVoteToken === "function");
   await page.waitForFunction(() => document.querySelector("#vote .section-title")?.classList.contains("visible"));
   await page.waitForTimeout(1600);
+  await page.evaluate(() => {
+    globalThis.__smokeConfettiCalls = 0;
+    const originalConfettiBurst = globalThis.confettiBurst;
+    globalThis.confettiBurst = (...args) => {
+      globalThis.__smokeConfettiCalls += 1;
+      return originalConfettiBurst(...args);
+    };
+  });
 
   const titleMotionState = await page.evaluate(() => ({
     titleCount: document.querySelectorAll(".section-title").length,
@@ -474,6 +482,8 @@ async function runPublicVoteSmoke(browser, baseUrl) {
     voteButtonDisabled: document.getElementById("voteBtn").disabled,
     voteFormDisplay: getComputedStyle(document.getElementById("voteForm")).display,
     modalOpen: document.getElementById("voteModalOverlay").classList.contains("show"),
+    bonusBurstShown: document.getElementById("bonusBurstOverlay").classList.contains("show"),
+    confettiCalls: globalThis.__smokeConfettiCalls,
   }));
 
   assert.equal(state.token, ADMIN_TOKEN);
@@ -482,6 +492,8 @@ async function runPublicVoteSmoke(browser, baseUrl) {
   assert.equal(state.voteButtonDisabled, true);
   assert.equal(state.voteFormDisplay, "none");
   assert.equal(state.modalOpen, false);
+  assert.equal(state.bonusBurstShown, false);
+  assert.equal(state.confettiCalls, 0);
   assert.equal(voteAuthHeader, `Bearer ${ADMIN_TOKEN}`);
   assert.ok(voteClientIdHeader.length >= 16);
   assert.equal(votePayload.voterName, "Smoke User");
@@ -576,6 +588,9 @@ async function runPublicFinalResultsSmoke(browser, baseUrl, options = {}) {
       shareHashtags: intent.searchParams.get("hashtags"),
       horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       stageOpacity: getComputedStyle(stage).opacity,
+      resultHeadingFont: getComputedStyle(document.querySelector(".final-result-heading h3")).fontFamily,
+      resultHeadingStroke: getComputedStyle(document.querySelector(".final-result-heading h3")).webkitTextStrokeWidth,
+      scoreLabelFontSize: getComputedStyle(document.querySelector(".result-score-part span")).fontSize,
     };
   });
   assert.equal(state.championAlt, "NOVA");
@@ -598,6 +613,9 @@ async function runPublicFinalResultsSmoke(browser, baseUrl, options = {}) {
   assert.equal(state.shareHashtags, "BATTLEFES2026,ColorSing");
   assert.ok(state.horizontalOverflow <= 1);
   assert.equal(state.stageOpacity, "1");
+  assert.ok(!state.resultHeadingFont.includes("Dela Gothic One"));
+  assert.equal(state.resultHeadingStroke, "0px");
+  if (mobile) assert.ok(Number.parseFloat(state.scoreLabelFontSize) >= 10);
   assert.ok(resultsRequestCount >= 1);
   assert.deepEqual(errors, []);
   if (process.env.CAPTURE_FINAL_RESULTS === "1") {
@@ -658,16 +676,25 @@ async function runPublicAdminClosedFinalResultsSmoke(browser, baseUrl) {
     document.getElementById("finalResultStage").classList.contains("is-visible") &&
     document.getElementById("testModeBadge")?.textContent.includes("RESULT")
   );
+  await page.waitForTimeout(1550);
+  await page.evaluate(() => {
+    globalThis.__stableResultRoot = document.getElementById("finalResultStage").firstElementChild;
+  });
+  await page.waitForTimeout(4200);
   const state = await page.evaluate(() => ({
     voteHidden: document.getElementById("voteUI").hidden,
     resultVisible: !document.getElementById("resultExperience").hidden,
     championAlt: document.querySelector(".result-champion-wordmark")?.getAttribute("alt"),
     badge: document.getElementById("testModeBadge")?.textContent,
+    resultRootStable: globalThis.__stableResultRoot === document.getElementById("finalResultStage").firstElementChild,
+    championScore: document.querySelector(".result-champion-score [data-result-count]")?.textContent,
   }));
   assert.equal(state.voteHidden, true);
   assert.equal(state.resultVisible, true);
   assert.equal(state.championAlt, "NOVA");
   assert.ok(state.badge.includes("RESULT"));
+  assert.equal(state.resultRootStable, true);
+  assert.equal(state.championScore, "291,800");
   assert.equal(adminAuthHeader, `Bearer ${OWNER_TOKEN}`);
   assert.deepEqual(errors, []);
   await context.close();
