@@ -2349,6 +2349,12 @@
     transition: opacity 0.8s var(--reveal-ease), transform 0.8s var(--reveal-ease);
   }
   .final-result-stage.is-visible { opacity: 1; transform: translateY(0); }
+  .final-result-stage > section:not(.result-share) {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
   .final-result-heading { text-align: center; }
   .final-result-heading h3 {
     margin: 0.35rem 0 0;
@@ -2588,7 +2594,7 @@
 
   .result-award-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 1rem;
   }
   .result-award-card {
@@ -2631,7 +2637,7 @@
   .result-award-recipient {
     --result-team-color: var(--gold);
     display: grid;
-    grid-template-columns: 48px minmax(0, 1fr) auto;
+    grid-template-columns: 56px minmax(0, 1fr) auto;
     align-items: center;
     gap: 0.75rem;
     padding: 0.7rem;
@@ -2640,11 +2646,11 @@
     background: rgba(3, 7, 20, 0.58);
   }
   .result-award-avatar {
-    width: 48px;
+    width: 56px;
     aspect-ratio: 1;
     overflow: hidden;
     border: 1px solid color-mix(in srgb, var(--result-team-color) 65%, transparent);
-    border-radius: 50%;
+    border-radius: 10px;
     background: rgba(255,255,255,0.06);
   }
   .result-award-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -3518,6 +3524,9 @@ let voted = false;
 let isSubmitting = false;
 let modalSelections = {}; // { mvp: memberId, entertainer: memberId, moment: memberId }
 let finalResultsCache = null;
+let renderedFinalResultsSignature = '';
+let resultCounterObserver = null;
+let resultCountersHaveAnimated = false;
 let resultRefreshPromise = null;
 let lastResultPublishedState = null;
 let testClosedResultsActive = false;
@@ -3864,13 +3873,37 @@ function animateResultCounters(root) {
   });
 }
 
-function celebrateFinalResult(teamColor) {
-  if (isReducedMotion()) return;
-  try {
-    if (sessionStorage.getItem('battlefes_result_celebrated') === '1') return;
-    sessionStorage.setItem('battlefes_result_celebrated', '1');
-  } catch (error) {}
-  requestAnimationFrame(() => confettiBurst(teamColor || '#ffe040'));
+function setResultCountersToFinal(root) {
+  root.querySelectorAll('[data-result-count]').forEach(counter => {
+    const target = Math.max(0, Math.round(Number(counter.dataset.resultCount) || 0));
+    counter.textContent = formatResultScore(target);
+  });
+}
+
+function observeResultCounters(root) {
+  const counters = Array.from(root.querySelectorAll('[data-result-count]'));
+  if (!counters.length) return;
+  if (resultCounterObserver) {
+    resultCounterObserver.disconnect();
+    resultCounterObserver = null;
+  }
+  if (resultCountersHaveAnimated || isReducedMotion() || !('IntersectionObserver' in window)) {
+    setResultCountersToFinal(root);
+    resultCountersHaveAnimated = true;
+    return;
+  }
+
+  counters.forEach(counter => { counter.textContent = '0'; });
+  const trigger = root.querySelector('.result-champion-score') || counters[0];
+  resultCounterObserver = new IntersectionObserver(entries => {
+    const visible = entries.some(entry => entry.target === trigger && entry.isIntersecting);
+    if (!visible) return;
+    resultCounterObserver.disconnect();
+    resultCounterObserver = null;
+    resultCountersHaveAnimated = true;
+    animateResultCounters(root);
+  }, { threshold: 0.12 });
+  resultCounterObserver.observe(trigger);
 }
 
 function renderFinalResults(finalResults = finalResultsCache) {
@@ -3878,12 +3911,30 @@ function renderFinalResults(finalResults = finalResultsCache) {
   const stage = document.getElementById('finalResultStage');
   if (!holding || !stage) return;
   if (!finalResults || !finalResults.winner) {
+    renderedFinalResultsSignature = '';
+    resultCountersHaveAnimated = false;
+    if (resultCounterObserver) {
+      resultCounterObserver.disconnect();
+      resultCounterObserver = null;
+    }
     setShown(holding, true);
     setShown(stage, false);
     return;
   }
 
   finalResultsCache = finalResults;
+  const renderSignature = JSON.stringify({
+    finalResults,
+    teams: teams.map(team => ({ id: team.id, name: team.name })),
+    categories: getIndividualCategories().map(category => ({ id: category.id, label: category.label })),
+  });
+  if (renderSignature === renderedFinalResultsSignature && stage.childElementCount > 0) {
+    setShown(holding, false);
+    setShown(stage, true);
+    stage.classList.add('is-visible');
+    return;
+  }
+  renderedFinalResultsSignature = renderSignature;
   const winner = finalResults.winner;
   const winnerTeam = resultTeam(winner.teamId);
   const standings = Array.isArray(finalResults.standings) ? finalResults.standings : [];
@@ -3979,8 +4030,7 @@ function renderFinalResults(finalResults = finalResultsCache) {
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       stage.classList.add('is-visible');
-      animateResultCounters(stage);
-      celebrateFinalResult(winnerTeam.color);
+      observeResultCounters(stage);
     });
   });
 }
@@ -4307,8 +4357,6 @@ async function submitBulkVote() {
       showThankYouOverlay();
     }
 
-    const team = teams.find(t => t.id === selected);
-    if (team) confettiBurst(team.color);
   } catch (error) {
     console.error('[Vote bulk submit]', error);
     document.getElementById('modalHint').textContent =

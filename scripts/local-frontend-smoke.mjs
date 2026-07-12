@@ -591,6 +591,10 @@ async function runPublicFinalResultsSmoke(browser, baseUrl, options = {}) {
       resultHeadingFont: getComputedStyle(document.querySelector(".final-result-heading h3")).fontFamily,
       resultHeadingStroke: getComputedStyle(document.querySelector(".final-result-heading h3")).webkitTextStrokeWidth,
       scoreLabelFontSize: getComputedStyle(document.querySelector(".result-score-part span")).fontSize,
+      championWidth: document.querySelector(".result-champion").getBoundingClientRect().width,
+      standingWidth: document.querySelector(".result-standing").getBoundingClientRect().width,
+      awardCardWidth: document.querySelector(".result-award-card").getBoundingClientRect().width,
+      awardAvatarRadius: getComputedStyle(document.querySelector(".result-award-avatar")).borderRadius,
     };
   });
   assert.equal(state.championAlt, "NOVA");
@@ -616,6 +620,9 @@ async function runPublicFinalResultsSmoke(browser, baseUrl, options = {}) {
   assert.ok(!state.resultHeadingFont.includes("Dela Gothic One"));
   assert.equal(state.resultHeadingStroke, "0px");
   if (mobile) assert.ok(Number.parseFloat(state.scoreLabelFontSize) >= 10);
+  assert.ok(Math.abs(state.championWidth - state.standingWidth) <= 1);
+  assert.ok(Math.abs(state.championWidth - state.awardCardWidth) <= 1);
+  assert.notEqual(state.awardAvatarRadius, "50%");
   assert.ok(resultsRequestCount >= 1);
   assert.deepEqual(errors, []);
   if (process.env.CAPTURE_FINAL_RESULTS === "1") {
@@ -637,6 +644,65 @@ async function runPublicFinalResultsSmoke(browser, baseUrl, options = {}) {
         : "output/review/final-results-desktop.png",
     });
   }
+  await context.close();
+}
+
+async function runResultCounterScrollTriggerSmoke(browser, baseUrl) {
+  const context = await browser.newContext({
+    viewport: { width: 1280, height: 500 },
+    reducedMotion: "no-preference",
+  });
+  await context.addInitScript(() => {
+    Date.now = () => new Date("2026-07-18T23:00:00+09:00").getTime();
+    localStorage.removeItem("battlefes_test_mode");
+    localStorage.removeItem("battlefes2026_vote");
+  });
+  const page = await context.newPage();
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
+  await page.route("**/api/results", (route) => {
+    route.fulfill({
+      status: 200,
+      contentType: "application/json; charset=utf-8",
+      body: JSON.stringify(finalResultsPayload()),
+    });
+  });
+
+  await page.goto(`${baseUrl}/index.html`, { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() =>
+    !document.getElementById("finalResultStage").hidden &&
+    document.querySelector("[data-result-count]")?.textContent === "0"
+  );
+  await page.waitForTimeout(1700);
+  const beforeScroll = await page.evaluate(() => ({
+    score: document.querySelector("[data-result-count]")?.textContent,
+    animated: resultCountersHaveAnimated,
+    scoreTop: document.querySelector(".result-champion-score")?.getBoundingClientRect().top,
+    viewportHeight: window.innerHeight,
+  }));
+  assert.equal(beforeScroll.score, "0");
+  assert.equal(beforeScroll.animated, false);
+  assert.ok(beforeScroll.scoreTop > beforeScroll.viewportHeight);
+
+  await page.locator(".result-champion-score").scrollIntoViewIfNeeded();
+  await page.waitForFunction(() =>
+    document.querySelector("[data-result-count]")?.textContent === "291,800" &&
+    resultCountersHaveAnimated === true
+  );
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(150);
+  await page.locator(".result-champion-score").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(250);
+  const afterReentry = await page.evaluate(() => ({
+    score: document.querySelector("[data-result-count]")?.textContent,
+    animated: resultCountersHaveAnimated,
+  }));
+  assert.equal(afterReentry.score, "291,800");
+  assert.equal(afterReentry.animated, true);
+  assert.deepEqual(errors, []);
   await context.close();
 }
 
@@ -1374,6 +1440,8 @@ try {
   console.log("OK public final results desktop smoke");
   await runPublicFinalResultsSmoke(browser, server.baseUrl, { mobile: true, reducedMotion: "reduce" });
   console.log("OK public final results mobile/reduced-motion smoke");
+  await runResultCounterScrollTriggerSmoke(browser, server.baseUrl);
+  console.log("OK result counter scroll-trigger smoke");
   await runPublicAdminClosedFinalResultsSmoke(browser, server.baseUrl);
   console.log("OK public admin closed final-results smoke");
   await runPublicDesktopTeamStackSmoke(browser, server.baseUrl);
