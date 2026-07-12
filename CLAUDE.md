@@ -100,6 +100,10 @@ curl.exe --ssl-no-revoke -L https://battle-fes.pages.dev/clip/b95ta/
 
 - 投票機能は Cloudflare Pages Functions + D1 を利用
 - 管理画面は `/admin/`
+- 管理画面の権限:
+  - `ADMIN_TOKEN`（既存の共通パスワード）= リーダー権限。22:50まではライブスコア入力・ライブスコア合計だけ、22:50以降は結果閲覧も解禁。設定・リセットは不可
+  - `OWNER_TOKEN` = 運営者専用。時刻に関係なく全結果閲覧・設定・リセット・テスト表示が可能。値はCloudflare Secretだけに保存し、文書・コードへ記載しない
+  - リーダー向け結果解禁時刻は `functions/api/_lib/admin-response.js` の `LEADER_RESULTS_UNLOCK_ISO`（現在 `2026-07-18T22:50:00+09:00`）
 - 管理画面用の集計とコメントログ確認機能あり
 - スコア計算: `投票ポイント合計 + 個人賞加点 + ライブスコア`
   - 個人賞3部門は部門ごとに60,000pt加点。同率1位は受賞メンバー数で分割し、各所属チームへ合算する

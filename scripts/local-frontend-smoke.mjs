@@ -6,6 +6,7 @@ import path from "node:path";
 import { chromium } from "playwright";
 
 const ADMIN_TOKEN = "local-secret";
+const OWNER_TOKEN = "owner-secret";
 const EDGE_EXECUTABLE = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe";
 
 const teams = [
@@ -222,6 +223,13 @@ function adminPayload({ status = "waiting", adminVoteStatusOverride = null } = {
   return {
     ok: true,
     status,
+    access: {
+      role: "owner",
+      canViewResults: true,
+      canManageVotes: true,
+      canEditLiveScores: true,
+      resultsUnlockAt: "2026-07-18T22:50:00+09:00",
+    },
     adminVoteStatusOverride,
     config: { categories, teams, members },
     categories: Object.fromEntries(
@@ -255,6 +263,27 @@ function adminPayload({ status = "waiting", adminVoteStatusOverride = null } = {
       },
     ],
     liveScores,
+  };
+}
+
+function leaderAdminPayload({ unlocked = false } = {}) {
+  const full = adminPayload({ status: "open" });
+  return {
+    ...full,
+    access: {
+      role: "leader",
+      canViewResults: unlocked,
+      canManageVotes: false,
+      canEditLiveScores: true,
+      resultsUnlockAt: "2026-07-18T22:50:00+09:00",
+    },
+    adminVoteStatusOverride: null,
+    categories: unlocked ? full.categories : {},
+    eventImpressions: unlocked ? full.eventImpressions : [],
+    individualAwardBonuses: unlocked
+      ? full.individualAwardBonuses
+      : { pointPerAward: 0, teamScores: {}, totalPoints: 0, awards: [] },
+    finalResults: unlocked ? full.finalResults : null,
   };
 }
 
@@ -599,7 +628,7 @@ async function runPublicAdminClosedFinalResultsSmoke(browser, baseUrl) {
     localStorage.setItem("battlefes_test_mode", "1");
     localStorage.setItem("battlefes_admin_token", token);
     localStorage.removeItem("battlefes2026_vote");
-  }, ADMIN_TOKEN);
+  }, OWNER_TOKEN);
   const page = await context.newPage();
   const errors = [];
   let adminAuthHeader = "";
@@ -639,7 +668,7 @@ async function runPublicAdminClosedFinalResultsSmoke(browser, baseUrl) {
   assert.equal(state.resultVisible, true);
   assert.equal(state.championAlt, "NOVA");
   assert.ok(state.badge.includes("RESULT"));
-  assert.equal(adminAuthHeader, `Bearer ${ADMIN_TOKEN}`);
+  assert.equal(adminAuthHeader, `Bearer ${OWNER_TOKEN}`);
   assert.deepEqual(errors, []);
   await context.close();
 }
@@ -850,7 +879,7 @@ async function runAdminSmoke(browser, baseUrl) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   await context.addInitScript((token) => {
     localStorage.setItem("battlefes_admin_token", token);
-  }, ADMIN_TOKEN);
+  }, OWNER_TOKEN);
   const page = await context.newPage();
   const errors = [];
   let resultsAuthHeader = "";
@@ -976,9 +1005,82 @@ async function runAdminSmoke(browser, baseUrl) {
   await page.locator("button.danger").click();
   await page.waitForFunction(() => document.getElementById("statusText").textContent.includes("リセット"));
 
+  assert.equal(resultsAuthHeader, `Bearer ${OWNER_TOKEN}`);
+  assert.equal(voteStatusAuthHeader, `Bearer ${OWNER_TOKEN}`);
+  assert.equal(resetAuthHeader, `Bearer ${OWNER_TOKEN}`);
+  assert.deepEqual(errors, []);
+  await context.close();
+}
+
+async function runLeaderAdminAccessSmoke(browser, baseUrl) {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  await context.addInitScript((token) => {
+    localStorage.setItem("battlefes_admin_token", token);
+    globalThis.__battleFesAdminNow = new Date("2026-07-18T22:49:59+09:00").getTime();
+    Date.now = () => globalThis.__battleFesAdminNow;
+  }, ADMIN_TOKEN);
+  const page = await context.newPage();
+  const errors = [];
+  let unlocked = false;
+  let resultsAuthHeader = "";
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
+  await page.route("**/api/admin/results", (route) => {
+    resultsAuthHeader = route.request().headers().authorization || "";
+    route.fulfill({
+      status: 200,
+      contentType: "application/json; charset=utf-8",
+      body: JSON.stringify(leaderAdminPayload({ unlocked })),
+    });
+  });
+
+  await page.goto(`${baseUrl}/admin/index.html`, { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() =>
+    document.getElementById("dashboard") &&
+    !document.getElementById("dashboard").classList.contains("hidden") &&
+    document.getElementById("accessModeTitle")?.textContent.includes("ライブスコア入力")
+  );
+  const lockedState = await page.evaluate(() => ({
+    activeTab: document.querySelector('[data-admin-tab][aria-selected="true"]')?.getAttribute("data-admin-tab"),
+    visibleTabs: Array.from(document.querySelectorAll("[data-admin-tab]"))
+      .filter((button) => !button.classList.contains("access-hidden"))
+      .map((button) => button.getAttribute("data-admin-tab")),
+    overallHidden: document.querySelector('[data-admin-tab-panel="overall"]').classList.contains("access-hidden"),
+    settingsHidden: document.querySelector('[data-admin-tab-panel="settings"]').classList.contains("access-hidden"),
+    inputCards: document.querySelectorAll(".live-score-card").length,
+    accessDetail: document.getElementById("accessModeDetail").textContent,
+  }));
+  assert.equal(lockedState.activeTab, "input");
+  assert.deepEqual(lockedState.visibleTabs, ["input"]);
+  assert.equal(lockedState.overallHidden, true);
+  assert.equal(lockedState.settingsHidden, true);
+  assert.equal(lockedState.inputCards, 9);
+  assert.ok(lockedState.accessDetail.includes("22:50"));
+
+  unlocked = true;
+  await page.evaluate(() => {
+    globalThis.__battleFesAdminNow = new Date("2026-07-18T22:50:00+09:00").getTime();
+  });
+  await page.waitForFunction(() =>
+    document.getElementById("accessModeTitle")?.textContent.includes("リーダー閲覧") &&
+    document.querySelector('[data-admin-tab="overall"]') &&
+    !document.querySelector('[data-admin-tab="overall"]').classList.contains("access-hidden")
+  );
+  const unlockedState = await page.evaluate(() => ({
+    activeTab: document.querySelector('[data-admin-tab][aria-selected="true"]')?.getAttribute("data-admin-tab"),
+    visibleTabs: Array.from(document.querySelectorAll("[data-admin-tab]"))
+      .filter((button) => !button.classList.contains("access-hidden"))
+      .map((button) => button.getAttribute("data-admin-tab")),
+    settingsHidden: document.querySelector('[data-admin-tab-panel="settings"]').classList.contains("access-hidden"),
+    overallText: document.getElementById("overallCategoryWrap").textContent,
+  }));
+  assert.equal(unlockedState.activeTab, "input");
+  assert.deepEqual(unlockedState.visibleTabs, ["overall", "input", "individual", "logs"]);
+  assert.equal(unlockedState.settingsHidden, true);
+  assert.ok(unlockedState.overallText.includes("NOVA"));
   assert.equal(resultsAuthHeader, `Bearer ${ADMIN_TOKEN}`);
-  assert.equal(voteStatusAuthHeader, `Bearer ${ADMIN_TOKEN}`);
-  assert.equal(resetAuthHeader, `Bearer ${ADMIN_TOKEN}`);
   assert.deepEqual(errors, []);
   await context.close();
 }
@@ -990,7 +1092,7 @@ async function runAdminMobileLayoutSmoke(browser, baseUrl) {
   });
   await context.addInitScript((token) => {
     localStorage.setItem("battlefes_admin_token", token);
-  }, ADMIN_TOKEN);
+  }, OWNER_TOKEN);
   const page = await context.newPage();
   const errors = [];
   let resultsAuthHeader = "";
@@ -1220,7 +1322,7 @@ async function runAdminMobileLayoutSmoke(browser, baseUrl) {
   assert.equal(auditTabState.operationLogRowCount, 6);
   assert.ok(auditTabState.operationLogText.includes("Listener A"));
 
-  assert.equal(resultsAuthHeader, `Bearer ${ADMIN_TOKEN}`);
+  assert.equal(resultsAuthHeader, `Bearer ${OWNER_TOKEN}`);
   assert.deepEqual(errors, []);
   await context.close();
 }
@@ -1253,6 +1355,8 @@ try {
   console.log("OK public mobile team card smoke");
   await runAdminSmoke(browser, server.baseUrl);
   console.log("OK admin smoke");
+  await runLeaderAdminAccessSmoke(browser, server.baseUrl);
+  console.log("OK leader admin access smoke");
   await runAdminMobileLayoutSmoke(browser, server.baseUrl);
   console.log("OK admin mobile layout smoke");
   console.log("ALL LOCAL FRONTEND SMOKE TESTS PASSED");

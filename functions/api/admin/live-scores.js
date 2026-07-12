@@ -1,11 +1,11 @@
-import { requireAdmin } from "../_lib/admin-auth.js";
+import { getAdminPrincipal, unauthorizedAdminResponse } from "../_lib/admin-auth.js";
+import { buildAdminResponse } from "../_lib/admin-response.js";
 import {
   buildAdminSnapshot,
   getAdminEffectiveVoteWindowStatus,
   getAdminVoteStatusOverride,
   saveLiveScores,
 } from "../_lib/vote-store.js";
-import { CATEGORIES, MEMBERS, TEAMS } from "../_lib/vote-categories.js";
 
 function json(data, init = {}) {
   const headers = new Headers(init.headers || {});
@@ -14,23 +14,9 @@ function json(data, init = {}) {
   return new Response(JSON.stringify(data), { ...init, headers });
 }
 
-function snapshotConfig() {
-  return {
-    categories: CATEGORIES.map((c) => ({
-      id: c.id,
-      type: c.type,
-      label: c.label,
-      candidateType: c.candidateType,
-      candidateIds: c.candidateIds,
-    })),
-    teams: TEAMS,
-    members: MEMBERS,
-  };
-}
-
 export async function onRequestPost(context) {
-  const unauthorized = requireAdmin(context.request, context.env);
-  if (unauthorized) return unauthorized;
+  const principal = getAdminPrincipal(context.request, context.env);
+  if (!principal) return unauthorizedAdminResponse();
 
   let body = {};
   try {
@@ -46,11 +32,10 @@ export async function onRequestPost(context) {
     getAdminVoteStatusOverride(context.env),
   ]);
 
-  return json({
-    ok: true,
+  return json(buildAdminResponse({
     status,
-    adminVoteStatusOverride: voteStatusOverride || null,
-    config: snapshotConfig(),
-    ...snapshot,
-  });
+    voteStatusOverride,
+    principal,
+    snapshot,
+  }));
 }

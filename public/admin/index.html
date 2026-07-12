@@ -90,6 +90,10 @@
       display: none !important;
     }
 
+    .access-hidden {
+      display: none !important;
+    }
+
     .panel {
       margin-bottom: 18px;
       padding: 18px 20px;
@@ -1193,11 +1197,11 @@
     </header>
 
     <section id="loginPanel" class="panel row">
-      <h2>管理者ログイン</h2>
-      <p class="lead">管理者パスワードを入力してダッシュボードを開きます。</p>
-      <label for="adminToken">管理者パスワード</label>
+      <h2>アクセスログイン</h2>
+      <p class="lead">共有パスワードまたは運営者専用パスワードを入力してください。</p>
+      <label for="adminToken">アクセスパスワード</label>
       <div class="password-row">
-        <input id="adminToken" type="password" placeholder="管理者パスワードを入力" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="statusText">
+        <input id="adminToken" type="password" placeholder="アクセスパスワードを入力" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="statusText">
         <button type="button" id="togglePwBtn" class="toggle-password-btn" onclick="togglePasswordVisibility()" aria-label="パスワードを表示" aria-pressed="false">表示</button>
       </div>
       <div class="admin-actions">
@@ -1210,6 +1214,16 @@
     </div>
 
     <main id="dashboard" class="hidden">
+      <section id="accessBar" class="panel row">
+        <div>
+          <h2 id="accessModeTitle">アクセスモード</h2>
+          <p id="accessModeDetail" class="lead"></p>
+        </div>
+        <div class="admin-actions">
+          <button type="button" onclick="logout()">ログアウト</button>
+        </div>
+      </section>
+
       <nav class="admin-tabs" aria-label="管理画面の表示切り替え">
         <button type="button" data-admin-tab="overall" aria-selected="true" onclick="activateAdminTab('overall')">総合</button>
         <button type="button" data-admin-tab="input" aria-selected="false" onclick="activateAdminTab('input')">入力</button>
@@ -1311,6 +1325,13 @@
     const TOKEN_KEY = "battlefes_admin_token";
     const DEFAULT_ADMIN_TAB = "overall";
 
+    let accessCache = {
+      role: "leader",
+      canViewResults: false,
+      canManageVotes: false,
+      canEditLiveScores: true,
+      resultsUnlockAt: "2026-07-18T22:50:00+09:00",
+    };
     let configCache = { categories: [], teams: [], members: [] };
     let categoriesDataCache = {};
     let voteStatusCache = "waiting";
@@ -1322,12 +1343,24 @@
     let activeIndividualCategoryId = null;
     let commentMemberFilterId = "all";
     let activeCommentLogTab = "event";
+    let accessUnlockRefreshPending = false;
+
+    function defaultAdminTab() {
+      return accessCache.canViewResults ? DEFAULT_ADMIN_TAB : "input";
+    }
+
+    function isAdminTabAllowed(tabId) {
+      if (tabId === "input") return Boolean(accessCache.canEditLiveScores);
+      if (tabId === "settings") return Boolean(accessCache.canManageVotes);
+      return Boolean(accessCache.canViewResults);
+    }
 
     function activateAdminTab(tabId = DEFAULT_ADMIN_TAB) {
       const buttons = Array.from(document.querySelectorAll("[data-admin-tab]"));
       const panels = Array.from(document.querySelectorAll("[data-admin-tab-panel]"));
       const hasPanel = panels.some((panel) => panel.getAttribute("data-admin-tab-panel") === tabId);
-      const nextTab = hasPanel ? tabId : DEFAULT_ADMIN_TAB;
+      const requested = hasPanel && isAdminTabAllowed(tabId) ? tabId : defaultAdminTab();
+      const nextTab = isAdminTabAllowed(requested) ? requested : "input";
 
       buttons.forEach((button) => {
         const isActive = button.getAttribute("data-admin-tab") === nextTab;
@@ -1337,6 +1370,39 @@
       panels.forEach((panel) => {
         panel.classList.toggle("is-active", panel.getAttribute("data-admin-tab-panel") === nextTab);
       });
+    }
+
+    function applyAccessUi(isLoggedIn = !document.getElementById("dashboard").classList.contains("hidden")) {
+      const owner = accessCache.role === "owner";
+      const unlocked = Boolean(accessCache.canViewResults);
+      const canManage = Boolean(accessCache.canManageVotes);
+      document.querySelectorAll("[data-admin-tab]").forEach((button) => {
+        const tabId = button.getAttribute("data-admin-tab");
+        button.classList.toggle("access-hidden", !isAdminTabAllowed(tabId));
+      });
+      document.querySelectorAll("[data-admin-tab-panel]").forEach((panel) => {
+        const tabId = panel.getAttribute("data-admin-tab-panel");
+        panel.classList.toggle("access-hidden", !isAdminTabAllowed(tabId));
+      });
+
+      const adminBar = document.getElementById("adminBar");
+      if (adminBar) adminBar.classList.toggle("hidden", !isLoggedIn || !canManage);
+      const title = document.getElementById("accessModeTitle");
+      const detail = document.getElementById("accessModeDetail");
+      if (title) title.textContent = owner
+        ? "運営者モード"
+        : (unlocked ? "リーダー閲覧モード" : "ライブスコア入力モード");
+      if (detail) {
+        detail.textContent = owner
+          ? "全結果の閲覧と管理操作ができます。"
+          : (unlocked
+            ? "22:50を過ぎたため、結果の閲覧が解禁されています。管理操作はできません。"
+            : "ライブスコアの入力と合計のみ表示します。結果は22:50に自動解禁されます。");
+      }
+      if (isLoggedIn) {
+        const selected = document.querySelector('[data-admin-tab][aria-selected="true"]')?.getAttribute("data-admin-tab");
+        activateAdminTab(selected && isAdminTabAllowed(selected) ? selected : defaultAdminTab());
+      }
     }
 
     function activateCommentLogTab(tabId = "event") {
@@ -1361,18 +1427,19 @@
     }
 
     function setLoggedInUi(isLoggedIn) {
+      const dashboard = document.getElementById("dashboard");
+      const wasLoggedIn = !dashboard.classList.contains("hidden");
       document.getElementById("loginPanel").classList.toggle("hidden", isLoggedIn);
-      document.getElementById("adminBar").classList.toggle("hidden", !isLoggedIn);
-      document.getElementById("dashboard").classList.toggle("hidden", !isLoggedIn);
+      dashboard.classList.toggle("hidden", !isLoggedIn);
+      applyAccessUi(isLoggedIn);
 
       if (!isLoggedIn) {
-        activateAdminTab(DEFAULT_ADMIN_TAB);
         const input = document.getElementById("adminToken");
         input.type = "password";
         input.value = "";
         syncPasswordToggleUI(false);
-      } else if (!document.querySelector(".admin-tab-panel.is-active")) {
-        activateAdminTab(DEFAULT_ADMIN_TAB);
+      } else if (!wasLoggedIn || !document.querySelector(".admin-tab-panel.is-active")) {
+        activateAdminTab(defaultAdminTab());
       }
     }
 
@@ -1435,7 +1502,7 @@
       const candidate = input.value.trim();
 
       if (!candidate) {
-        setStatus("管理者パスワードを入力してください");
+        setStatus("アクセスパスワードを入力してください");
         input.focus();
         return;
       }
@@ -1457,6 +1524,13 @@
 
     function logout() {
       clearToken();
+      accessCache = {
+        role: "leader",
+        canViewResults: false,
+        canManageVotes: false,
+        canEditLiveScores: true,
+        resultsUnlockAt: "2026-07-18T22:50:00+09:00",
+      };
       setLoggedInUi(false);
       setStatus("ログアウトしました");
     }
@@ -2517,6 +2591,7 @@
     }
 
     function renderSnapshot(data) {
+      accessCache = data.access || accessCache;
       configCache = data.config || { categories: [], teams: [], members: [] };
       categoriesDataCache = data.categories || {};
       voteStatusCache = data.status || "waiting";
@@ -2552,6 +2627,7 @@
         : '<tr><td colspan="3" class="empty">感想はまだありません</td></tr>';
 
       syncResponsiveTableLabels(document.getElementById("dashboard"));
+      applyAccessUi(true);
       refreshTestModeUI();
     }
 
@@ -2601,6 +2677,18 @@
       }
     }
 
+    async function refreshLeaderAccessAtUnlock() {
+      if (accessUnlockRefreshPending || accessCache.role !== "leader" || accessCache.canViewResults) return;
+      const unlockAt = new Date(accessCache.resultsUnlockAt || 0).getTime();
+      if (!Number.isFinite(unlockAt) || Date.now() < unlockAt) return;
+      accessUnlockRefreshPending = true;
+      try {
+        await loadAdmin({ source: "leader-unlock", successMessage: "22:50になったため結果表示を解禁しました" });
+      } finally {
+        accessUnlockRefreshPending = false;
+      }
+    }
+
     window.addEventListener("storage", (event) => {
       if (!event.key || event.key === TEST_MODE_KEY) {
         refreshTestModeUI();
@@ -2626,6 +2714,7 @@
     });
 
     initialize();
+    window.setInterval(refreshLeaderAccessAtUnlock, 1000);
   </script>
 </body>
 </html>

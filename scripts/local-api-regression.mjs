@@ -17,6 +17,7 @@ import {
 } from "../functions/api/_lib/vote-store.js";
 
 const ADMIN_TOKEN = "local-secret";
+const OWNER_TOKEN = "owner-secret";
 const BONUS_KEYWORD = "真夏の夜空に響け！";
 const BONUS_KEYWORD_HALFWIDTH = "真夏の夜空に響け!";
 
@@ -373,6 +374,7 @@ class MemoryD1 {
 function createEnv(db = new MemoryD1()) {
   return {
     ADMIN_TOKEN,
+    OWNER_TOKEN,
     BATTLE_FES_DB: db,
     BONUS_KEYWORD,
   };
@@ -409,13 +411,14 @@ function withNow(iso, fn) {
     });
 }
 
-function req(path, { method = "GET", body, auth = false, ip = "203.0.113.10", clientId = "", headers = {} } = {}) {
+function req(path, { method = "GET", body, auth = false, leaderAuth = false, ip = "203.0.113.10", clientId = "", headers = {} } = {}) {
   const requestHeaders = new Headers(headers);
   if (!requestHeaders.has("user-agent")) requestHeaders.set("user-agent", "local-regression");
   if (!requestHeaders.has("accept-language")) requestHeaders.set("accept-language", "ja-JP");
   requestHeaders.set("CF-Connecting-IP", ip);
   if (clientId) requestHeaders.set("x-battle-fes-client-id", clientId);
-  if (auth) requestHeaders.set("authorization", `Bearer ${ADMIN_TOKEN}`);
+  if (auth) requestHeaders.set("authorization", `Bearer ${OWNER_TOKEN}`);
+  if (leaderAuth) requestHeaders.set("authorization", `Bearer ${ADMIN_TOKEN}`);
   let payload = body;
   if (body !== undefined && typeof body !== "string") {
     requestHeaders.set("content-type", "application/json");
@@ -566,6 +569,7 @@ async function vote(env, options = {}) {
       method: "POST",
       body: voteBody(options),
       auth: options.auth || false,
+      leaderAuth: options.leaderAuth || false,
       ip: options.ip || "203.0.113.10",
       clientId: options.clientId || "",
       headers: options.headers || {},
@@ -606,6 +610,95 @@ async function testAdminAuth() {
     env,
   });
   assert.equal(bearer.status, 200);
+}
+
+async function testLeaderAccessIsLimitedUntil2250() {
+  const env = createEnv();
+  await withNow("2026-07-18T22:20:00+09:00", async () => {
+    const submitted = await vote(env, {
+      leaderAuth: true,
+      ip: "203.0.113.201",
+      teamId: 2,
+      individualIds: [4, 5, 9],
+    });
+    assert.equal(submitted.status, 200);
+  });
+
+  await withNow("2026-07-18T22:40:00+09:00", async () => {
+    const leaderResponse = await getAdminResults({
+      request: req("/api/admin/results", { leaderAuth: true }),
+      env,
+    });
+    const leaderData = await readJson(leaderResponse);
+    assert.equal(leaderResponse.status, 200);
+    assert.equal(leaderData.access.role, "leader");
+    assert.equal(leaderData.access.canViewResults, false);
+    assert.equal(leaderData.access.canManageVotes, false);
+    assert.deepEqual(leaderData.categories, {});
+    assert.deepEqual(leaderData.eventImpressions, []);
+    assert.equal(leaderData.finalResults, null);
+    assert.equal(leaderData.individualAwardBonuses.awards.length, 0);
+    assert.equal(Object.keys(leaderData.liveScores.memberScores).length, 9);
+
+    const leaderSave = await postAdminLiveScores({
+      request: req("/api/admin/live-scores", {
+        method: "POST",
+        leaderAuth: true,
+        body: {
+          memberScores: [
+            { memberId: 1, teamId: 1, oshiBonusBefore: 0, oshiBonusAfter: 0, liveScoreBefore: 0, liveScoreAfter: 1000 },
+          ],
+        },
+      }),
+      env,
+    });
+    const leaderSaveData = await readJson(leaderSave);
+    assert.equal(leaderSave.status, 200);
+    assert.equal(leaderSaveData.access.role, "leader");
+    assert.equal(leaderSaveData.access.canViewResults, false);
+    assert.deepEqual(leaderSaveData.categories, {});
+    assert.equal(leaderSaveData.liveScores.teamScores["1"], 1000);
+
+    const ownerResponse = await getAdminResults({
+      request: req("/api/admin/results", { auth: true }),
+      env,
+    });
+    const ownerData = await readJson(ownerResponse);
+    assert.equal(ownerData.access.role, "owner");
+    assert.equal(ownerData.access.canViewResults, true);
+    assert.equal(ownerData.access.canManageVotes, true);
+    assert.equal(ownerData.categories.team.results.totalVotes, 1);
+    assert.equal(ownerData.finalResults.winner.teamId, 2);
+
+    const leaderReset = await postAdminReset({
+      request: req("/api/admin/reset", { method: "POST", leaderAuth: true }),
+      env,
+    });
+    assert.equal(leaderReset.status, 401);
+    const leaderStatus = await postAdminVoteStatus({
+      request: req("/api/admin/vote-status", {
+        method: "POST",
+        leaderAuth: true,
+        body: { status: "closed" },
+      }),
+      env,
+    });
+    assert.equal(leaderStatus.status, 401);
+  });
+
+  await withNow("2026-07-18T22:50:00+09:00", async () => {
+    const leaderResponse = await getAdminResults({
+      request: req("/api/admin/results", { leaderAuth: true }),
+      env,
+    });
+    const leaderData = await readJson(leaderResponse);
+    assert.equal(leaderData.access.role, "leader");
+    assert.equal(leaderData.access.canViewResults, true);
+    assert.equal(leaderData.access.canManageVotes, false);
+    assert.equal(leaderData.categories.team.results.totalVotes, 1);
+    assert.equal(leaderData.finalResults.winner.teamId, 2);
+    assert.equal(leaderData.adminVoteStatusOverride, null);
+  });
 }
 
 async function testAdminVoteStatusOverrideDoesNotAffectPublicVoteGate() {
@@ -1071,6 +1164,7 @@ const tests = [
   testPublicResultsAreSealedUntilPublish,
   testPublicResultsInitial,
   testAdminAuth,
+  testLeaderAccessIsLimitedUntil2250,
   testAdminVoteStatusOverrideDoesNotAffectPublicVoteGate,
   testWaitingVoteGateAndAdminTestMode,
   testOpenVoteWithoutAdmin,
