@@ -4,10 +4,13 @@ import { mkdir, stat } from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
 import { chromium } from "playwright";
+import sharp from "sharp";
 
 const WIDTH = 1500;
 const HEIGHT = 500;
-const OUTPUT = "public/assets/promo/x-header-battle-fes.png";
+const SCALE = 2;
+const OUTPUT_PNG = "public/assets/promo/x-header-battle-fes.png";
+const OUTPUT_JPG = "public/assets/promo/x-header-battle-fes-upload.jpg";
 const EDGE = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe";
 
 function contentType(filePath) {
@@ -55,7 +58,7 @@ function startStaticServer() {
   });
 }
 
-await mkdir(path.dirname(OUTPUT), { recursive: true });
+await mkdir(path.dirname(OUTPUT_PNG), { recursive: true });
 const { server, port } = await startStaticServer();
 let browser;
 try {
@@ -64,7 +67,7 @@ try {
   } catch {
     browser = await chromium.launch({ executablePath: EDGE });
   }
-  const page = await browser.newPage({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1 });
+  const page = await browser.newPage({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: SCALE });
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => {
@@ -96,8 +99,21 @@ try {
   assert.ok(state.brand.left >= 200 && state.brand.right < 650);
   assert.ok(state.info.left >= 650 && state.info.right <= 1420);
   assert.deepEqual(errors, []);
-  await page.screenshot({ path: OUTPUT });
-  console.log(`saved ${OUTPUT} (${WIDTH}x${HEIGHT})`);
+  await page.screenshot({ path: OUTPUT_PNG });
+  await sharp(OUTPUT_PNG)
+    .flatten({ background: "#050917" })
+    .jpeg({ quality: 96, chromaSubsampling: "4:4:4", progressive: true, optimiseCoding: true })
+    .toFile(OUTPUT_JPG);
+  const [pngMeta, jpgMeta] = await Promise.all([
+    sharp(OUTPUT_PNG).metadata(),
+    sharp(OUTPUT_JPG).metadata(),
+  ]);
+  assert.equal(pngMeta.width, WIDTH * SCALE);
+  assert.equal(pngMeta.height, HEIGHT * SCALE);
+  assert.equal(jpgMeta.width, WIDTH * SCALE);
+  assert.equal(jpgMeta.height, HEIGHT * SCALE);
+  console.log(`saved ${OUTPUT_PNG} (${pngMeta.width}x${pngMeta.height})`);
+  console.log(`saved ${OUTPUT_JPG} (${jpgMeta.width}x${jpgMeta.height}, 4:4:4)`);
 } finally {
   if (browser) await browser.close();
   server.close();
