@@ -9,9 +9,5 @@ Set-Location $root
 # 確認方法: npx wrangler pages deployment list --project-name battle-fes
 #   Environment 列が "Production" の Branch が本番ブランチ
 
-if (Test-Path ".\scripts\preflight-check.ps1") {
-  powershell -ExecutionPolicy Bypass -File ".\scripts\preflight-check.ps1"
-} else {
-  Write-Warning "scripts\preflight-check.ps1 not found; skipping preflight."
-}
+powershell -ExecutionPolicy Bypass -File ".\scripts\preflight-check.ps1"
 npx wrangler pages deploy public --project-name battle-fes --branch master --commit-dirty=true --commit-message "deploy"

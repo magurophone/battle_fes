@@ -388,6 +388,7 @@ async function runPublicVoteSmoke(browser, baseUrl) {
 
   await page.goto(`${baseUrl}/index.html#vote`, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => typeof submitBulkVote === "function" && typeof getAdminTestVoteToken === "function");
+  assert.equal(await page.locator("#heroVoteCta").isVisible(), true);
   await page.waitForFunction(() => document.querySelector("#vote .section-title")?.classList.contains("visible"));
   await page.waitForTimeout(1600);
   await page.evaluate(() => {
@@ -758,6 +759,7 @@ async function runPublicAdminClosedFinalResultsSmoke(browser, baseUrl) {
   });
   await page.waitForTimeout(4200);
   const state = await page.evaluate(() => ({
+    heroVoteCtaVisible: !document.getElementById("heroVoteCta").hidden,
     voteHidden: document.getElementById("voteUI").hidden,
     resultVisible: !document.getElementById("resultExperience").hidden,
     championAlt: document.querySelector(".result-champion-wordmark")?.getAttribute("alt"),
@@ -765,6 +767,7 @@ async function runPublicAdminClosedFinalResultsSmoke(browser, baseUrl) {
     resultRootStable: globalThis.__stableResultRoot === document.getElementById("finalResultStage").firstElementChild,
     championScore: document.querySelector(".result-champion-score [data-result-count]")?.textContent,
   }));
+  assert.equal(state.heroVoteCtaVisible, false);
   assert.equal(state.voteHidden, true);
   assert.equal(state.resultVisible, true);
   assert.equal(state.championAlt, "NOVA");
@@ -774,6 +777,45 @@ async function runPublicAdminClosedFinalResultsSmoke(browser, baseUrl) {
   assert.equal(adminAuthHeader, `Bearer ${OWNER_TOKEN}`);
   assert.deepEqual(errors, []);
   await context.close();
+}
+
+async function runHeroVoteCtaScheduleSmoke(browser, baseUrl) {
+  const cases = [
+    { at: "2026-07-18T22:14:59+09:00", visible: false, label: "before main voting" },
+    { at: "2026-07-18T22:15:00+09:00", visible: true, label: "main voting opens" },
+    { at: "2026-07-18T22:30:00+09:00", visible: true, label: "main voting close boundary" },
+    { at: "2026-07-18T22:30:00.001+09:00", visible: false, label: "after main voting" },
+    { at: "2026-07-18T22:15:00+09:00", visible: true, label: "main voting opens on mobile", mobile: true },
+  ];
+
+  for (const testCase of cases) {
+    const context = await browser.newContext({
+      viewport: testCase.mobile ? { width: 390, height: 844 } : { width: 1280, height: 900 },
+    });
+    await context.addInitScript((fixedNow) => {
+      Date.now = () => new Date(fixedNow).getTime();
+      localStorage.removeItem("battlefes_test_mode");
+      localStorage.removeItem("battlefes_admin_token");
+    }, testCase.at);
+    const page = await context.newPage();
+    const errors = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    page.on("console", (message) => {
+      if (message.type() === "error") errors.push(message.text());
+    });
+    await page.route("**/api/results", (route) => {
+      route.fulfill({
+        status: 200,
+        contentType: "application/json; charset=utf-8",
+        body: JSON.stringify(resultsPayload()),
+      });
+    });
+    await page.goto(`${baseUrl}/index.html`, { waitUntil: "domcontentloaded" });
+    await page.waitForFunction(() => typeof applyVoteVisibility === "function");
+    assert.equal(await page.locator("#heroVoteCta").isVisible(), testCase.visible, testCase.label);
+    assert.deepEqual(errors, [], testCase.label);
+    await context.close();
+  }
 }
 
 async function runPublicMobileTeamCardScenario(browser, baseUrl, reducedMotion) {
@@ -1444,6 +1486,8 @@ async function launchSmokeBrowser() {
 const server = await startStaticServer();
 const browser = await launchSmokeBrowser();
 try {
+  await runHeroVoteCtaScheduleSmoke(browser, server.baseUrl);
+  console.log("OK hero vote CTA schedule smoke");
   await runPublicVoteSmoke(browser, server.baseUrl);
   console.log("OK public vote smoke");
   await runPublicFinalResultsSmoke(browser, server.baseUrl);

@@ -3051,8 +3051,8 @@
     </div>
   </div>
 
-  <!-- 段階公開: ヒーローの投票ボタン 非表示中。再表示は hidden を外すだけ -->
-  <div class="hero-btns" hidden>
+  <!-- 本投票（22:15-22:30）と投票UIのテストモードで表示 -->
+  <div class="hero-btns" id="heroVoteCta" hidden>
     <a href="#vote" class="btn btn-primary">投票する</a>
   </div>
 
@@ -5010,6 +5010,7 @@ function setShown(el, shown) {
 }
 
 function applyVoteVisibility() {
+  const heroVoteCta = document.getElementById('heroVoteCta');
   const cd = document.getElementById('voteCountdown');
   const ui = document.getElementById('voteUI');
   const result = document.getElementById('resultExperience');
@@ -5026,6 +5027,7 @@ function applyVoteVisibility() {
     const showCountdown = nextState === 'countdown';
     const showVote = nextState === 'vote' || nextState === 'test';
     const showResult = nextState === 'holding' || nextState === 'result' || nextState === 'test-result';
+    setShown(heroVoteCta, showVote && isMainVotingNow());
     setShown(cd, showCountdown);
     setShown(ui, showVote);
     setShown(result, showResult);

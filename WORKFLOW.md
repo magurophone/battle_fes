@@ -62,6 +62,14 @@ Leave any still-unknown slots as `COMING SOON`.
 
 ## Local Verification
 
+All frontend/UI changes must be verified with Playwright. Run the repeatable suite before reporting completion:
+
+```powershell
+npm run test:ui
+```
+
+For regressions and time/state-dependent UI, add the boundary states to `scripts/local-frontend-smoke.mjs` so the same bug cannot silently return. The production deploy script runs this suite as a mandatory preflight and stops when it fails.
+
 Start static preview:
 
 ```powershell

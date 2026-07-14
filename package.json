@@ -1,8 +1,10 @@
 {
   "scripts": {
-    "build:site-team-media": "node scripts/build-site-team-media.mjs"
+    "build:site-team-media": "node scripts/build-site-team-media.mjs",
+    "test:ui": "node scripts/local-frontend-smoke.mjs"
   },
   "devDependencies": {
+    "playwright": "^1.59.1",
     "sharp": "^0.35.2"
   }
 }
