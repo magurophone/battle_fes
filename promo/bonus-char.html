@@ -152,6 +152,42 @@
     margin-top:6px;
   }
   .idx b{color:var(--gold);}
+
+  /*
+    透過版 (?trans=1): チーム配信背景に直接載せる用。
+    - 外枠線は消す（背景と喧嘩するため）
+    - スクリムを強化: 中央の暗さで明るい背景でも文字周りだけ沈む
+    - 文字に暗色の縁シャドウを追加: 金縁+暗縁の二重で白背景でも黒背景でも輪郭が立つ
+  */
+  body.trans .stage-frame{display:none;}
+  /* 半径を明示して端に届く前に完全フェードアウトさせる（枠での切れ防止） */
+  body.trans .scrim{
+    background:radial-gradient(circle 295px at 50% 52%,
+      rgba(6,3,0,.90) 0%,
+      rgba(6,3,0,.76) 38%,
+      rgba(6,3,0,.42) 66%,
+      rgba(6,3,0,0) 100%);
+  }
+  body.trans .glyph{
+    filter:
+      drop-shadow(0 0 30px rgba(255,190,80,.5))
+      drop-shadow(0 0 10px rgba(255,150,40,.45))
+      drop-shadow(0 0 3px rgba(0,0,0,.95))
+      drop-shadow(0 4px 10px rgba(0,0,0,.9));
+  }
+  body.trans .label{
+    text-shadow:
+      0 0 18px rgba(255,120,30,.85),
+      0 0 6px rgba(255,180,60,.9),
+      0 0 3px rgba(0,0,0,.95),
+      0 2px 5px rgba(0,0,0,1);
+  }
+  body.trans .idx{
+    text-shadow:
+      0 0 12px rgba(255,120,30,.6),
+      0 0 3px rgba(0,0,0,.95),
+      0 2px 4px rgba(0,0,0,1);
+  }
 </style>
 </head>
 <body>
@@ -178,6 +214,7 @@
   document.getElementById('idx').innerHTML='<b>'+idx+'</b> / '+total;
   if(p.get('checker')) document.body.classList.add('checker');
   if(p.get('solid')) document.body.classList.add('solid');
+  if(p.get('trans')) document.body.classList.add('trans');
 </script>
 </body>
 </html>

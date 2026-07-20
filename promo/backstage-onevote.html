@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>開発裏話 1人1票図解</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Dela+Gothic+One&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+JP:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #fff8ee;
+    --muted: #c6a982;
+    --gold: #ffe040;
+    --accent: #ff7c1e;
+    --line: rgba(255, 176, 82, 0.28);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    width: 1600px;
+    height: 900px;
+    margin: 0;
+    overflow: hidden;
+    background: #050407;
+  }
+  body {
+    color: var(--ink);
+    font-family: "Noto Sans JP", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+  .poster {
+    position: relative;
+    width: 1600px;
+    height: 900px;
+    overflow: hidden;
+    isolation: isolate;
+    padding: 64px 90px;
+    background:
+      radial-gradient(900px 520px at 20% 0%, rgba(255, 124, 30, 0.14), transparent 60%),
+      radial-gradient(800px 500px at 92% 100%, rgba(120, 20, 40, 0.22), transparent 58%),
+      linear-gradient(168deg, #0a0a1e 0%, #100714 52%, #1b0808 100%);
+  }
+  .poster::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("/assets/textures/grain-fine-dark.png");
+    background-size: 480px;
+    opacity: 0.26;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  .kicker {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(255, 220, 10, 0.45);
+  }
+  .q {
+    margin-top: 18px;
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+  .q b { color: var(--ink); }
+  .a {
+    margin-top: 10px;
+    font-family: "Dela Gothic One", "Noto Sans JP", sans-serif;
+    font-size: 84px;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.7), 0 0 46px rgba(255, 120, 30, 0.35);
+  }
+  /* Dela Gothic は画数の多い漢字（票など）が塗り潰れるため、ここは Noto 900 を使う */
+  .a b {
+    color: var(--gold);
+    font-family: "Noto Sans JP", sans-serif;
+    font-weight: 900;
+    font-size: 1.08em;
+    letter-spacing: 0.06em;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
+  }
+
+  .tickets {
+    margin-top: 56px;
+    display: flex;
+    align-items: stretch;
+    gap: 60px;
+  }
+  .ticket {
+    flex: 1;
+    position: relative;
+    border: 1.5px solid var(--line);
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(20, 14, 8, 0.72), rgba(10, 6, 4, 0.86));
+    padding: 34px 40px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    gap: 36px;
+  }
+  .ticket .tno {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+  }
+  .ticket .tlabel {
+    margin-top: 8px;
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+  }
+  .ticket .tnote {
+    margin-top: 12px;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .stamp {
+    flex: none;
+    width: 148px;
+    height: 148px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Noto Sans JP", sans-serif;
+    font-weight: 900;
+    font-size: 42px;
+    letter-spacing: 0.04em;
+  }
+  .ticket.ok { border-color: rgba(255, 200, 110, 0.8); box-shadow: 0 14px 34px rgba(0,0,0,0.45), 0 0 40px rgba(255, 150, 50, 0.22); }
+  .ticket.ok .stamp {
+    border: 4px solid var(--gold);
+    color: var(--gold);
+    text-shadow: 0 0 18px rgba(255, 200, 60, 0.6);
+    box-shadow: 0 0 26px rgba(255, 200, 60, 0.3), inset 0 0 20px rgba(255, 200, 60, 0.12);
+  }
+  .ticket.ng { opacity: 0.92; }
+  .ticket.ng .stamp {
+    border: 4px solid rgba(255, 80, 90, 0.9);
+    color: rgba(255, 110, 115, 0.95);
+    transform: rotate(-8deg);
+    text-shadow: 0 0 14px rgba(255, 80, 90, 0.5);
+  }
+  .ticket.ng .tlabel { color: rgba(253, 246, 236, 0.75); }
+
+  .foot {
+    margin-top: 56px;
+    border: 1.5px solid rgba(255, 200, 140, 0.5);
+    border-radius: 14px;
+    background:
+      linear-gradient(180deg, rgba(24, 10, 6, 0.55), rgba(16, 8, 5, 0.8)),
+      url("/assets/textures/marble-dark.png") center / cover no-repeat;
+    padding: 34px 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+  }
+  .foot .msg {
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    line-height: 1.55;
+  }
+  .foot .msg b { color: var(--gold); }
+  .foot .when {
+    flex: none;
+    text-align: right;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .foot .when b { color: var(--ink); font-size: 30px; }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="kicker">BATTLE FES 開発裏話</div>
+  <div class="q">Q. <b>2回投票したらどうなるの？</b></div>
+  <div class="a">A. できません ― <b>1人1票</b></div>
+
+  <div class="tickets">
+    <div class="ticket ok">
+      <div>
+        <div class="tno">1回目</div>
+        <div class="tlabel">投票を受付</div>
+        <div class="tnote">応援したいチームと個人賞を選んで送信。あなたの1票が確実に記録されます。</div>
+      </div>
+      <div class="stamp">受付</div>
+    </div>
+    <div class="ticket ng">
+      <div>
+        <div class="tno">2回目</div>
+        <div class="tlabel">そもそも押せません</div>
+        <div class="tnote">投票が完了するとボタンは「投票済み」に変わります。</div>
+      </div>
+      <div class="stamp">済</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="msg">1人1票が守られるから、<b>応援の数の勝負</b>に意味がある。<br>あなたの1票を待っています。</div>
+    <div class="when">本投票 FINAL VOTE<br><b>7.18 SAT 22:15-22:30</b></div>
+  </div>
+</div>
+</body>
+</html>

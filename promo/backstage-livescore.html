@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>開発裏話 ライブスコア図解</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Dela+Gothic+One&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+JP:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #fff8ee;
+    --muted: #c6a982;
+    --gold: #ffe040;
+    --accent: #ff7c1e;
+    --line: rgba(255, 176, 82, 0.28);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    width: 1600px;
+    height: 900px;
+    margin: 0;
+    overflow: hidden;
+    background: #050407;
+  }
+  body {
+    color: var(--ink);
+    font-family: "Noto Sans JP", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+  .poster {
+    position: relative;
+    width: 1600px;
+    height: 900px;
+    overflow: hidden;
+    isolation: isolate;
+    padding: 64px 90px;
+    background:
+      radial-gradient(900px 520px at 80% 0%, rgba(255, 124, 30, 0.14), transparent 60%),
+      radial-gradient(800px 500px at 8% 100%, rgba(120, 20, 40, 0.22), transparent 58%),
+      linear-gradient(168deg, #0a0a1e 0%, #100714 52%, #1b0808 100%);
+  }
+  .poster::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("/assets/textures/grain-fine-dark.png");
+    background-size: 480px;
+    opacity: 0.26;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  .kicker {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(255, 220, 10, 0.45);
+  }
+  .title {
+    margin-top: 14px;
+    font-family: "Dela Gothic One", "Noto Sans JP", sans-serif;
+    font-size: 58px;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.7), 0 0 46px rgba(255, 120, 30, 0.3);
+  }
+  .title small {
+    display: inline-block;
+    margin-left: 26px;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 34px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+  }
+
+  .steps {
+    margin-top: 52px;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+  .step {
+    flex: 1;
+    position: relative;
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(20, 14, 8, 0.72), rgba(10, 6, 4, 0.86));
+    padding: 30px 34px 28px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+  }
+  .arrow {
+    align-self: center;
+    width: 66px;
+    text-align: center;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 44px;
+    color: var(--accent);
+    text-shadow: 0 0 14px rgba(255, 124, 30, 0.6);
+    flex: none;
+  }
+  .step .no {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 24px;
+    letter-spacing: 0.34em;
+    color: var(--accent);
+  }
+  .step .what {
+    margin-top: 10px;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+  }
+  .meter {
+    margin-top: 24px;
+    display: inline-block;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--gold);
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 200, 140, 0.4);
+    border-radius: 10px;
+    padding: 14px 30px;
+    text-shadow: 0 0 18px rgba(255, 200, 60, 0.5);
+  }
+  .meter small {
+    font-size: 30px;
+    color: var(--muted);
+    margin-left: 6px;
+  }
+  .step .note {
+    margin-top: 16px;
+    font-size: 21px;
+    font-weight: 500;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .step.result {
+    border-color: rgba(255, 170, 80, 0.85);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45), 0 0 44px rgba(255, 120, 30, 0.28);
+  }
+  .step.result .meter { color: #ffffff; }
+
+  .kband {
+    margin-top: 34px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    font-size: 25px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .kband .chip {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 24px;
+    font-weight: 700;
+    color: rgba(255, 235, 200, 0.98);
+    background:
+      linear-gradient(rgba(28, 12, 5, 0.65), rgba(12, 5, 3, 0.8)),
+      url("/assets/textures/marble-dark.png") center / cover no-repeat;
+    border: 1.5px solid rgba(255, 200, 140, 0.55);
+    border-radius: 100px;
+    padding: 12px 30px;
+  }
+  .kband .desc { color: var(--muted); font-weight: 500; }
+
+  .fair {
+    margin-top: 34px;
+    border: 1.5px solid rgba(255, 200, 140, 0.5);
+    border-radius: 14px;
+    background:
+      linear-gradient(180deg, rgba(24, 10, 6, 0.55), rgba(16, 8, 5, 0.8)),
+      url("/assets/textures/marble-dark.png") center / cover no-repeat;
+    padding: 30px 40px;
+    display: flex;
+    align-items: center;
+    gap: 44px;
+  }
+  .fair .head {
+    flex: none;
+    font-family: "Dela Gothic One", "Noto Sans JP", sans-serif;
+    font-size: 32px;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+    text-shadow: 0 0 20px rgba(255, 200, 60, 0.4);
+  }
+  .fair .formula {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 29px;
+    font-weight: 700;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .fair .formula b { color: var(--gold); }
+  .fair .why {
+    font-size: 21px;
+    font-weight: 500;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="kicker">BATTLE FES 開発裏話</div>
+  <div class="title">ライブスコアの決まり方<small>LIVE SCORE</small></div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="no">STEP 1</div>
+      <div class="what">配信前のメーターを記録</div>
+      <div class="meter">120<small>k</small></div>
+      <div class="note">各メンバーの枠が始まる前の数字</div>
+    </div>
+    <div class="arrow">&gt;&gt;</div>
+    <div class="step">
+      <div class="no">STEP 2</div>
+      <div class="what">配信後のメーターを記録</div>
+      <div class="meter">170<small>k</small></div>
+      <div class="note">枠が終わった直後の数字</div>
+    </div>
+    <div class="arrow">&gt;&gt;</div>
+    <div class="step result">
+      <div class="no">STEP 3</div>
+      <div class="what">差分がチームの得点に</div>
+      <div class="meter">+50<small>k</small></div>
+      <div class="note">本番の枠で受け取った応援がそのままライブスコアの元になる</div>
+    </div>
+  </div>
+
+  <div class="kband">
+    <span class="chip">1k = 1,000</span>
+    <span class="desc">ColorSingの「k」は1,000。50kなら50,000ポイント。</span>
+  </div>
+
+  <div class="fair">
+    <div class="head">フェア調整</div>
+    <div>
+      <div class="formula">ライブスコア = 差分 ÷ ( 1 + <b>推しボーナス%</b> / 100 )</div>
+      <div class="why">推しボーナスの倍率分は割り戻し。ボーナスが高い人が有利にならないよう、全員「素の応援量」で勝負します。<br>配信中にボーナス%が変動した場合は、変動前後それぞれで計算した値の中間値を採用。</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

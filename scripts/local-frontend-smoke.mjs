@@ -1020,6 +1020,46 @@ async function runPublicDesktopTeamStackSmoke(browser, baseUrl) {
   await runPublicDesktopTeamStackScenario(browser, baseUrl, 900);
 }
 
+async function runAdminLoginInputPersistenceSmoke(browser, baseUrl) {
+  const viewports = [
+    { name: "desktop", viewport: { width: 1280, height: 900 }, isMobile: false },
+    { name: "mobile", viewport: { width: 390, height: 844 }, isMobile: true },
+  ];
+
+  for (const testCase of viewports) {
+    const context = await browser.newContext({
+      viewport: testCase.viewport,
+      isMobile: testCase.isMobile,
+    });
+    await context.addInitScript((fixedNow) => {
+      localStorage.removeItem("battlefes_admin_token");
+      Date.now = () => new Date(fixedNow).getTime();
+    }, "2026-07-19T12:00:00+09:00");
+    const page = await context.newPage();
+    let adminResultsRequests = 0;
+
+    await page.route("**/api/admin/results", (route) => {
+      adminResultsRequests += 1;
+      route.fulfill({
+        status: 401,
+        contentType: "application/json; charset=utf-8",
+        body: JSON.stringify({ error: "Unauthorized" }),
+      });
+    });
+
+    await page.goto(`${baseUrl}/admin/index.html`, { waitUntil: "domcontentloaded" });
+    const input = page.locator("#adminToken");
+    await input.fill("入力保持テスト");
+    await page.waitForTimeout(1300);
+
+    assert.equal(await input.inputValue(), "入力保持テスト", `${testCase.name}: login input was cleared`);
+    assert.equal(adminResultsRequests, 0, `${testCase.name}: unauthenticated unlock refresh called admin API`);
+    assert.equal(await page.locator("#loginPanel").isVisible(), true);
+    assert.equal(await page.locator("#dashboard").isVisible(), false);
+    await context.close();
+  }
+}
+
 async function runAdminSmoke(browser, baseUrl) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   await context.addInitScript((token) => {
@@ -1502,6 +1542,8 @@ try {
   console.log("OK public desktop team stack smoke");
   await runPublicMobileTeamCardSmoke(browser, server.baseUrl);
   console.log("OK public mobile team card smoke");
+  await runAdminLoginInputPersistenceSmoke(browser, server.baseUrl);
+  console.log("OK admin login input persistence smoke");
   await runAdminSmoke(browser, server.baseUrl);
   console.log("OK admin smoke");
   await runLeaderAdminAccessSmoke(browser, server.baseUrl);

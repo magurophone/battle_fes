@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>開発裏話 フォントとサイトイメージ</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Ops+One&family=Dela+Gothic+One&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+JP:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #fff8ee;
+    --muted: #c6a982;
+    --gold: #ffe040;
+    --accent: #ff7c1e;
+    --line: rgba(255, 176, 82, 0.28);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    width: 1600px;
+    height: 900px;
+    margin: 0;
+    overflow: hidden;
+    background: #050407;
+  }
+  body {
+    color: var(--ink);
+    font-family: "Noto Sans JP", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+  .poster {
+    position: relative;
+    width: 1600px;
+    height: 900px;
+    overflow: hidden;
+    isolation: isolate;
+    padding: 58px 90px 52px;
+    background:
+      radial-gradient(880px 500px at 78% -4%, rgba(255, 124, 30, 0.15), transparent 60%),
+      radial-gradient(760px 500px at 5% 106%, rgba(132, 21, 45, 0.25), transparent 58%),
+      linear-gradient(168deg, #0a0a1e 0%, #100714 52%, #1b0808 100%);
+  }
+  .poster::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    background-image: url("/assets/textures/grain-fine-dark.png");
+    background-size: 480px;
+    opacity: 0.26;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  .kicker {
+    position: relative;
+    z-index: 2;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(255, 220, 10, 0.45);
+  }
+  .title-row {
+    position: relative;
+    z-index: 2;
+    margin-top: 12px;
+    display: flex;
+    align-items: baseline;
+    gap: 28px;
+  }
+  .title {
+    font-family: "Dela Gothic One", "Noto Sans JP", sans-serif;
+    font-size: 58px;
+    line-height: 1.15;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.7), 0 0 46px rgba(255, 120, 30, 0.3);
+  }
+  .title-en {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 31px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+  }
+
+  .countdown-panel {
+    position: relative;
+    z-index: 1;
+    height: 350px;
+    margin-top: 28px;
+    padding: 30px 52px 28px;
+    overflow: hidden;
+    border: 1.5px solid rgba(255, 188, 100, 0.42);
+    border-radius: 12px;
+    background:
+      radial-gradient(760px 300px at 68% 24%, rgba(255, 112, 26, 0.2), transparent 62%),
+      linear-gradient(160deg, rgba(26, 8, 8, 0.95), rgba(5, 2, 3, 0.98) 70%);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5), 0 0 46px rgba(255, 120, 30, 0.12);
+  }
+  .countdown-panel::before,
+  .countdown-panel::after {
+    content: "";
+    position: absolute;
+    left: 4%;
+    right: 4%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255, 200, 140, 0.56), transparent);
+  }
+  .countdown-panel::before { top: 20px; }
+  .countdown-panel::after { bottom: 20px; }
+  .countdown-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+  }
+  .countdown-headline {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+  }
+  .countdown-headline strong {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 25px;
+    letter-spacing: 0.48em;
+    color: rgba(255, 208, 150, 0.88);
+    padding-left: 0.48em;
+  }
+  .countdown-headline span {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: rgba(255, 214, 162, 0.55);
+  }
+  .reference {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    border: 1px solid rgba(255, 210, 110, 0.5);
+    border-radius: 100px;
+    padding: 9px 18px;
+    background: rgba(36, 14, 6, 0.7);
+  }
+
+  .counter {
+    margin-top: 22px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 18px;
+  }
+  .counter-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .digits {
+    display: flex;
+    gap: 7px;
+  }
+  .digit {
+    position: relative;
+    width: 88px;
+    height: 132px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 182, 86, 0.16);
+    background: linear-gradient(180deg, #1d0d05 0%, #080403 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 218, 160, 0.2),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.85),
+      0 8px 20px rgba(0, 0, 0, 0.4);
+    font-family: "Black Ops One", "Bebas Neue", sans-serif;
+    font-size: 100px;
+    line-height: 1;
+    color: #ffb63d;
+    text-shadow: 0 0 20px rgba(255, 137, 31, 0.35), 0 5px 14px rgba(0, 0, 0, 0.8);
+  }
+  .digit::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.88);
+    box-shadow: 0 1px 0 rgba(255, 170, 80, 0.15);
+  }
+  .counter-label {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 16px;
+    line-height: 1;
+    letter-spacing: 0.42em;
+    padding-left: 0.42em;
+    color: rgba(255, 177, 88, 0.76);
+  }
+  .separator {
+    width: 20px;
+    height: 132px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 35px;
+  }
+  .separator i {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff0c0 0%, #ff9a30 55%, rgba(255, 90, 20, 0) 100%);
+    box-shadow: 0 0 14px rgba(255, 160, 50, 0.7), 0 0 28px rgba(255, 120, 30, 0.4);
+  }
+  .countdown-note {
+    margin-top: 16px;
+    text-align: center;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: rgba(255, 224, 180, 0.62);
+  }
+
+  .font-grid {
+    position: relative;
+    z-index: 2;
+    margin-top: 26px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .font-card {
+    position: relative;
+    height: 184px;
+    padding: 22px 28px;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    background:
+      linear-gradient(180deg, rgba(24, 10, 6, 0.56), rgba(12, 6, 6, 0.84)),
+      url("/assets/textures/marble-dark.png") center / cover no-repeat;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.38);
+  }
+  .font-tag {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 17px;
+    letter-spacing: 0.36em;
+    color: var(--accent);
+  }
+  .font-tag b {
+    margin-left: 10px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .jp-sample {
+    margin-top: 12px;
+    font-family: "Dela Gothic One", "Noto Sans JP", sans-serif;
+    font-size: 49px;
+    line-height: 1.1;
+    letter-spacing: 0.05em;
+    color: transparent;
+    -webkit-text-stroke: 2px #ffd47a;
+    filter: drop-shadow(0 0 13px rgba(255, 180, 80, 0.35));
+  }
+  .stencil-sample {
+    margin-top: 7px;
+    display: flex;
+    align-items: baseline;
+    gap: 30px;
+    font-family: "Black Ops One", "Bebas Neue", sans-serif;
+    color: var(--ink);
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+  }
+  .stencil-sample .round {
+    font-size: 54px;
+    letter-spacing: 0.18em;
+  }
+  .stencil-sample .team {
+    font-size: 46px;
+    letter-spacing: 0.05em;
+    color: #ff2d78;
+  }
+  .font-desc {
+    position: absolute;
+    left: 28px;
+    bottom: 18px;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: rgba(255, 222, 178, 0.68);
+  }
+  .concept-line {
+    position: absolute;
+    z-index: 3;
+    left: 90px;
+    right: 90px;
+    bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+  .concept-line::before,
+  .concept-line::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255, 190, 120, 0.42), transparent);
+  }
+  .concept-line b { color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="kicker">BATTLE FES 開発裏話</div>
+  <div class="title-row">
+    <div class="title">フォントとサイトイメージ</div>
+    <div class="title-en">TYPE &amp; VISUAL</div>
+  </div>
+
+  <section class="countdown-panel" aria-label="投票開始までのカウントダウン表示">
+    <div class="countdown-head">
+      <div class="countdown-headline">
+        <strong>BATTLE STARTS IN</strong>
+        <span>投票開始まで</span>
+      </div>
+    </div>
+
+    <div class="counter" aria-label="4日2時間50分10秒">
+      <div class="counter-cell">
+        <div class="digits"><span class="digit">0</span><span class="digit">4</span></div>
+        <div class="counter-label">DAYS</div>
+      </div>
+      <div class="separator" aria-hidden="true"><i></i><i></i></div>
+      <div class="counter-cell">
+        <div class="digits"><span class="digit">0</span><span class="digit">2</span></div>
+        <div class="counter-label">HOURS</div>
+      </div>
+      <div class="separator" aria-hidden="true"><i></i><i></i></div>
+      <div class="counter-cell">
+        <div class="digits"><span class="digit">5</span><span class="digit">0</span></div>
+        <div class="counter-label">MIN</div>
+      </div>
+      <div class="separator" aria-hidden="true"><i></i><i></i></div>
+      <div class="counter-cell">
+        <div class="digits"><span class="digit">1</span><span class="digit">0</span></div>
+        <div class="counter-label">SEC</div>
+      </div>
+    </div>
+    <div class="countdown-note">黒い計器盤・フラップ式の数字・オレンジの発光で、試合前の緊張感をつくる。</div>
+  </section>
+
+  <div class="font-grid">
+    <div class="font-card">
+      <div class="font-tag">FONT 01 <b>DELA GOTHIC ONE</b></div>
+      <div class="jp-sample">リスナー投票</div>
+      <div class="font-desc">太い輪郭で、日本語の大見出しを力強く。</div>
+    </div>
+    <div class="font-card">
+      <div class="font-tag">FONT 02 <b>BLACK OPS ONE</b></div>
+      <div class="stencil-sample"><span class="round">ROUND 1</span><span class="team">CRIMSON</span></div>
+      <div class="font-desc">軍用ステンシル系の切れ込みで、競技・作戦の空気を加える。</div>
+    </div>
+  </div>
+
+  <div class="concept-line"><b>夏フェスの熱量</b> × バトル前の緊張感</div>
+</div>
+</body>
+</html>

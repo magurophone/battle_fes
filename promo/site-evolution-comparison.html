@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BATTLE FES — Site Evolution</title>
+  <style>
+    @font-face {
+      font-family: "BattleDisplay";
+      src: url("/public/assets/fonts/BlackOpsOne-Regular.ttf") format("truetype");
+      font-display: swap;
+    }
+
+    :root {
+      --ink: #060816;
+      --panel: #0b0f22;
+      --paper: #fff3d8;
+      --muted: #b9a98e;
+      --gold: #ffd36e;
+      --orange: #ff7b20;
+      --pink: #ff3f76;
+      --line: rgba(255, 211, 110, 0.3);
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 2400px;
+      height: 1350px;
+      margin: 0;
+      overflow: hidden;
+      background: var(--ink);
+    }
+
+    body {
+      color: var(--paper);
+      font-family: "Yu Gothic", "YuGothic", "Meiryo", sans-serif;
+    }
+
+    .canvas {
+      position: relative;
+      width: 2400px;
+      height: 1350px;
+      padding: 70px 80px 58px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 15% 5%, rgba(255, 123, 32, 0.18), transparent 30%),
+        radial-gradient(circle at 88% 12%, rgba(255, 63, 118, 0.13), transparent 28%),
+        linear-gradient(145deg, #090b1b 0%, #050714 52%, #0c0813 100%);
+    }
+
+    .canvas::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.18;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: linear-gradient(to bottom, black, transparent 80%);
+    }
+
+    .masthead {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 180px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 8px;
+      color: var(--orange);
+      font-family: "BattleDisplay", sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.34em;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 70px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--orange), var(--gold));
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "BattleDisplay", "Impact", sans-serif;
+      font-size: 86px;
+      font-weight: 400;
+      line-height: 0.92;
+      letter-spacing: 0.035em;
+      text-transform: uppercase;
+    }
+
+    .masthead-copy {
+      max-width: 620px;
+      padding-bottom: 4px;
+      color: var(--paper);
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.55;
+      letter-spacing: 0.06em;
+      text-align: right;
+    }
+
+    .masthead-copy span {
+      display: block;
+      color: var(--muted);
+      font-family: "BattleDisplay", sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+    }
+
+    .timeline {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 56px;
+      height: 976px;
+      padding-top: 38px;
+    }
+
+    .stage {
+      position: relative;
+      display: grid;
+      grid-template-rows: 740px 1fr;
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 18px;
+      background: rgba(10, 13, 30, 0.86);
+      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
+    }
+
+    .stage[data-stage="final"] {
+      border-color: rgba(255, 211, 110, 0.68);
+      box-shadow: 0 28px 90px rgba(255, 123, 32, 0.13), 0 0 0 1px rgba(255, 123, 32, 0.13);
+    }
+
+    .stage-visual {
+      position: relative;
+      overflow: hidden;
+      background: #080a16;
+    }
+
+    .stage-visual::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      box-shadow: inset 0 -120px 100px -90px rgba(5, 7, 20, 0.95);
+    }
+
+    .stage img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    .stage-date {
+      position: absolute;
+      z-index: 2;
+      top: 24px;
+      left: 24px;
+      display: inline-flex;
+      align-items: center;
+      min-height: 48px;
+      padding: 0 20px;
+      border: 1px solid rgba(255, 211, 110, 0.48);
+      border-radius: 999px;
+      background: rgba(5, 7, 20, 0.84);
+      backdrop-filter: blur(12px);
+      color: var(--gold);
+      font-family: "BattleDisplay", sans-serif;
+      font-size: 18px;
+      letter-spacing: 0.16em;
+    }
+
+    .stage-number {
+      position: absolute;
+      z-index: 2;
+      top: 14px;
+      right: 22px;
+      color: rgba(255, 255, 255, 0.25);
+      font-family: "BattleDisplay", sans-serif;
+      font-size: 84px;
+      line-height: 1;
+    }
+
+    .stage-copy {
+      position: relative;
+      padding: 28px 30px 26px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      background:
+        linear-gradient(90deg, rgba(255, 123, 32, 0.08), transparent 55%),
+        rgba(8, 11, 26, 0.96);
+    }
+
+    .stage-kicker {
+      margin-bottom: 9px;
+      color: var(--orange);
+      font-family: "BattleDisplay", sans-serif;
+      font-size: 19px;
+      letter-spacing: 0.22em;
+    }
+
+    .stage h2 {
+      margin: 0 0 10px;
+      color: var(--paper);
+      font-size: 37px;
+      font-weight: 900;
+      line-height: 1.18;
+      letter-spacing: 0.04em;
+    }
+
+    .stage p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.55;
+      letter-spacing: 0.035em;
+    }
+
+    .arrow {
+      position: absolute;
+      z-index: 4;
+      top: 384px;
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 211, 110, 0.54);
+      border-radius: 50%;
+      background: #090b1b;
+      color: var(--gold);
+      font-family: sans-serif;
+      font-size: 30px;
+      font-weight: 900;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    }
+
+    .arrow.one { left: calc(50% - 26px); }
+
+    .footer {
+      position: absolute;
+      z-index: 3;
+      left: 80px;
+      right: 80px;
+      bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      color: rgba(255, 243, 216, 0.42);
+      font-family: "BattleDisplay", sans-serif;
+      font-size: 14px;
+      letter-spacing: 0.22em;
+    }
+  </style>
+</head>
+<body>
+  <main class="canvas" id="comparison" aria-label="BATTLE FES特設サイトのデザイン進化比較">
+    <header class="masthead">
+      <div>
+        <div class="eyebrow">BATTLE FES 2026 / SITE ARCHIVE</div>
+        <h1>FIVE MONTHS OF EVOLUTION</h1>
+      </div>
+      <div class="masthead-copy">
+        最初の構想から、イベント当日の体験へ。
+        <span>DESIGN &amp; DEVELOPMENT / MAR — JUL 2026</span>
+      </div>
+    </header>
+
+    <section class="timeline" aria-label="初期版と完成版のサイトデザイン比較">
+      <article class="stage" data-stage="initial">
+        <div class="stage-visual">
+          <img src="/output/comparison/stage-01-initial.png" alt="2026年3月12日の初期サイトデザイン">
+          <div class="stage-date">MAR. 12 / 2026</div>
+          <div class="stage-number">01</div>
+        </div>
+        <div class="stage-copy">
+          <div class="stage-kicker">DESIGN DRAFT</div>
+          <h2>最初のデザイン原案</h2>
+          <p>サイトの方向性を探るために制作した原案。<br>ここから世界観と機能を磨き込んだ。</p>
+        </div>
+      </article>
+
+      <article class="stage" data-stage="final">
+        <div class="stage-visual">
+          <img src="/output/comparison/stage-03-final.png" alt="2026年7月18日の完成版サイト">
+          <div class="stage-date">JUL. 18 / 2026</div>
+          <div class="stage-number">02</div>
+        </div>
+        <div class="stage-copy">
+          <div class="stage-kicker">FINAL EXPERIENCE</div>
+          <h2>当日を動かすサイトへ</h2>
+          <p>リアルタイム投票と時刻連動を実装。<br>デザインから運用まで、ひとつの体験に。</p>
+        </div>
+      </article>
+
+      <div class="arrow one" aria-hidden="true">›</div>
+    </section>
+
+    <footer class="footer">
+      <span>BATTLE FES / COLORsing SUMMER EVENT 2026</span>
+      <span>FIRST DRAFT → FINAL EXPERIENCE</span>
+    </footer>
+  </main>
+</body>
+</html>

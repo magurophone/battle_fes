@@ -3782,6 +3782,7 @@ function resultAwardCardHtml(group, index) {
     `;
   }).join('');
   const tiedCount = recipients.length > 1 ? recipients.length : Number(recipients[0] && recipients[0].tiedWinnerCount) || 1;
+  const categoryTotal = recipients.reduce((sum, award) => sum + (Number(award.bonusPoint) || 0), 0);
   return `
     <article class="result-award-card">
       <span class="result-award-number" aria-hidden="true">0${index + 1}</span>
@@ -3792,7 +3793,7 @@ function resultAwardCardHtml(group, index) {
       <div class="result-award-recipients">
         ${rows || '<p class="result-section-note">受賞者確定待ち</p>'}
       </div>
-      ${tiedCount > 1 ? `<p class="result-award-tie">同率受賞 · 60,000ptを${tiedCount}名で分配</p>` : ''}
+      ${tiedCount > 1 ? `<p class="result-award-tie">同率受賞 · ${formatResultScore(categoryTotal)}ptを${tiedCount}名で分配</p>` : ''}
     </article>
   `;
 }
@@ -3961,9 +3962,18 @@ function renderFinalResults(finalResults = finalResultsCache) {
       </article>
     `;
   }).join('');
-  const awardsHtml = resultAwardGroups(finalResults)
+  const awardGroups = resultAwardGroups(finalResults);
+  const awardsHtml = awardGroups
     .map((group, index) => resultAwardCardHtml(group, index))
     .join('');
+  // 部門加点額は事前秘匿のためHTMLに直書きせず、公開後のAPI値から算出する
+  const awardCategoryTotal = awardGroups.reduce((max, group) => {
+    const total = group.recipients.reduce((sum, award) => sum + (Number(award.bonusPoint) || 0), 0);
+    return Math.max(max, total);
+  }, 0);
+  const awardsNote = awardCategoryTotal
+    ? `各部門${formatResultScore(awardCategoryTotal)}pt · 同率時は均等分配`
+    : '受賞メンバーの所属チームに加点';
 
   stage.classList.remove('is-visible');
   stage.innerHTML = `
@@ -4003,7 +4013,7 @@ function renderFinalResults(finalResults = finalResultsCache) {
           <div class="result-section-kicker">INDIVIDUAL HONORS</div>
           <h4 id="resultAwardsHeading">個人賞</h4>
         </div>
-        <p class="result-section-note">各部門60,000pt · 同率時は均等分配</p>
+        <p class="result-section-note">${awardsNote}</p>
       </div>
       <div class="result-award-grid">${awardsHtml}</div>
     </section>

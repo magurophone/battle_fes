@@ -91,6 +91,13 @@ try {
       .png({ compressionLevel: 9, adaptiveFiltering: true })
       .toFile(`public/assets/promo/bonus/preview-${idx}.png`);
     console.log("saved", out, `(${ch} ${idx}/${total})`);
+    // 透過版（チーム配信背景に直接載せる用。枠なし・スクリム強化）
+    await page.goto(`http://127.0.0.1:${port}/promo/bonus-char.html?${q}&trans=1`, { waitUntil: "networkidle" });
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(400);
+    const outTrans = `public/assets/promo/bonus/char-${idx}-trans.png`;
+    await page.screenshot({ path: outTrans, omitBackground: true });
+    console.log("saved", outTrans, `(${ch} ${idx}/${total})`);
   }
 } finally {
   await browser.close();

@@ -1337,7 +1337,8 @@
     let voteStatusCache = "waiting";
     let adminVoteStatusOverrideCache = null;
     let liveScoresCache = { memberScores: {}, teamScores: {}, totalLiveScore: 0 };
-    let individualAwardBonusCache = { pointPerAward: 60000, teamScores: {}, totalPoints: 0, awards: [] };
+    // 加点額は事前秘匿のためHTMLに直書きしない。実値はAPIレスポンスで上書きされる
+    let individualAwardBonusCache = { pointPerAward: 0, teamScores: {}, totalPoints: 0, awards: [] };
     let liveScoresDraft = null;
     let liveScoreActiveTeamId = null;
     let activeIndividualCategoryId = null;
@@ -2597,7 +2598,7 @@
       voteStatusCache = data.status || "waiting";
       adminVoteStatusOverrideCache = data.adminVoteStatusOverride || null;
       liveScoresCache = data.liveScores || { memberScores: {}, teamScores: {}, totalLiveScore: 0 };
-      individualAwardBonusCache = data.individualAwardBonuses || { pointPerAward: 60000, teamScores: {}, totalPoints: 0, awards: [] };
+      individualAwardBonusCache = data.individualAwardBonuses || { pointPerAward: 0, teamScores: {}, totalPoints: 0, awards: [] };
 
       document.getElementById("voteStatus").textContent = voteStatusCache || "-";
       renderLiveScorePanel(liveScoresCache);
@@ -2679,6 +2680,8 @@
 
     async function refreshLeaderAccessAtUnlock() {
       if (accessUnlockRefreshPending || accessCache.role !== "leader" || accessCache.canViewResults) return;
+      const dashboard = document.getElementById("dashboard");
+      if (!getToken() || !dashboard || dashboard.classList.contains("hidden")) return;
       const unlockAt = new Date(accessCache.resultsUnlockAt || 0).getTime();
       if (!Number.isFinite(unlockAt) || Date.now() < unlockAt) return;
       accessUnlockRefreshPending = true;

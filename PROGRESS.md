@@ -1,5 +1,38 @@
 # BATTLE FES 2026 実装進捗
 
+2026-07-19: 管理画面 `/admin/` のログイン入力が約1秒後に消える不具合を修正。イベント終了後も1秒周期の `refreshLeaderAccessAtUnlock()` が未ログイン状態で管理APIを呼び、401時の `setLoggedInUi(false)` が入力欄を空にしていた。未ログイン／ダッシュボード非表示時は解禁確認APIへ進まない条件を追加し、`scripts/local-frontend-smoke.mjs` にPC・スマホで「1.3秒待っても入力値保持」「管理API呼び出し0件」「ログイン画面維持」の回帰テストを追加。全PlaywrightスモークPASS後、Cloudflare Pages Production / masterへデプロイ済み（deployment `6c06a5b6-e837-42ee-83d9-1c72d8102aa0`）。本番 `/admin/` でもPC・スマホともHTTP 200、入力値保持、未ログイン管理API呼び出し0件を確認済み。
+
+2026-07-15: 開発裏話その4画像 `public/assets/promo/backstage-4-type-visual.png` を修正。①「UFCのカウントダウン表示を参考」チップを画像から削除（ユーザー指示。記事 `docs/backstage-4-type-visual.md` のUFC言及は本文に残っている・削除は未指示）。`promo/shot-backstage-type-visual.mjs` の検証assertは「UFCが含まれないこと」に反転済み。②ROUND 1 / CRIMSON の色収差風ズレ影（赤/青オフセット text-shadow）が静止画でブレに見えるため黒ドロップシャドウへ変更。等倍クロップで輪郭シャープを確認済み。
+
+## 未デプロイ（次回セッションで判断）
+
+以下はローカル完了・本番未反映。デプロイは `powershell -ExecutionPolicy Bypass -File .\scripts\deploy-safe.ps1`。
+- 個人賞60,000ptのHTMLソース秘匿対応（`public/index.html` / `battlefes.html` / `public/admin/index.html`、テスト全PASS済み）
+- 7/14の管理画面2権限分離などが未デプロイならそれも含む（PROGRESS各エントリ参照）
+- ※ SNS画像・配信背景は `public/assets/promo/` 配下にあるため、デプロイすると公開URLからアクセス可能になる点に留意
+
+## SNS開発裏話シリーズ 残ネタ（ドラフトは口調=その1準拠で作成済み、会話ログ）
+
+- 投稿済み/準備済み: その1 AZURE（7/11投稿）／その2 ライブスコア（画像 `backstage-2-livescore.png`）／その3 1人1票（画像 `backstage-3-onevote.png`）／その4 フォント（画像 `backstage-4-type-visual.png`＋記事）
+- 残り候補: 没演出集／管理画面チラ見せ（数字マスクのスクショ素材が必要）／「いつ投票が一番効くか」（**7/17前日推奨**・時間加重の話）／「結果は23:00に自動公開」（**7/18当日推奨**）
+- 方針: 個人賞ポイントはシリーズ全体で言及禁止（当日結果発表まで秘匿）／不正対策の判定方法の詳細は書かない／対外コピーに名前以外の絵文字禁止
+
+2026-07-14: SNS「開発裏話」その4（フォントとサイトイメージ）の記事と添付画像を作成。事前に本番 `https://battle-fes.pages.dev` をPlaywrightでPC 1440px／スマホ390pxの全セクション・モバイルメニューまで確認。UFC参考の範囲は主に投票開始カウントダウンメーター（黒い計器盤、DAYS/HOURS/MIN/SEC、フラップ式数字、オレンジ発光）に限定し、サイト全体がUFC風という表現は避けた。フォントは日本語見出し `Dela Gothic One` と、チーム名・ROUND・カウントダウン数字に使う軍用ステンシル系 `Black Ops One` の役割を紹介。記事は `docs/backstage-4-type-visual.md`、画像は `public/assets/promo/backstage-4-type-visual.png`（1600×900 @2x）、生成元は `promo/backstage-type-visual.html` + `node promo/shot-backstage-type-visual.mjs`。レンダースクリプトで8桁／4区分／2書体／キャンバス内収まり／フォント読込／ブラウザエラーなしをPlaywright検証済み。未デプロイ。
+
+2026-07-13: SNS「開発裏話」その3（1人1票）の添付画像を作成。`public/assets/promo/backstage-3-onevote.png`（1600×900 @2x）。Q&A見出し「2回投票したらどうなるの？→できません―1人1票」、1回目=受付/2回目=自動で無効のチケット対比、下部に「あなたの1票を待っています」+「VOTE OPEN 7.18 SAT 20:45」。不正対策の仕組みの詳細（判定方法）は回避ヒントになるため画像・文章とも記載しない方針。生成元 `promo/backstage-onevote.html` + `node promo/shot-backstage-onevote.mjs`。
+
+2026-07-12: SNS「開発裏話」シリーズ その2（ライブスコアの決まり方）の添付画像を作成。`public/assets/promo/backstage-2-livescore.png`（1600×900 @2x）。内容は配信前/配信後メーター差分の3ステップ、1k=1,000の単位説明、推しボーナス割り戻しのフェア調整式。生成元 `promo/backstage-livescore.html` + `node promo/shot-backstage-livescore.mjs`。数字（120k/170k/+50k）は説明用の架空例。裏話シリーズのドラフト（その2〜8、口調はその1準拠）は会話内で共有済み。個人賞ポイントはシリーズ全体で非公開方針。
+
+2026-07-12: 【方針】個人賞の加点ポイント（各部門60,000pt）は当日の結果発表まで対外的に伏せる。理由: 事前に金額を告知すると「3部門とも同じチームのメンバーに投票する」最適化行動を誘発するため。SNS開発裏側シリーズのネタからも除外。公開サイトのルール文言は「個人賞加点」という要素名のみで金額非表示（現状維持でOK）。ただし結果画面テンプレートとして「各部門60,000pt」の文字列が `public/index.html` のHTMLソース内に存在する（表示は23:00以降）。→ 同日対応済み: `public/index.html` / `battlefes.html` の「各部門60,000pt」「同率受賞 · 60,000ptを◯名で分配」を、公開後の `finalResults.awards[].bonusPoint` 合計から算出する動的文言に変更（データ未取得時は「受賞メンバーの所属チームに加点」）。`public/admin/index.html` の `pointPerAward: 60000` フォールバックも 0 に変更（実値はAPI応答で上書き）。60,000という数字は公開HTMLソースから消え、サーバー側 `functions/api/_lib/vote-store.js` の定数のみに存在。API回帰18件・フロントスモーク9件全PASS、結果画面レビュー画像で「各部門60,000pt・同率時は均等分配」「60,000ptを2名で分配」がAPI値から正しく描画されることを確認済み。
+
+2026-07-12: 管理画面を運営者／リーダーの2権限へ分離。既存の共通 `ADMIN_TOKEN` はリーダー権限として、22:50まではライブスコア入力・チーム別ライブスコア・合計ライブスコアだけ返す。投票結果、個人賞、総合順位、コメント／ログ、最終結果はAPIレスポンスから除外し、管理画面でもタブを非表示にする。`2026-07-18T22:50:00+09:00` 以降は結果閲覧だけ自動解禁し、開いている画面も1秒監視で再取得する。新設 `OWNER_TOKEN` は時刻に関係なく全結果・設定・リセット・締切後テストを利用可能。リーダーは22:50以降もリセット／締切後切替APIを拒否する。運営者専用パスワードの値はCloudflare Secretだけに保存し、リポジトリには置かない。
+
+2026-07-12: 公開フロントの最終結果発表を全面実装。22:30締切後〜23:00は票数を見せず「最終結果を集計中」ステージを表示し、23:00にページ更新なしで公式結果へ自動遷移する。結果は総合優勝の大判ヒーロー、3チーム総合順位、ライブスコア／個人賞加点／投票ポイントの内訳、個人賞3部門の受賞者を表示。同率個人賞は全受賞者と各配分ポイントを表示する。`/api/results` は公開時刻後だけライブスコアを読み、`finalResults` としてサーバー側で確定した順位・内訳を返す。公開前は個人賞と、締切後の全結果をAPIでも封印する。管理画面の「締切後表示 ON」は同じブラウザのテストモード公開フロントへ連動し、管理APIの実集計で結果画面を表示する。X共有は優勝・個人賞・ハッシュタグ・結果URLを入力済みのWeb Intentを生成し、公式結果ポストURLを `RESULT_ANNOUNCEMENT_POST_URL` へ設定すると引用ポスト導線になる。名前・画像・チーム演出はAPIの `memberId / memberName / teamId` と既存画像マップから自動反映。PC／スマホ／reduced-motion／23:00境界／管理画面連動／横スクロール／X URLを実ブラウザで検証。API回帰17件、フロントスモーク全件PASS。レビュー画像は `output/review/final-results-desktop.png` と `output/review/final-results-mobile.png`。
+
+2026-07-12: 貫通BONUSキーワード9文字の透過PNG版を追加。チームごとの配信背景に直接載せられるよう、`promo/bonus-char.html` に `?trans=1` モードを実装（外枠線なし・中央放射スクリム強化・文字は金縁＋暗縁の二重シャドウ）。白/黒/グレー/派手色の4背景合成で可読性検証済み。`node promo/shot-bonus-char.mjs` が従来の不透明版に加えて `public/assets/promo/bonus/char-{1..9}-trans.png` を出力し、配布用 `public/assets/promo/bonus/貫通bonus_透過.zip` にまとめ済み。
+
+2026-07-12: 当日配信背景（スマホ縦 1080×1920）2枚を作成。初版は黒背景の独自デザインだったが「サイトの文脈に沿っていない」「開会式中に 19:45 START 表記はおかしい」との指摘で作り直し。現行版は特設サイトのヒーローと同一の視覚言語: `hero-bg.webp` 写真背景＋暗幕グラデ、`sublogo-colorsing-trim` → `logo-B-trim` → Dela Gothic タグライン、marble の date-chip ピル意匠、スポットライト。①開会式 `public/assets/promo/stream-bg-opening.png`（チップ「開会式｜OPENING CEREMONY」、時刻表記なし、下部にチームワードマーク3枚）②本投票〜結果発表 `public/assets/promo/stream-bg-result.png`（FINAL STAGE＋「本投票・結果発表」、チップ「本投票｜22:30 締切」「結果発表｜22:30〜」、投票URL）。生成元は `promo/stream-bg.html`（`?scene=opening|result` 切替、`&guides=1` で配信UI占有領域を赤表示）+ `node promo/shot-stream-bg.mjs`。既存素材のみ使用、SNS投稿画像のレイアウト流用なし。ColorSing配信UIのレイアウト指定（ユーザー提供の見取り図）に基づき、上部0〜310px＝アイコン/視聴中/歌唱曲名、1060px〜下端＝歌詞バー+コメント欄は情報禁止領域とし、ロゴ・テキストはすべて y=330〜1040 の帯（`.safe`）内に配置。背景写真のみ全面。ガイド付きレンダリングで領域内収まりを検証済み。
+
 2026-07-12: 個人賞60,000pt・同率分割対応の検証完了。node scripts/local-api-regression.mjs は15件すべてPASS、node scripts/local-frontend-smoke.mjs も公開投票・PCカードstacking・スマホカード・管理画面・管理画面SPの全項目PASS。
 
 2026-07-12: 個人賞加点を各部門50,000ptから **60,000pt** へ変更。同率1位が複数いる場合は部門の60,000ptを受賞メンバー数で整数分割し、各メンバーの所属チームへ合算する。割り切れない場合は総額を正確に60,000ptへ保つため、候補ID順に1ptずつ余りを配る。APIの individualAwardBonuses.awards は同率受賞者全員を返し、各要素へ tiedWinnerCount と実配分 bonusPoint を格納。管理画面の個人賞トップ表示も1名だけを選ばず、同率受賞者全員と「同率トップ／同率受賞」を表示する。2名・3名・9名同率、同一チーム内同率、D1/API経由の3部門同率を回帰テストへ追加。
@@ -277,7 +310,7 @@ CSS は `public/index.html` `.placeholder` 定義参照。`color: var(--muted); 
   - CRIMSON #3: まぐろふぉん
   - NOVA #3: りんか🔔
   - GOLDEN #3: iran痔
-- [ ] 顧客向け結果表示の見せ方を最終決定
+- [x] 顧客向け結果表示を実装（23:00自動公開、総合優勝・全順位内訳・個人賞・同率・X共有）
 - [ ] 試験用リセットボタンを残すか削除するか決定
 - [x] 時間加重投票のバックエンド実装（早い投票ほど価値が低い）
 - [ ] 個人賞 (MVP / エンタメ / モーメント) の最終ラベル・候補メンバー確定（現状 `functions/api/_lib/vote-categories.js` に 3 賞 + プレースホルダ名）
